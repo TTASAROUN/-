@@ -7,7 +7,7 @@
 | 문서 | 내용 |
 |---|---|
 | [lecture-notes/01-analysis-unit-and-time-dimension.md](lecture-notes/01-analysis-unit-and-time-dimension.md) | 분석 단위와 다층 분석, 횡단 연구 vs. 종단 연구 |
-| [lecture-notes/02-literature-review-and-writing.md](lecture-notes/02-literature-review-and-writing.md) | 선행연구 검토, 읽기·글쓰기 조언 (녹취 진행 중) |
+| [lecture-notes/02-literature-review-and-writing.md](lecture-notes/02-literature-review-and-writing.md) | 선행연구 검토, 지도교수 선정·소통, 문헌 검색과 AI 활용, 과제 안내 |
 | [lecture-notes/transcripts/](lecture-notes/transcripts/) | 음성 인식 녹취 원문 (미편집, 대조용) |
 
 ## 원칙
