@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>설문 응답</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;600&family=Noto+Sans+KR:wght@800&display=swap">
+<link rel="stylesheet" href="css/style.css">
+<style>
+  .wrap{max-width:640px;margin:0 auto;padding:24px 16px 60px}
+  .qcard{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px;margin-top:12px}
+  .qcard .qt{font-weight:600;margin-bottom:10px}
+  .scale{display:flex;gap:6px}
+  .scale label{flex:1;text-align:center;border:1px solid var(--line);border-radius:8px;padding:10px 0;cursor:pointer}
+  .scale input{display:none} .scale input:checked+span{color:var(--accent);font-weight:700}
+  .scale label:has(input:checked){border-color:var(--accent);background:var(--accent-soft)}
+  .opt{display:block;padding:8px 10px;border:1px solid var(--line);border-radius:8px;margin-top:6px;cursor:pointer}
+  .opt:has(input:checked){border-color:var(--accent);background:var(--accent-soft)}
+</style>
+</head>
+<body>
+<div class="wrap" id="wrap"><div class="muted">불러오는 중…</div></div>
+<script src="js/modules.js"></script><script src="js/seed.js"></script><script src="js/store.js"></script>
+<script>
+(async () => {
+  const S = LMS.store, $ = (s) => document.querySelector(s), esc = (v) => String(v ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const id = new URLSearchParams(location.search).get('id');
+  let survey, org, mode = 'local';
+  try { const r = await fetch('/api/public/survey/' + id); if (r.ok) { ({ survey, org } = await r.json()); mode = 'api'; } } catch (e) {}
+  if (!survey) { await S.init(); survey = S.get('survey', id); org = S.settings(); }
+  if (!survey) return $('#wrap').innerHTML = '<div class="card empty">설문을 찾을 수 없습니다.</div>';
+  $('#wrap').innerHTML = `<div class="small muted">${esc((org || {}).name || '')}</div><h1 style="font-size:22px;margin-bottom:4px">${esc(survey.title)}</h1><div class="muted small">${survey.start || ''} ~ ${survey.end || ''} · 대상: ${esc(survey.target || '')}</div>
+    <form id="f"><div class="qcard"><div class="qt">이름 (선택)</div><input type="text" id="who" placeholder="익명으로 제출하려면 비워 두세요"></div>
+    ${(survey.questions || []).map((q, i) => `<div class="qcard"><div class="qt">${i + 1}. ${esc(q.text)}</div>${q.type === '객관' ? `<div class="scale">${[1, 2, 3, 4, 5].map(n => `<label><input type="radio" name="q${i}" value="${n}" required><span>${n}</span></label>`).join('')}</div><div class="small muted" style="display:flex;justify-content:space-between;margin-top:4px"><span>전혀 아니다</span><span>매우 그렇다</span></div>` : q.type === '선다' ? (q.options || []).map(o => `<label class="opt"><input type="radio" name="q${i}" value="${esc(o)}" required> ${esc(o)}</label>`).join('') : `<textarea name="q${i}" placeholder="자유롭게 적어주세요"></textarea>`}</div>`).join('')}
+    <button class="btn primary" style="width:100%;justify-content:center;margin-top:16px;padding:12px" type="submit">제출하기</button></form>`;
+  $('#f').onsubmit = async (e) => { e.preventDefault(); const fd = new FormData(e.target); const answers = {}; (survey.questions || []).forEach((q, i) => answers[i] = q.type === '객관' ? +fd.get('q' + i) : fd.get('q' + i));
+    const rec = { survey: survey.id, respondent: $('#who').value.trim() || '익명', answers, date: new Date().toISOString().slice(0, 10) };
+    try { if (mode === 'api') { const r = await fetch('/api/public/survey_response', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(rec) }); if (!r.ok) throw new Error(); } else await S.add('survey_response', rec);
+      $('#wrap').innerHTML = `<div class="card" style="text-align:center;padding:40px"><h1 style="font-size:22px">제출되었습니다</h1><div class="muted" style="margin-top:8px">소중한 의견 감사합니다.</div></div>`; } catch (err) { alert('제출에 실패했습니다. 다시 시도해 주세요.'); } };
+})();
+</script>
+</body>
+</html>

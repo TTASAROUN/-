@@ -1,0 +1,91 @@
+/* store.js — 데이터 저장소. 서버가 있으면 API, 없으면 브라우저 저장소를 씁니다. */
+window.LMS = window.LMS || {};
+LMS.store = (() => {
+  const st = { mode: 'local', db: {}, user: null, ready: false };
+  const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+  const LS_KEY = 'lms_db_v1', LS_USER = 'lms_user_v1';
+
+  function ensure() { Object.keys(LMS.entities).concat(['settings']).forEach(k => { if (!Array.isArray(st.db[k])) st.db[k] = []; }); }
+  function persistLocal() { try { localStorage.setItem(LS_KEY, JSON.stringify(st.db)); } catch (e) { console.warn('저장 실패', e); } }
+
+  async function api(path, opt = {}) {
+    const res = await fetch('/api' + path, { headers: { 'Content-Type': 'application/json' }, credentials: 'same-origin', ...opt });
+    if (res.status === 401) { st.user = null; throw new Error('로그인이 필요합니다'); }
+    if (!res.ok) throw new Error((await res.json().catch(() => ({}))).error || '요청 실패');
+    return res.json();
+  }
+
+  st.init = async function () {
+    // 서버가 있는지 확인
+    try {
+      const ping = await fetch('/api/ping', { credentials: 'same-origin' });
+      if (ping.ok) st.mode = 'api';
+    } catch (e) { st.mode = 'local'; }
+    if (st.mode === 'api') {
+      try { st.user = (await api('/me')).user; } catch (e) { st.user = null; }
+      if (st.user) st.db = await api('/db');
+    } else {
+      try { st.db = JSON.parse(localStorage.getItem(LS_KEY) || 'null') || {}; } catch (e) { st.db = {}; }
+      if (!Object.keys(st.db).length) { st.db = LMS.makeSeed(); persistLocal(); }
+      try { st.user = JSON.parse(localStorage.getItem(LS_USER) || 'null'); } catch (e) { st.user = null; }
+    }
+    ensure(); st.ready = true; return st;
+  };
+  st.reload = async function () { if (st.mode === 'api' && st.user) { st.db = await api('/db'); ensure(); } };
+
+  st.login = async function (id, pw) {
+    if (st.mode === 'api') { st.user = (await api('/login', { method: 'POST', body: JSON.stringify({ id, pw }) })).user; st.db = await api('/db'); ensure(); return st.user; }
+    ensure();
+    const u = st.db.user.find(u => u.id === id && u.pw === pw);
+    if (!u) throw new Error('아이디 또는 비밀번호가 맞지 않습니다');
+    st.user = { id: u.id, name: u.name, role: u.role }; try { localStorage.setItem(LS_USER, JSON.stringify(st.user)); } catch (e) {}
+    return st.user;
+  };
+  st.logout = async function () {
+    if (st.mode === 'api') await api('/logout', { method: 'POST' }).catch(() => {});
+    st.user = null; try { localStorage.removeItem(LS_USER); } catch (e) {}
+  };
+
+  st.list = (col) => st.db[col] || [];
+  st.get = (col, id) => (st.db[col] || []).find(r => r.id === id);
+  st.settings = () => (st.db.settings && st.db.settings[0]) || { name: '우리 기관', code: 'ORG' };
+
+  st.add = async function (col, rec) {
+    rec = { ...rec, id: rec.id || uid(), createdAt: new Date().toISOString(), createdBy: st.user && st.user.name };
+    if (st.mode === 'api') rec = await api('/' + col, { method: 'POST', body: JSON.stringify(rec) });
+    ensure(); st.db[col].push(rec); if (st.mode === 'local') persistLocal(); return rec;
+  };
+  st.update = async function (col, id, rec) {
+    rec = { ...rec, id, updatedAt: new Date().toISOString(), updatedBy: st.user && st.user.name };
+    if (st.mode === 'api') rec = await api(`/${col}/${id}`, { method: 'PUT', body: JSON.stringify(rec) });
+    const i = st.db[col].findIndex(r => r.id === id); if (i >= 0) st.db[col][i] = rec; else st.db[col].push(rec);
+    if (st.mode === 'local') persistLocal(); return rec;
+  };
+  st.save = (col, rec) => rec.id && st.get(col, rec.id) ? st.update(col, rec.id, rec) : st.add(col, rec);
+  st.remove = async function (col, id) {
+    if (st.mode === 'api') await api(`/${col}/${id}`, { method: 'DELETE' });
+    st.db[col] = st.db[col].filter(r => r.id !== id); if (st.mode === 'local') persistLocal();
+  };
+  st.upload = async function (file) {
+    if (st.mode === 'api') {
+      const res = await fetch('/api/upload', { method: 'POST', credentials: 'same-origin', headers: { 'x-filename': encodeURIComponent(file.name) }, body: file });
+      if (!res.ok) throw new Error('업로드 실패'); return res.json();
+    }
+    if (file.size > 1.5 * 1024 * 1024) throw new Error('브라우저 저장 모드에서는 1.5MB 이하 파일만 올릴 수 있습니다 (서버 설치 시 제한 없음)');
+    const url = await new Promise((ok, no) => { const r = new FileReader(); r.onload = () => ok(r.result); r.onerror = no; r.readAsDataURL(file); });
+    return { name: file.name, url, size: file.size };
+  };
+  st.resetDemo = async function () {
+    if (st.mode === 'api') { await api('/reset', { method: 'POST' }); st.db = await api('/db'); }
+    else { st.db = {}; ensure(); st.db.settings = [{ id: 'main', name: '우리 기관', code: 'ORG' }]; st.db.user = [{ id: 'admin', pw: '1234', name: '관리자', role: '관리자' }]; persistLocal(); }
+    ensure();
+  };
+  st.exportJSON = () => JSON.stringify(st.db, null, 1);
+  st.importJSON = async function (text) {
+    const data = JSON.parse(text);
+    if (st.mode === 'api') { await api('/import', { method: 'POST', body: JSON.stringify(data) }); st.db = await api('/db'); }
+    else { st.db = data; persistLocal(); }
+    ensure();
+  };
+  return st;
+})();

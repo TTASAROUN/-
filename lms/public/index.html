@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>훈련기관 홈페이지</title>
+<meta name="description" content="직업훈련기관 홈페이지 — 모집 과정, 상담 신청, 취업 현황">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600&family=Noto+Sans+KR:wght@700;900&family=IBM+Plex+Mono:wght@600&display=swap">
+<style>
+:root{--bg:#FFFFFF;--ink:#16202A;--muted:#5E6B78;--line:#E3E8ED;--soft:#F2F5F8;--accent:#0E6F6C;--accent-2:#F2B01E;--font:"IBM Plex Sans KR","Noto Sans KR",-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;--head:"Noto Sans KR",sans-serif;--mono:"IBM Plex Mono",monospace}
+*{box-sizing:border-box}body{margin:0;font-family:var(--font);color:var(--ink);background:var(--bg);line-height:1.6;font-size:15px}
+h1,h2,h3{font-family:var(--head);margin:0;line-height:1.25;text-wrap:balance}
+a{color:inherit}.wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+header{position:sticky;top:0;background:rgba(255,255,255,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);z-index:10}
+header .wrap{display:flex;align-items:center;gap:20px;height:64px}
+.logo{font-family:var(--head);font-weight:900;font-size:20px;letter-spacing:-.02em;text-decoration:none}
+.logo b{color:var(--accent)}
+nav{margin-left:auto;display:flex;gap:4px}nav a{text-decoration:none;padding:8px 12px;border-radius:8px;font-weight:600;font-size:14px}nav a:hover{background:var(--soft)}
+nav a.cta{background:var(--accent);color:#fff}
+.hero{background:linear-gradient(135deg,#0B3D3B 0%,#0E6F6C 55%,#178F8A 100%);color:#fff;padding:72px 0 64px;position:relative;overflow:hidden}
+.hero:after{content:"";position:absolute;right:-120px;top:-120px;width:420px;height:420px;border-radius:50%;background:rgba(242,176,30,.18)}
+.hero .wrap{position:relative}
+.hero .eyebrow{font-size:13px;letter-spacing:.12em;text-transform:uppercase;opacity:.85;font-weight:600}
+.hero h1{font-size:clamp(28px,5vw,48px);font-weight:900;margin:12px 0 10px;max-width:16em}
+.hero h1 em{font-style:normal;color:var(--accent-2)}
+.hero p{font-size:17px;opacity:.92;max-width:34em;margin:0 0 26px}
+.hero .btns{display:flex;gap:10px;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:12px 20px;border-radius:10px;font-weight:700;text-decoration:none;border:1px solid transparent;cursor:pointer;font-size:15px;font-family:inherit}
+.btn.y{background:var(--accent-2);color:#2A1D00}.btn.w{background:#fff;color:var(--accent)}.btn.g{background:var(--accent);color:#fff}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-top:-30px;position:relative}
+.stat{background:#fff;border:1px solid var(--line);border-radius:12px;padding:16px 18px;box-shadow:0 8px 24px rgba(20,40,40,.08)}
+.stat .v{font-family:var(--mono);font-size:28px;font-weight:600;color:var(--accent)}.stat .l{font-size:13px;color:var(--muted)}
+section{padding:56px 0}section h2{font-size:26px;font-weight:800;margin-bottom:6px}section .sub{color:var(--muted);margin-bottom:24px}
+.courses{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
+.course{border:1px solid var(--line);border-radius:14px;padding:20px;display:flex;flex-direction:column;gap:8px;background:#fff}
+.course .tag{display:inline-block;font-size:12px;font-weight:700;padding:3px 9px;border-radius:999px;background:#FFF3D1;color:#7A5200;align-self:flex-start}
+.course .tag.run{background:#DDF0EE;color:var(--accent)}
+.course h3{font-size:18px}.course .meta{font-size:13px;color:var(--muted);display:flex;flex-wrap:wrap;gap:6px 14px}.course p{margin:0;font-size:14px;flex:1}
+.course a{margin-top:6px;align-self:flex-start;font-size:14px;font-weight:700;color:var(--accent);text-decoration:none}
+.why{background:var(--soft)}.why .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px}
+.why .it{background:#fff;border-radius:12px;padding:20px;border:1px solid var(--line)}.why .it .ic{font-size:26px}.why .it h3{font-size:16px;margin:8px 0 4px}.why .it p{margin:0;font-size:14px;color:var(--muted)}
+.consult{display:grid;grid-template-columns:1.1fr .9fr;gap:36px;align-items:start}
+.form{background:#fff;border:1px solid var(--line);border-radius:14px;padding:22px;display:grid;gap:12px}
+.form label{font-size:13px;font-weight:600;color:var(--muted);display:block;margin-bottom:4px}
+.form input,.form select,.form textarea{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:8px;font:inherit}
+.form textarea{min-height:90px}.form .ok{background:#DDF0EE;color:var(--accent);padding:12px;border-radius:8px;font-weight:600}
+.contact{font-size:15px}.contact div{padding:8px 0;border-bottom:1px solid var(--line)}.contact b{display:inline-block;width:80px;color:var(--muted);font-weight:600}
+.notice{border-left:3px solid var(--accent-2);padding:8px 12px;margin-bottom:8px;background:var(--soft);border-radius:0 8px 8px 0}
+.notice .d{font-family:var(--mono);font-size:12px;color:var(--muted)}
+footer{border-top:1px solid var(--line);padding:28px 0;font-size:13px;color:var(--muted)}
+footer .wrap{display:flex;flex-wrap:wrap;gap:8px 24px;justify-content:space-between}
+@media(max-width:800px){.consult{grid-template-columns:1fr}nav a:not(.cta){display:none}header .wrap{height:58px}}
+</style>
+</head>
+<body>
+<header><div class="wrap"><a class="logo" href="#" id="logo">기관명</a><nav><a href="#courses">모집과정</a><a href="#why">기관소개</a><a href="#notice">공지</a><a href="#contact">오시는 길</a><a class="cta" href="#consult">상담 신청</a></nav></div></header>
+
+<div class="hero"><div class="wrap">
+  <div class="eyebrow">국비지원 직업훈련</div>
+  <h1 id="slogan">처음 상담부터 <em>취업 후 관리</em>까지<br>한 곳에서 책임집니다</h1>
+  <p id="about">훈련생 · 교강사 · 행정담당자 누구나 쉽고 편하게. 실무 중심 훈련과 1:1 취업 지원으로 결과를 만듭니다.</p>
+  <div class="btns"><a class="btn y" href="#consult">무료 상담 신청</a><a class="btn w" href="#courses">모집 중인 과정 보기</a></div>
+</div></div>
+<div class="wrap"><div class="stats" id="stats"></div></div>
+
+<section id="courses"><div class="wrap"><h2>모집 중인 과정</h2><div class="sub">지금 신청할 수 있는 훈련과정입니다. 궁금한 점은 상담을 신청하세요.</div><div class="courses" id="courseList"></div></div></section>
+
+<section class="why" id="why"><div class="wrap"><h2>왜 우리 기관인가</h2><div class="sub">훈련 전·중·후 전 과정을 하나의 시스템으로 관리합니다.</div>
+<div class="grid">
+  <div class="it"><div class="ic">🎯</div><h3>사전평가로 맞춤 편성</h3><p>입학 전 수준을 진단해 기초 보강부터 심화까지 개인별로 안내합니다.</p></div>
+  <div class="it"><div class="ic">📝</div><h3>NCS 능력단위 평가</h3><p>능력단위별 성적표와 분석표로 무엇을 보완할지 바로 알 수 있습니다.</p></div>
+  <div class="it"><div class="ic">💬</div><h3>정기 상담과 고충 처리</h3><p>학습·진로·취업 상담을 기록하고 건의사항은 처리 결과까지 알려드립니다.</p></div>
+  <div class="it"><div class="ic">💼</div><h3>취업 후 사후관리</h3><p>취업 확인, 근속 상담까지 수료 후에도 계속 함께합니다.</p></div>
+</div></div></section>
+
+<section id="consult"><div class="wrap"><h2>상담 신청</h2><div class="sub">남겨주시면 담당자가 연락드립니다. 신청 내용은 바로 기관 상담 시스템에 등록됩니다.</div>
+<div class="consult">
+  <form class="form" id="cform">
+    <div><label for="c_name">이름 *</label><input id="c_name" required></div>
+    <div><label for="c_phone">연락처 *</label><input id="c_phone" required placeholder="010-0000-0000"></div>
+    <div><label for="c_course">관심 과정</label><select id="c_course"><option value="">선택</option></select></div>
+    <div><label for="c_msg">문의 내용</label><textarea id="c_msg" placeholder="궁금한 점을 적어주세요 (지원 자격, 훈련비, 시간 등)"></textarea></div>
+    <button class="btn g" type="submit">상담 신청하기</button>
+  </form>
+  <div>
+    <h3 style="font-size:18px;margin-bottom:10px" id="notice">공지사항</h3><div id="noticeList"></div>
+    <h3 style="font-size:18px;margin:22px 0 10px" id="contact">오시는 길 · 연락처</h3><div class="contact" id="contactBox"></div>
+  </div>
+</div></div></section>
+
+<footer><div class="wrap"><span id="foot"></span><a href="admin.html" style="text-decoration:none">교직원 로그인</a></div></footer>
+
+<script src="js/modules.js"></script><script src="js/seed.js"></script><script src="js/store.js"></script>
+<script>
+(async () => {
+  const $ = (s) => document.querySelector(s), esc = (v) => String(v ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  let site, mode = 'local';
+  try { const r = await fetch('/api/public/site'); if (r.ok) { site = await r.json(); mode = 'api'; } } catch (e) {}
+  if (!site) { const S = LMS.store; await S.init(); site = { org: S.settings(), courses: S.list('course').filter(c => c.public && c.status !== '종료'), employment: S.list('employment').length, notices: S.list('notice').filter(n => n.target === '전체').slice(-3), trainees: S.list('trainee').length }; }
+  const org = site.org || {};
+  document.title = org.name || '훈련기관';
+  $('#logo').innerHTML = esc(org.name || '기관명').replace(/(.{2})/, '<b>$1</b>');
+  if (org.slogan) $('#slogan').innerHTML = esc(org.slogan).replace(/(취업|책임|실무)/, '<em>$1</em>');
+  if (org.about) $('#about').textContent = org.about;
+  const running = site.courses.filter(c => c.status === '진행중').length, open = site.courses.filter(c => c.status === '모집중').length;
+  $('#stats').innerHTML = [[open, '모집 중인 과정'], [running, '진행 중인 과정'], [site.employment, '취업 연계 실적'], ['1:1', '취업 사후관리']].map(([v, l]) => `<div class="stat"><div class="v">${v}</div><div class="l">${l}</div></div>`).join('');
+  $('#courseList').innerHTML = site.courses.length ? site.courses.map(c => `<div class="course"><span class="tag ${c.status === '진행중' ? 'run' : ''}">${esc(c.status)}${c.deadline && c.status === '모집중' ? ' · ' + c.deadline + ' 마감' : ''}</span><h3>${esc(c.name)}</h3>
+    <div class="meta"><span>📅 ${esc(c.start || '')} ~ ${esc(c.end || '')}</span>${c.hours ? `<span>⏱ ${c.hours}시간</span>` : ''}${c.capacity ? `<span>👥 정원 ${c.capacity}명</span>` : ''}</div><p>${esc(c.intro || '')}</p><a href="#consult" data-c="${c.id}">이 과정 상담 신청 →</a></div>`).join('') : '<div style="color:var(--muted)">현재 모집 중인 과정이 없습니다.</div>';
+  $('#c_course').innerHTML += site.courses.map(c => `<option value="${c.id}">${esc(c.name)}</option>`).join('');
+  document.querySelectorAll('[data-c]').forEach(a => a.onclick = () => { $('#c_course').value = a.dataset.c; });
+  $('#noticeList').innerHTML = (site.notices || []).length ? site.notices.map(n => `<div class="notice"><div class="d">${esc(n.date || '')}</div><div>${esc(n.title)}</div></div>`).join('') : '<div style="color:var(--muted);font-size:14px">등록된 공지가 없습니다.</div>';
+  $('#contactBox').innerHTML = [['주소', org.address], ['전화', org.phone], ['이메일', org.email], ['운영시간', org.hours]].filter(x => x[1]).map(([k, v]) => `<div><b>${k}</b>${esc(v)}</div>`).join('');
+  $('#foot').textContent = `© ${new Date().getFullYear()} ${org.name || ''} · ${org.address || ''} · ${org.phone || ''}`;
+  $('#cform').onsubmit = async (e) => { e.preventDefault(); const rec = { name: $('#c_name').value.trim(), phone: $('#c_phone').value.trim(), course: $('#c_course').value, content: $('#c_msg').value.trim() };
+    try { if (mode === 'api') { const r = await fetch('/api/public/consult', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(rec) }); if (!r.ok) throw new Error(); }
+      else await LMS.store.add('admission_consult', { ...rec, channel: '홈페이지', date: new Date().toISOString().slice(0, 10), status: '상담중' });
+      $('#cform').innerHTML = '<div class="ok">상담 신청이 접수되었습니다. 곧 연락드리겠습니다.</div>'; } catch (err) { alert('접수에 실패했습니다. 전화로 문의해 주세요.'); } };
+})();
+</script>
+</body>
+</html>
