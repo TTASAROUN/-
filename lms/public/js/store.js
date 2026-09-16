@@ -9,6 +9,7 @@ LMS.store = (() => {
   function persistLocal() { try { localStorage.setItem(LS_KEY, JSON.stringify(st.db)); } catch (e) { console.warn('저장 실패', e); } }
 
   async function api(path, opt = {}) {
+    if (st.student && /^\/[a-z_]+(\/|$)/.test(path) && !path.startsWith('/student') && !path.startsWith('/logout')) path = '/student' + path;
     const res = await fetch('/api' + path, { headers: { 'Content-Type': 'application/json' }, credentials: 'same-origin', ...opt });
     if (res.status === 401) { st.user = null; throw new Error('로그인이 필요합니다'); }
     if (!res.ok) throw new Error((await res.json().catch(() => ({}))).error || '요청 실패');
@@ -22,7 +23,7 @@ LMS.store = (() => {
       if (ping.ok) st.mode = 'api';
     } catch (e) { st.mode = 'local'; }
     if (st.mode === 'api') {
-      try { st.user = (await api('/me')).user; } catch (e) { st.user = null; }
+      try { const r = await fetch('/api/me', { credentials: 'same-origin' }); st.user = r.ok ? (await r.json()).user : null; } catch (e) { st.user = null; }
       if (st.user) st.db = await api('/db');
     } else {
       try { st.db = JSON.parse(localStorage.getItem(LS_KEY) || 'null') || {}; } catch (e) { st.db = {}; }
@@ -41,6 +42,21 @@ LMS.store = (() => {
     st.user = { id: u.id, name: u.name, role: u.role }; try { localStorage.setItem(LS_USER, JSON.stringify(st.user)); } catch (e) {}
     return st.user;
   };
+  /* 훈련생 포털: 이름 + 생년월일 + 연락처 뒤 4자리 */
+  st.studentLogin = async function (name, birth, phone4) {
+    if (st.mode === 'api') { const r = await api('/student/login', { method: 'POST', body: JSON.stringify({ name, birth, phone4 }) }); st.student = r.trainee; st.db = await api('/student/data'); ensure(); return st.student; }
+    ensure();
+    const t = st.db.trainee.find(t => t.name === name.trim() && t.birth === birth && (t.phone || '').replace(/\D/g, '').slice(-4) === phone4 && t.portal !== false);
+    if (!t) throw new Error('일치하는 훈련생이 없습니다. 이름·생년월일·연락처를 확인하세요');
+    st.student = t; try { sessionStorage.setItem('lms_student', t.id); } catch (e) {}
+    return t;
+  };
+  st.studentResume = async function () {
+    if (st.mode === 'api') { try { const r = await api('/student/me'); st.student = r.trainee; st.db = await api('/student/data'); ensure(); } catch (e) { st.student = null; } return st.student; }
+    let id = null; try { id = sessionStorage.getItem('lms_student'); } catch (e) {}
+    st.student = id ? st.get('trainee', id) : null; return st.student;
+  };
+  st.studentLogout = async function () { if (st.mode === 'api') await api('/logout', { method: 'POST' }).catch(() => {}); st.student = null; try { sessionStorage.removeItem('lms_student'); } catch (e) {} };
   st.logout = async function () {
     if (st.mode === 'api') await api('/logout', { method: 'POST' }).catch(() => {});
     st.user = null; try { localStorage.removeItem(LS_USER); } catch (e) {}
@@ -48,7 +64,37 @@ LMS.store = (() => {
 
   st.list = (col) => st.db[col] || [];
   st.get = (col, id) => (st.db[col] || []).find(r => r.id === id);
-  st.settings = () => (st.db.settings && st.db.settings[0]) || { name: '우리 기관', code: 'ORG' };
+  st.settings = () => { const o = (st.db.settings && st.db.settings[0]) || { name: '우리 기관', code: 'ORG' }; if (!Array.isArray(o.orgs)) o.orgs = []; return o; };
+  st.orgs = () => st.settings().orgs;
+  st.orgName = (code) => { const o = st.orgs().find(o => o.code === code); return o ? o.name : st.settings().name; };
+  st.orgShort = (code) => { const o = st.orgs().find(o => o.code === code); return o ? (o.short || o.name) : '공통'; };
+  /* 어떤 기록이 어느 기관 것인지 — 직접 org가 있으면 그것, 아니면 과정/훈련생을 따라감 */
+  st.orgOf = (col, r) => {
+    if (!r) return '';
+    if (r.org !== undefined) return r.org || '';
+    if (r.course) { const c = st.get('course', r.course); return c ? (c.org || '') : ''; }
+    if (r.trainee) { const t = st.get('trainee', r.trainee); return t ? st.orgOf('trainee', t) : ''; }
+    if (r.evalInfo) return st.orgOf('pre_eval_info', st.get('pre_eval_info', r.evalInfo));
+    if (r.setting) return st.orgOf('x', st.get('subject_eval_setting', r.setting) || st.get('self_diag_setting', r.setting));
+    if (r.survey) return st.orgOf('survey', st.get('survey', r.survey));
+    if (r.folder) return st.orgOf('cert_folder', st.get('cert_folder', r.folder));
+    if (r.parent) return st.orgOf('cert_folder', st.get('cert_folder', r.parent));
+    if (r.staff) return st.orgOf('staff', st.get('staff', r.staff));
+    return '';
+  };
+  st.curOrg = '';
+  try { st.curOrg = localStorage.getItem('lms_org') || ''; } catch (e) {}
+  st.setOrg = (code) => { st.curOrg = code || ''; try { localStorage.setItem('lms_org', st.curOrg); } catch (e) {} };
+  /* 현재 선택된 기관 기준으로 걸러진 목록. 기관 표시가 없는 공통 기록은 항상 보임 */
+  st.listOrg = (col) => { const l = st.list(col); if (!st.curOrg) return l; return l.filter(r => { const o = st.orgOf(col, r); return !o || o === st.curOrg; }); };
+  st.restoreDemo = async function () {
+    if (st.mode === 'api') { await api('/restore-demo', { method: 'POST' }); st.db = await api('/db'); ensure(); return; }
+    const seed = LMS.makeSeed(); const cur = st.settings(); const wasEmpty = st.isEmpty();
+    for (const [k, v] of Object.entries(seed)) { if (k === 'settings') continue; if (!st.db[k] || !st.db[k].length) st.db[k] = v; }
+    st.db.settings = wasEmpty ? seed.settings : [{ ...seed.settings[0], ...cur, demo: true, orgs: cur.orgs && cur.orgs.length ? cur.orgs : seed.settings[0].orgs }];
+    persistLocal(); ensure();
+  };
+  st.isEmpty = () => !(st.db.course || []).length && !(st.db.trainee || []).length;
 
   st.add = async function (col, rec) {
     rec = { ...rec, id: rec.id || uid(), createdAt: new Date().toISOString(), createdBy: st.user && st.user.name };

@@ -9,6 +9,7 @@ const SIDO = ['서울','경기','인천','부산','대구','광주','대전','�
 const CHANNEL = ['홈페이지','HRD-Net','지인소개','전화문의','블로그/SNS','고용센터','기타'];
 const APPROVAL = ['작성','검토','승인'];
 
+const ORG = (extra={}) => ({k:'org', l:'기관 구분', t:'org', list:true, ...extra});
 const F = {
   trainee: (extra={}) => ({k:'trainee', l:'훈련생', t:'ref', r:'trainee', req:true, list:true, ...extra}),
   course:  (extra={}) => ({k:'course',  l:'과정',   t:'ref', r:'course',  req:true, list:true, ...extra}),
@@ -33,6 +34,7 @@ LMS.entities = {
     F.staff('interviewer','면접관'), F.memo(),
   ]},
   admission_consult: { label:'입학상담', fields:[
+    ORG(),
     {k:'name', l:'이름', t:'text', req:true, list:true},
     {k:'phone', l:'연락처', t:'text', list:true},
     {k:'gender', l:'성별', t:'select', o:['남','여']},
@@ -46,6 +48,7 @@ LMS.entities = {
     F.staff('counselor','담당자'),
   ]},
   daily_recruit: { label:'일일모집현황', fields:[
+    ORG(),
     F.date(), F.course(),
     {k:'inquiry', l:'문의', t:'number', list:true},
     {k:'consult', l:'상담', t:'number', list:true},
@@ -62,6 +65,7 @@ LMS.entities = {
 
   /* ---------- 2. 과정등록 ---------- */
   course: { label:'교육과정현황', copy:true, fields:[
+    ORG(),
     {k:'name', l:'과정명', t:'text', req:true, list:true},
     {k:'ncs', l:'NCS 분류', t:'text', hint:'예: 20. 정보통신 > 01. 정보기술'},
     {k:'start', l:'시작일', t:'date', list:true},
@@ -107,6 +111,7 @@ LMS.entities = {
     {k:'emergency', l:'비상연락처', t:'text'},
     {k:'note', l:'특이사항', t:'textarea'},
     {k:'photo', l:'사진', t:'file'},
+    {k:'portal', l:'훈련생 포털 로그인 허용', t:'bool', def:true, hint:'훈련생은 이름 + 생년월일 + 연락처 뒤 4자리로 로그인'},
   ]},
   trainee_counsel: { label:'교육생 상담일지', fields:[
     F.trainee(), F.course(), F.date('date','상담일'),
@@ -127,6 +132,7 @@ LMS.entities = {
     F.staff('writer','작성자'), F.date('date','작성일'), F.approval(),
   ]},
   grievance: { label:'고충 및 건의사항', fields:[
+    ORG({req:false}),
     F.trainee(), F.date(),
     {k:'kind', l:'구분', t:'select', o:['고충','건의'], list:true},
     {k:'content', l:'내용', t:'textarea', req:true},
@@ -136,6 +142,15 @@ LMS.entities = {
   course_board: { label:'과정별 게시판', fields:[
     F.course(), {k:'title', l:'제목', t:'text', req:true, list:true},
     {k:'content', l:'내용', t:'textarea'}, F.staff('writer','작성자',{list:true}), F.date('date','작성일'), F.file(),
+  ]},
+
+  counsel_request: { label:'훈련생 상담신청', fields:[
+    F.trainee(), F.date('date','신청일'),
+    {k:'wish', l:'희망일', t:'date', list:true},
+    {k:'kind', l:'상담유형', t:'select', o:['학습','진로','생활','취업','기타'], list:true},
+    {k:'content', l:'신청내용', t:'textarea', req:true},
+    {k:'status', l:'처리상태', t:'select', o:['접수','일정확정','완료'], list:true, badge:true, def:'접수'},
+    {k:'reply', l:'답변/확정일정', t:'textarea'},
   ]},
 
   /* ---------- 5. 훈련일지 ---------- */
@@ -287,6 +302,7 @@ LMS.entities = {
 
   /* ---------- 13. 인증평가자료함 ---------- */
   cert_folder: { label:'자료함 폴더', fields:[
+    ORG(),
     {k:'name', l:'폴더명', t:'text', req:true, list:true},
     {k:'parent', l:'상위 폴더', t:'ref', r:'cert_folder'},
     {k:'order', l:'순서', t:'number', def:1, list:true},
@@ -300,12 +316,14 @@ LMS.entities = {
 
   /* ---------- 14. 커뮤니티 ---------- */
   notice: { label:'기관내 공지사항', fields:[
+    ORG(),
     {k:'title', l:'제목', t:'text', req:true, list:true},
     {k:'target', l:'대상', t:'select', o:['전체','교직원','교강사'], list:true},
     {k:'important', l:'중요', t:'bool'},
     {k:'content', l:'내용', t:'textarea'}, F.staff('writer','작성자',{list:true}), F.date('date','작성일'), F.file(),
   ]},
   schedule: { label:'일정', fields:[
+    ORG(),
     {k:'title', l:'제목', t:'text', req:true, list:true}, F.date(),
     {k:'time', l:'시간', t:'time'},
     {k:'kind', l:'구분', t:'select', o:['기관','과정','평가','행사','기타'], list:true},
@@ -314,6 +332,7 @@ LMS.entities = {
 
   /* ---------- 15. 기타관리 ---------- */
   staff: { label:'교직원 현황 및 등록', fields:[
+    ORG(),
     {k:'name', l:'이름', t:'text', req:true, list:true},
     {k:'kind', l:'구분', t:'select', o:['교직원','교강사'], list:true},
     {k:'position', l:'직위', t:'text', list:true},
@@ -322,6 +341,7 @@ LMS.entities = {
     {k:'status', l:'상태', t:'select', o:['재직','휴직','퇴직'], list:true, badge:true, def:'재직'},
   ]},
   staff_award: { label:'우수교직원 선발', fields:[
+    ORG(),
     {k:'period', l:'선발기간', t:'text', req:true, list:true, hint:'예: 2026년 상반기'},
     F.staff('staff','교직원',{req:true, list:true}),
     {k:'score', l:'평가점수', t:'number', list:true},
@@ -329,16 +349,19 @@ LMS.entities = {
     {k:'result', l:'결과', t:'select', o:['후보','선발','미선발'], list:true, badge:true},
   ]},
   meeting: { label:'회의록', fields:[
+    ORG(),
     F.date('date','일시'), {k:'title', l:'회의명', t:'text', req:true, list:true},
     {k:'attendees', l:'참석자', t:'text', list:true},
     {k:'agenda', l:'안건', t:'textarea'}, {k:'decision', l:'결정사항', t:'textarea'}, F.file(),
   ]},
   form_library: { label:'서식자료실', fields:[
+    ORG(),
     {k:'title', l:'제목', t:'text', req:true, list:true},
     {k:'category', l:'분류', t:'select', o:['행정','훈련','평가','취업','기타'], list:true},
     {k:'desc', l:'설명', t:'text'}, F.file(), F.date('date','등록일'),
   ]},
   asset: { label:'교재/시설/장비 현황', fields:[
+    ORG(),
     {k:'kind', l:'구분', t:'select', o:['교재','시설','장비'], req:true, list:true},
     {k:'name', l:'명칭', t:'text', req:true, list:true},
     {k:'qty', l:'수량', t:'number', list:true}, {k:'acquired', l:'취득일', t:'date'},
@@ -346,6 +369,7 @@ LMS.entities = {
     {k:'status', l:'상태', t:'select', o:['정상','수리중','폐기'], list:true, badge:true, def:'정상'}, F.memo(),
   ]},
   user: { label:'사용자 계정', fields:[
+    ORG({list:true, hint:'비우면 전체 기관'}),
     {k:'id', l:'아이디', t:'text', req:true, list:true},
     {k:'pw', l:'비밀번호', t:'text', req:true},
     {k:'name', l:'이름', t:'text', req:true, list:true},
@@ -365,7 +389,7 @@ LMS.menus = [
     {view:'interview_result', label:'면접평가 결과표'}, {key:'grievance'}, {key:'course_board'},
   ]},
   {n:4, label:'상담관리', icon:'💬', items:[
-    {view:'counsel_by_course', label:'과정별 상담관리'}, {view:'counsel_by_date', label:'일자별 상담관리'}, {view:'counsel_by_trainee', label:'훈련생별 상담관리'},
+    {view:'counsel_by_course', label:'과정별 상담관리'}, {view:'counsel_by_date', label:'일자별 상담관리'}, {view:'counsel_by_trainee', label:'훈련생별 상담관리'}, {key:'counsel_request'},
   ]},
   {n:5, label:'훈련일지', icon:'📝', items:[ {key:'training_log'}, {key:'makeup_log'} ]},
   {n:6, label:'사전평가', icon:'🧪', items:[

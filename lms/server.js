@@ -69,14 +69,51 @@ async function apiHandler(req, res, url) {
   }
   if (p === '/public/consult' && m === 'POST') { /* 홈페이지 상담신청 → 입학상담에 자동 등록 */
     const b = JSON.parse((await readBody(req)).toString());
-    const rec = { id: uid(), name: b.name, phone: b.phone, course: b.course, channel: '홈페이지', content: b.content, date: new Date().toISOString().slice(0, 10), status: '상담중', createdAt: new Date().toISOString() };
+    const co = (db.course || []).find(c => c.id === b.course); const rec = { id: uid(), org: co ? co.org : '', name: b.name, phone: b.phone, course: b.course, channel: '홈페이지', content: b.content, date: new Date().toISOString().slice(0, 10), status: '상담중', createdAt: new Date().toISOString() };
     (db.admission_consult = db.admission_consult || []).push(rec); save(); return json(res, 200, { ok: true });
   }
   if (p === '/public/site' && m === 'GET') {
     return json(res, 200, { org: (db.settings || [])[0], courses: (db.course || []).filter(c => c.public && c.status !== '종료'), employment: (db.employment || []).length, notices: (db.notice || []).filter(n => n.target === '전체').slice(-3) });
   }
 
-  const user = getUser(req);
+  /* ---------- 훈련생 포털 ---------- */
+  if (p === '/student/login' && m === 'POST') {
+    const { name, birth, phone4 } = JSON.parse((await readBody(req)).toString() || '{}');
+    const t = (db.trainee || []).find(t => t.name === String(name || '').trim() && t.birth === birth && String(t.phone || '').replace(/\D/g, '').slice(-4) === String(phone4 || '') && t.portal !== false);
+    if (!t) return json(res, 401, { error: '일치하는 훈련생이 없습니다. 이름·생년월일·연락처를 확인하세요' });
+    const sid = crypto.randomBytes(16).toString('hex'); sessions.set(sid, { role: '훈련생', traineeId: t.id, name: t.name });
+    res.setHeader('Set-Cookie', `sid=${sid}; Path=/; HttpOnly; SameSite=Lax`);
+    return json(res, 200, { trainee: t });
+  }
+  const sess = getUser(req);
+  if (p.startsWith('/student/')) {
+    if (!sess || sess.role !== '훈련생') return json(res, 401, { error: '훈련생 로그인이 필요합니다' });
+    const t = (db.trainee || []).find(t => t.id === sess.traineeId); if (!t) return json(res, 401, { error: '훈련생 정보가 없습니다' });
+    if (p === '/student/me') return json(res, 200, { trainee: t });
+    if (p === '/student/data') {
+      const mine = (col) => (db[col] || []).filter(r => r.trainee === t.id);
+      const course = (db.course || []).find(c => c.id === t.course);
+      const org = course && course.org;
+      const forMe = (col) => (db[col] || []).filter(r => r.course === t.course);
+      return json(res, 200, {
+        settings: db.settings, trainee: [t], course: course ? [course] : [], staff: (db.staff || []).map(s => ({ id: s.id, name: s.name, kind: s.kind, position: s.position })),
+        notice: (db.notice || []).filter(n => n.target === '전체' && (!n.org || n.org === org)),
+        guide_material: forMe('guide_material'), course_board: forMe('course_board'), timetable: forMe('timetable'), schedule: (db.schedule || []).filter(s => !s.org || s.org === org),
+        subject_eval_setting: forMe('subject_eval_setting'), grade: mine('grade'), pre_eval: mine('pre_eval'), pre_eval_info: forMe('pre_eval_info'),
+        self_diag_setting: forMe('self_diag_setting'), self_eval: mine('self_eval'), perf_eval: mine('perf_eval'),
+        survey: (db.survey || []).filter(s => s.status === '진행중' && (!s.course || s.course === t.course)), survey_response: (db.survey_response || []).filter(r => r.respondent === t.name || r.trainee === t.id),
+        counsel_request: mine('counsel_request'), grievance: mine('grievance'), certificate: mine('certificate'), employment: mine('employment'),
+      });
+    }
+    const [, , col, id] = p.split('/');
+    const ALLOW = { self_eval: 1, survey_response: 1, counsel_request: 1, grievance: 1 };
+    if (!ALLOW[col]) return json(res, 403, { error: '허용되지 않은 작업' });
+    db[col] = db[col] || [];
+    if (m === 'POST' && !id) { const rec = JSON.parse((await readBody(req)).toString()); rec.id = rec.id || uid(); rec.trainee = t.id; if (col === 'survey_response') rec.respondent = t.name; if (col === 'grievance') rec.org = org || ''; db[col].push(rec); save(); return json(res, 200, rec); }
+    if (m === 'PUT' && id) { const i = db[col].findIndex(r => r.id === id && r.trainee === t.id); if (i < 0) return json(res, 404, { error: 'not found' }); const rec = JSON.parse((await readBody(req)).toString()); rec.id = id; rec.trainee = t.id; db[col][i] = rec; save(); return json(res, 200, rec); }
+    return json(res, 404, { error: 'not found' });
+  }
+  const user = sess && sess.role !== '훈련생' ? sess : null;
   if (!user) return json(res, 401, { error: '로그인이 필요합니다' });
   if (p === '/me') return json(res, 200, { user });
   if (p === '/logout') { return json(res, 200, { ok: true }); }
@@ -87,7 +124,8 @@ async function apiHandler(req, res, url) {
     return json(res, 200, { name, url: '/uploads/' + stored });
   }
   if (user.role !== '관리자' && (p === '/reset' || p === '/import')) return json(res, 403, { error: '관리자만 가능합니다' });
-  if (p === '/reset' && m === 'POST') { db = { settings: [{ id: 'main', name: db.settings?.[0]?.name || '우리 기관', code: db.settings?.[0]?.code || 'ORG' }], user: db.user }; save(); return json(res, 200, { ok: true }); }
+  if (p === '/restore-demo' && m === 'POST') { const seed = makeSeed(); for (const [k, v] of Object.entries(seed)) { if (k === 'settings' || k === 'user') continue; if (!db[k] || !db[k].length) db[k] = v; } db.settings = [{ ...seed.settings[0], ...(db.settings || [])[0], demo: true }]; save(); return json(res, 200, { ok: true }); }
+  if (p === '/reset' && m === 'POST') { db = { settings: [{ ...(db.settings?.[0] || {}), id: 'main', demo: false }], user: db.user }; save(); return json(res, 200, { ok: true }); }
   if (p === '/import' && m === 'POST') { const data = JSON.parse((await readBody(req)).toString()); if (!data.user?.length) data.user = db.user; db = data; save(); return json(res, 200, { ok: true }); }
 
   const [, col, id] = p.split('/');
@@ -115,7 +153,7 @@ http.createServer(async (req, res) => {
     if (url.pathname.startsWith('/api/')) return await apiHandler(req, res, url);
     if (url.pathname.startsWith('/uploads/')) { if (!getUser(req)) { res.writeHead(401); return res.end('로그인 필요'); } return serveFile(res, path.join(UP, path.basename(url.pathname))); }
     let p = url.pathname === '/' ? '/index.html' : url.pathname;
-    if (p === '/admin') p = '/admin.html'; if (p === '/survey') p = '/survey.html';
+    if (p === '/admin') p = '/admin.html'; if (p === '/survey') p = '/survey.html'; if (p === '/student') p = '/student.html';
     const file = path.normalize(path.join(PUB, p));
     if (!file.startsWith(PUB)) { res.writeHead(403); return res.end(); }
     serveFile(res, file);

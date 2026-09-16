@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>훈련생 포털</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600&family=Noto+Sans+KR:wght@700;800&family=IBM+Plex+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="css/style.css">
+<style>
+  .wrap{max-width:720px;margin:0 auto;padding:0 16px 80px}
+  .top{display:flex;align-items:center;gap:10px;padding:14px 0;border-bottom:1px solid var(--line);margin-bottom:14px}
+  .top h1{font-size:18px} .top .grow{flex:1}
+  .stabs{display:flex;gap:4px;overflow-x:auto;padding:4px 0 10px;position:sticky;top:0;background:var(--bg);z-index:5}
+  .stabs button{flex:none;border:1px solid var(--line);background:var(--surface);padding:8px 12px;border-radius:999px;font-weight:600;cursor:pointer;font-size:13px}
+  .stabs button.active{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+  .item{padding:10px 0;border-bottom:1px solid var(--line)} .item:last-child{border-bottom:0}
+  .item .t{font-weight:600} .item .d{font-size:12px;color:var(--muted)}
+  .scale{display:flex;gap:6px;margin-top:6px} .scale label{flex:1;text-align:center;border:1px solid var(--line);border-radius:8px;padding:8px 0;cursor:pointer;font-size:13px}
+  .scale input{display:none} .scale label:has(input:checked){border-color:var(--accent);background:var(--accent-soft);color:var(--accent);font-weight:700}
+  .note{background:var(--amber-soft);border:1px solid var(--amber);border-radius:8px;padding:8px 12px;font-size:12px;margin-bottom:12px}
+</style>
+</head>
+<body>
+<div class="wrap" id="wrap"><div class="muted" style="padding:40px 0">불러오는 중…</div></div>
+<script src="js/modules.js"></script><script src="js/seed.js"></script><script src="js/store.js"></script>
+<script>
+(async () => {
+  const S = LMS.store, $ = (s, el = document) => el.querySelector(s), esc = (v) => String(v ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const today = () => new Date().toISOString().slice(0, 10);
+  let toastT; const toast = (m, err) => { let t = $('#toast'); if (!t) { t = document.createElement('div'); t.id = 'toast'; document.body.appendChild(t); } t.className = 'toast' + (err ? ' err' : ''); t.textContent = m; t.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => t.hidden = true, 2600); };
+  await S.init(); await S.studentResume();
+  const org = () => S.settings();
+  const wrap = $('#wrap');
+
+  function login(msg) {
+    wrap.innerHTML = `<div class="login" style="min-height:70vh"><form class="box" id="lf"><div class="small muted">${esc(org().name)}</div><h1>훈련생 포털</h1><div class="muted small">성적·자기평가·설문·상담신청</div>
+      <div class="field"><label>이름</label><input id="n" type="text" autocomplete="name" required></div>
+      <div class="field"><label>생년월일</label><input id="b" type="date" required></div>
+      <div class="field"><label>연락처 뒤 4자리</label><input id="p" type="text" inputmode="numeric" maxlength="4" pattern="\\d{4}" required></div>
+      ${msg ? `<div class="small" style="color:var(--bad);margin-top:8px">${esc(msg)}</div>` : ''}
+      <button class="btn primary" type="submit">들어가기</button>
+      ${org().demo ? `<div class="small muted" style="margin-top:12px">예시 계정: 김민준 / 1985-01-10 / 1000</div>` : ''}</form></div>`;
+    $('#lf').onsubmit = async (e) => { e.preventDefault(); try { await S.studentLogin($('#n').value, $('#b').value, $('#p').value.trim()); location.hash = ''; app(); } catch (err) { login(err.message); } };
+  }
+
+  const TABS = [['home', '홈'], ['grade', '성적'], ['self', '자기평가'], ['survey', '설문'], ['counsel', '상담·건의'], ['docs', '자료']];
+  function app() {
+    const t = S.student; const co = S.get('course', t.course) || {};
+    const tab = location.hash.replace('#', '') || 'home';
+    wrap.innerHTML = `<div class="top"><div><div class="small muted">${esc(S.orgName(co.org))}</div><h1>${esc(t.name)} 님</h1><div class="small muted">${esc(co.name || '')}</div></div><div class="grow"></div><button class="btn sm" id="out">나가기</button></div>
+      <div class="stabs">${TABS.map(([k, l]) => `<button class="${k === tab ? 'active' : ''}" data-t="${k}">${l}</button>`).join('')}</div><div id="body"></div>`;
+    $('#out').onclick = async () => { await S.studentLogout(); login(); };
+    document.querySelectorAll('.stabs button').forEach(b => b.onclick = () => { location.hash = b.dataset.t; app(); });
+    (PAGES[tab] || PAGES.home)($('#body'), t, co);
+  }
+  const mine = (col) => S.list(col).filter(r => r.trainee === S.student.id);
+  const forCourse = (col) => S.list(col).filter(r => r.course === S.student.course);
+  const card = (title, body) => `<div class="card"><h2>${title}</h2>${body}</div>`;
+  const PAGES = {};
+  PAGES.home = (el, t, co) => {
+    const notices = S.list('notice').filter(n => n.target === '전체' && (!n.org || n.org === co.org)).slice(-5).reverse();
+    const week = S.list('timetable').filter(x => x.course === t.course && x.date >= today()).sort((a, b) => a.date > b.date ? 1 : a.date < b.date ? -1 : (a.period || 0) - (b.period || 0)).slice(0, 8);
+    const req = mine('counsel_request').slice(-3).reverse();
+    el.innerHTML = card('📣 공지사항', notices.length ? notices.map(n => `<div class="item"><div class="t">${n.important ? '❗ ' : ''}${esc(n.title)}</div><div class="d">${n.date || ''}</div><div class="small" style="white-space:pre-wrap">${esc(n.content || '')}</div></div>`).join('') : '<div class="muted">공지가 없습니다</div>')
+      + card('📅 다가오는 수업', week.length ? week.map(x => `<div class="item"><div class="t">${esc(x.subject)}</div><div class="d">${x.date} · ${x.period ? x.period + '교시 ' : ''}${x.start || ''}~${x.end || ''} · ${esc(x.room || '')}</div></div>`).join('') : '<div class="muted">등록된 시간표가 없습니다</div>')
+      + card('💬 내 상담신청', req.length ? req.map(r => `<div class="item"><div class="t">${esc(r.kind)} · ${badge(r.status)}</div><div class="d">${r.date} 신청${r.wish ? ' · 희망 ' + r.wish : ''}</div>${r.reply ? `<div class="small">답변: ${esc(r.reply)}</div>` : ''}</div>`).join('') : '<div class="muted">신청 내역이 없습니다</div>');
+  };
+  const badge = (v) => `<span class="badge ${['완료', '일정확정', '합격', 'A'].includes(v) ? 'good' : ['접수', '처리중', 'B', 'C'].includes(v) ? 'warn' : ['F', 'D'].includes(v) ? 'bad' : ''}">${esc(v)}</span>`;
+  PAGES.grade = (el, t) => {
+    const gs = mine('grade'), pe = mine('pre_eval'), pf = mine('perf_eval'), certs = mine('certificate');
+    const tot = (g) => (+g.s1 || 0) + (+g.s2 || 0) + (+g.s3 || 0), letter = (n) => n >= 90 ? 'A' : n >= 80 ? 'B' : n >= 70 ? 'C' : n >= 60 ? 'D' : 'F';
+    el.innerHTML = card('📊 능력단위 성적', gs.length ? `<div class="table-wrap"><table><thead><tr><th>능력단위</th><th class="num">이론</th><th class="num">실기</th><th class="num">태도</th><th class="num">총점</th><th>등급</th></tr></thead><tbody>${gs.map(g => { const s = S.get('subject_eval_setting', g.setting) || {}; const n = tot(g); return `<tr><td>${esc(s.unit || '')}</td><td class="num">${g.s1 ?? ''}</td><td class="num">${g.s2 ?? ''}</td><td class="num">${g.s3 ?? ''}</td><td class="num">${n}</td><td>${badge(letter(n))}</td></tr>`; }).join('')}</tbody></table></div>` : '<div class="muted">아직 성적이 없습니다</div>')
+      + card('🧪 사전평가', pe.length ? pe.map(p => { const i = S.get('pre_eval_info', p.evalInfo) || {}; const n = (+p.a1 || 0) + (+p.a2 || 0) + (+p.a3 || 0); return `<div class="item"><div class="t">${esc(i.name || '')} · ${n}점</div><div class="d">이론 ${p.a1 ?? '-'} · 실기 ${p.a2 ?? '-'} · 태도 ${p.a3 ?? '-'}</div></div>`; }).join('') : '<div class="muted">없음</div>')
+      + card('✅ 수행평가 결과', pf.length ? pf.map(p => `<div class="item"><div class="t">${esc(p.unit)}</div>${(p.criteria || []).map((c, i) => `<div class="small">${i + 1}. ${esc(c)} — <b>${esc((p.achieve || {})[i] || '-')}</b></div>`).join('')}${p.comment ? `<div class="d">총평: ${esc(p.comment)}</div>` : ''}</div>`).join('') : '<div class="muted">없음</div>')
+      + card('🏅 발급된 증서', certs.length ? certs.map(c => `<div class="item"><div class="t">${esc(c.kind)} <span class="mono small">${esc(c.number)}</span></div><div class="d">${c.date} 발급 · 원본은 기관에서 받으세요</div></div>`).join('') : '<div class="muted">없음</div>');
+  };
+  PAGES.self = (el, t) => {
+    const sets = forCourse('self_diag_setting');
+    el.innerHTML = sets.length ? sets.map(s => { const done = mine('self_eval').find(e => e.setting === s.id); const a = (done && done.answers) || {};
+      return `<div class="card"><h2>${esc(s.unit)} 자기평가 ${done ? '<span class="badge good">제출됨 · 수정 가능</span>' : ''}</h2><form data-s="${s.id}">${(s.items || []).map((it, i) => `<div class="item"><div>${i + 1}. ${esc(it)}</div><div class="scale">${[1, 2, 3, 4, 5].map(n => `<label><input type="radio" name="q${i}" value="${n}" ${+a[i] === n ? 'checked' : ''} required>${n}</label>`).join('')}</div><div class="small muted" style="display:flex;justify-content:space-between"><span>전혀 못한다</span><span>매우 잘한다</span></div></div>`).join('')}
+        <div class="field" style="margin-top:8px"><label>소감 / 다짐</label><textarea name="reflect">${esc(done ? done.reflect || '' : '')}</textarea></div><button class="btn primary" style="margin-top:10px">${done ? '수정 제출' : '제출'}</button></form></div>`; }).join('') : '<div class="card empty">아직 열린 자기평가가 없습니다</div>';
+    el.querySelectorAll('form[data-s]').forEach(f => f.onsubmit = async (e) => { e.preventDefault(); const fd = new FormData(f); const s = S.get('self_diag_setting', f.dataset.s); const answers = {}; (s.items || []).forEach((_, i) => answers[i] = +fd.get('q' + i)); const done = mine('self_eval').find(e => e.setting === s.id);
+      const rec = { ...(done || {}), trainee: t.id, course: t.course, setting: s.id, date: today(), answers, reflect: fd.get('reflect') };
+      try { await S.save('self_eval', rec); toast('제출했습니다'); app(); } catch (err) { toast(err.message, true); } });
+  };
+  PAGES.survey = (el, t) => {
+    const svs = S.list('survey').filter(s => s.status === '진행중' && (!s.course || s.course === t.course));
+    el.innerHTML = card('🗳️ 설문', svs.length ? svs.map(s => { const done = S.list('survey_response').some(r => r.survey === s.id && (r.respondent === t.name || r.trainee === t.id)); return `<div class="item"><div class="t">${esc(s.title)} ${done ? '<span class="badge good">응답 완료</span>' : ''}</div><div class="d">${s.start || ''} ~ ${s.end || ''}</div>${done ? '' : `<a class="btn sm primary" style="margin-top:6px" href="survey.html?id=${s.id}&name=${encodeURIComponent(t.name)}">응답하기 →</a>`}</div>`; }).join('') : '<div class="muted">진행 중인 설문이 없습니다</div>');
+  };
+  PAGES.counsel = (el, t) => {
+    el.innerHTML = card('💬 상담 신청', `<form id="cf"><div class="form"><div class="field"><label>상담 유형</label><select name="kind">${['학습', '진로', '생활', '취업', '기타'].map(k => `<option>${k}</option>`).join('')}</select></div><div class="field"><label>희망일</label><input type="date" name="wish"></div><div class="field wide"><label>신청 내용</label><textarea name="content" required placeholder="상담받고 싶은 내용을 적어주세요"></textarea></div></div><button class="btn primary" style="margin-top:10px">신청</button></form>`)
+      + card('📝 고충 · 건의', `<form id="gf"><div class="form"><div class="field"><label>구분</label><select name="kind"><option>고충</option><option>건의</option></select></div><div class="field wide"><label>내용</label><textarea name="content" required></textarea></div></div><button class="btn" style="margin-top:10px">제출</button></form>
+        ${mine('grievance').slice(-5).reverse().map(g => `<div class="item"><div class="t">${esc(g.kind)} · ${badge(g.status)}</div><div class="d">${g.date}</div><div class="small">${esc(g.content)}</div>${g.result ? `<div class="small">처리: ${esc(g.result)}</div>` : ''}</div>`).join('')}`);
+    $('#cf').onsubmit = async (e) => { e.preventDefault(); const fd = new FormData(e.target); try { await S.add('counsel_request', { trainee: t.id, date: today(), wish: fd.get('wish'), kind: fd.get('kind'), content: fd.get('content'), status: '접수' }); toast('상담을 신청했습니다'); location.hash = 'home'; app(); } catch (err) { toast(err.message, true); } };
+    $('#gf').onsubmit = async (e) => { e.preventDefault(); const fd = new FormData(e.target); try { await S.add('grievance', { trainee: t.id, date: today(), kind: fd.get('kind'), content: fd.get('content'), status: '접수' }); toast('제출했습니다'); app(); } catch (err) { toast(err.message, true); } };
+  };
+  PAGES.docs = (el, t) => {
+    const gm = forCourse('guide_material'), cb = forCourse('course_board').slice().reverse();
+    const file = (f) => f && f.url ? `<div><a class="btn sm" href="${esc(f.url)}" target="_blank" rel="noopener">📎 ${esc(f.name)}</a></div>` : '';
+    el.innerHTML = card('📚 학습 안내자료', gm.length ? gm.map(g => `<div class="item"><div class="t">[${esc(g.kind)}] ${esc(g.title)}</div><div class="small" style="white-space:pre-wrap">${esc(g.content || '')}</div>${file(g.file)}</div>`).join('') : '<div class="muted">없음</div>')
+      + card('📌 과정 게시판', cb.length ? cb.map(b => `<div class="item"><div class="t">${esc(b.title)}</div><div class="d">${b.date || ''}</div><div class="small" style="white-space:pre-wrap">${esc(b.content || '')}</div>${file(b.file)}</div>`).join('') : '<div class="muted">없음</div>');
+  };
+  window.addEventListener('hashchange', () => { if (S.student) app(); });
+  if (S.student) app(); else login();
+})();
+</script>
+</body>
+</html>
