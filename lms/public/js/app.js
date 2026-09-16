@@ -97,7 +97,7 @@ window.addEventListener('hashchange', route);
 
 /* ---------------- 목록 화면 ---------------- */
 function renderList(page, col, filterCourse) {
-  const ent = E[col]; const cols = ent.fields.filter(f => f.list);
+  const ent = E[col]; const cols = ent.fields.filter(f => f.list && !(f.t === 'org' && !S.orgs().length));
   let q = '', sortK = null, sortD = 1, courseF = filterCourse || '';
   const hasCourse = ent.fields.some(f => f.k === 'course');
   page.innerHTML = `<div class="toolbar no-print">
@@ -205,6 +205,7 @@ function openForm(col, rec = {}, onDone) {
 }
 function nextCertNo(courseId) { const org = S.settings(); const co = S.get('course', courseId); const y = new Date().getFullYear(); const prefix = `${(co && co.org) || org.code || 'ORG'}-${y}-`; const n = L('certificate').filter(c => (c.number || '').startsWith(prefix)).length + 1; return prefix + String(n).padStart(3, '0'); }
 function fieldHTML(f, rec) {
+  if (f.t === 'org' && !S.orgs().length) return '';
   const v = rec[f.k]; const id = 'f_' + f.k; const wide = ['textarea', 'lines', 'questions', 'scores', 'json', 'file'].includes(f.t);
   const lab = `<label for="${id}">${esc(f.l)}${f.req ? ' <span class="req">*</span>' : ''}</label>`;
   const hint = f.hint ? `<div class="hint">${esc(f.hint)}</div>` : '';

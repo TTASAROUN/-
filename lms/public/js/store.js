@@ -25,9 +25,11 @@ LMS.store = (() => {
     if (st.mode === 'api') {
       try { const r = await fetch('/api/me', { credentials: 'same-origin' }); st.user = r.ok ? (await r.json()).user : null; } catch (e) { st.user = null; }
       if (st.user) st.db = await api('/db');
+      else { try { const r = await fetch('/api/public/site'); if (r.ok) { const d = await r.json(); if (d.org) st.db.settings = [d.org]; } } catch (e) {} }
     } else {
       try { st.db = JSON.parse(localStorage.getItem(LS_KEY) || 'null') || {}; } catch (e) { st.db = {}; }
       if (!Object.keys(st.db).length) { st.db = LMS.makeSeed(); persistLocal(); }
+      else if (st.db.settings && st.db.settings[0] && /한빛|○○/.test(st.db.settings[0].name || '')) { st.db.settings = LMS.makeSeed().settings; persistLocal(); }
       try { st.user = JSON.parse(localStorage.getItem(LS_USER) || 'null'); } catch (e) { st.user = null; }
     }
     ensure(); st.ready = true; return st;
