@@ -25,3 +25,8 @@ node server.js          # http://localhost:3000  (포트 변경: PORT=8080 node 
 | `public/index.html` | 홈페이지 · `admin.html` 콘솔 · `student.html` 훈련생 포털 · `survey.html` 설문 응답 |
 
 분석 문서: [../docs/lms-analysis.md](../docs/lms-analysis.md)
+
+## 서버 설치
+
+Ubuntu 서버에서 `sudo bash deploy/install.sh 홈페이지주소 콘솔주소` 한 줄. Node.js·HTTPS·자동시작·일일 백업까지 설정합니다.
+가비아 기준 클릭 순서: [../docs/deploy-gabia.md](../docs/deploy-gabia.md)

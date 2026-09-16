@@ -1,0 +1,9 @@
+# 홈페이지와 업무 콘솔 모두 같은 프로그램이 서비스합니다. HTTPS 인증서는 Caddy가 자동 발급·갱신합니다.
+__HOME__, www.__HOME__ {
+	reverse_proxy 127.0.0.1:3000
+	encode gzip
+}
+__LMS__ {
+	reverse_proxy 127.0.0.1:3000
+	encode gzip
+}

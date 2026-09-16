@@ -1,0 +1,16 @@
+[Unit]
+Description=Ttasa LMS (Node.js)
+After=network.target
+
+[Service]
+Type=simple
+User=lms
+WorkingDirectory=/opt/lms
+Environment=PORT=__PORT__
+Environment=NODE_ENV=production
+ExecStart=/usr/bin/node /opt/lms/server.js
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target
