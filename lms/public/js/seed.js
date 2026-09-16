@@ -5,7 +5,7 @@ LMS.makeSeed = function () {
   const d = (offset) => { const x = new Date(today); x.setDate(x.getDate() + offset); return x.toISOString().slice(0, 10); };
   const id = (p, i) => `${p}${i}`;
   const S = {};
-  S.settings = [{ id: 'main', name: '한빛직업전문학교', code: 'HB', ceo: '홍길동', address: '서울특별시 강남구 테헤란로 123', phone: '02-1234-5678', email: 'info@example.com', hours: '평일 09:00 ~ 18:00', slogan: '취업까지 책임지는 실무 중심 훈련', demo: true }];
+  S.settings = [{ id: 'main', name: '○○직업전문학교 (기관명을 입력하세요)', code: 'HB', ceo: '홍길동', address: '서울특별시 강남구 테헤란로 123', phone: '02-1234-5678', email: 'info@example.com', hours: '평일 09:00 ~ 18:00', slogan: '취업까지 책임지는 실무 중심 훈련', demo: true }];
   S.user = [
     { id: 'admin', pw: '1234', name: '관리자', role: '관리자' },
     { id: 'teacher', pw: '1234', name: '이교사', role: '교강사' },
@@ -81,13 +81,13 @@ LMS.makeSeed = function () {
   S.survey_response = [1, 2, 3, 4, 5, 6].map(i => ({ id: 'sr' + i, survey: 'sv1', respondent: names[i - 1], date: d(-i % 4), answers: { 0: 3 + i % 3, 1: 4 + i % 2, 2: ['실습', '프로젝트', '실습', '멘토링', '실습', '이론 강의'][i - 1], 3: ['실습 시간이 더 있으면 좋겠어요', '프로젝트 피드백을 더 자주', '', '진도가 조금 빠릅니다', '만족합니다', '과제 양 조절'][i - 1] } }));
   S.certificate = [11, 12, 13].map((i, k) => ({ id: 'cf' + k, trainee: 't' + i, course: 'c3', kind: '수료증', number: `HB-${today.getFullYear()}-00${k + 1}`, date: d(-19), issuer: 'st1' }));
   S.employment = [
-    { id: 'em1', trainee: 't12', company: '(주)한빛테크', date: d(-10), job: '사무행정', type: '정규직', insured: true, related: true },
+    { id: 'em1', trainee: 't12', company: '(주)예시테크', date: d(-10), job: '사무행정', type: '정규직', insured: true, related: true },
     { id: 'em2', trainee: 't14', company: '나래물류', date: d(-6), job: '총무', type: '계약직', insured: true, related: true },
     { id: 'em3', trainee: 't16', company: '푸른상사', date: d(-2), job: '경리', type: '정규직', insured: false, related: true },
   ];
   S.daily_job_report = [{ id: 'dj1', date: d(-2), course: 'c3', count: 1, companies: '푸른상사' }];
   S.aftercare = [{ id: 'af1', trainee: 't12', date: d(-3), kind: '근속확인', content: '재직 중, 업무 적응 양호', next: d(27), manager: 'st3' }];
-  S.job_confirm = [{ id: 'jc1', trainee: 't12', company: '(주)한빛테크', kind: '고용보험 가입확인서', date: d(-5) }];
+  S.job_confirm = [{ id: 'jc1', trainee: 't12', company: '(주)예시테크', kind: '고용보험 가입확인서', date: d(-5) }];
   S.cert_folder = [
     { id: 'cfd1', name: '1. 기관 운영', order: 1 }, { id: 'cfd2', name: '2. 훈련 과정 관리', order: 2 }, { id: 'cfd3', name: '3. 훈련생 관리', order: 3 }, { id: 'cfd4', name: '4. 취업 및 사후관리', order: 4 },
     { id: 'cfd21', name: '2-1. 훈련일지', parent: 'cfd2', order: 1 }, { id: 'cfd22', name: '2-2. 평가 자료', parent: 'cfd2', order: 2 },
