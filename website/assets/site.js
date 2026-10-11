@@ -27,8 +27,8 @@ const I={
 };
 const PAGES=[
  ['about.html','회사소개','about','우리가 누구이며 어떤 가치로 일하는지'],
- ['maternity.html','산모신생아 건강관리사','mom','산후 회복과 신생아 돌봄을 함께합니다'],
- ['infant.html','영유아 관리사','baby','영유아 성장 단계에 맞춘 안전한 돌봄'],
+ ['maternity.html','산모·신생아','mom','산후 회복과 신생아 돌봄을 함께합니다'],
+ ['infant.html','영유아','baby','영유아 성장 단계에 맞춘 안전한 돌봄'],
  ['housekeeping.html','가사관리','home','깔끔하고 믿을 수 있는 가사 서비스'],
  ['organize.html','정리수납','organize','공간을 정돈해 일상을 가볍게'],
  ['class.html','응애맘빠','couple','출산을 준비하는 예비부부만을 위한 우리 가족 준비 교실'],
@@ -45,7 +45,7 @@ const link=p=>`<a href="${p[0]}" class="${cur===p[0]?'on':''}">${p[1]}</a>`;
 const care=PAGES.filter(p=>CARE.includes(p[0])),rest=PAGES.filter(p=>!CARE.includes(p[0])&&p[0]!=='about.html');
 const byName=n=>PAGES.find(p=>p[0]===n);
 const topNav=['about.html'].map(byName).map(link).join('')+
- `<div class="dd"><a href="#" class="${CARE.includes(cur)?'on':''}">돌봄 서비스 ▾</a><div class="ddm">${care.map(link).join('')}</div></div>`+
+ `<div class="dd"><a href="#" class="${CARE.includes(cur)?'on':''}">돌봄 서비스</a><div class="ddm">${care.map(link).join('')}</div></div>`+
  ['class.html','growth-note.html','match.html','branch.html','shop.html','academy.html'].map(byName).map(link).join('');
 document.body.insertAdjacentHTML('afterbegin',`<header class="site"><div class="wrap">
  <a class="logo notranslate" href="index.html">따사로운</a><nav class="main">${topNav}</nav><div class="langbox notranslate"><button id="lang-btn" type="button" aria-label="Language">${flag("kr")}<small>▾</small></button><div id="lang-menu">${LANGS.map(l=>`<button type="button" data-l="${l[0]}">${flag(l[2])}${l[1]}</button>`).join('')}</div></div></div></header><div id="gt"></div>`);
@@ -82,3 +82,10 @@ if(document.querySelector('[data-form],[data-feed],[data-match]')){
   if(document.querySelector('[data-match]'))ld('assets/holidays.js').then(()=>ld('assets/match-core.js')).then(()=>ld('assets/sample-caregivers.js')).then(()=>ld('assets/match.js'));
  });
 }
+
+// 상단 '돌봄 서비스' 메뉴: 마우스를 올리거나(PC) 눌러서(모바일 포함) 펼칩니다
+(function(){
+ const dd=document.querySelector('.dd');if(!dd)return;
+ dd.querySelector(':scope > a').addEventListener('click',e=>{e.preventDefault();e.stopPropagation();dd.classList.toggle('open')});
+ document.addEventListener('click',()=>dd.classList.remove('open'));
+})();

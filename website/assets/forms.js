@@ -3,7 +3,7 @@
 const CFG=window.SITE_CONFIG||{};
 window.cookieLang=()=>{try{return(document.cookie.match(/googtrans=\/ko\/([\w-]+)/)||[])[1]||'ko'}catch(e){return 'ko'}};
 const cookieLang=window.cookieLang;
-const SVC=['산모신생아 건강관리','영유아 관리','가사관리','정리수납'];
+const SVC=['산모·신생아','영유아','가사관리','정리수납'];
 // k:내부키(시트 제목 겸용) t:종류 o:선택지 opt:선택입력 ph:안내문구
 const FORMS={
  consult:{title:'상담 신청',btn:'상담 신청하기',f:[
