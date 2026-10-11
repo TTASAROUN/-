@@ -34,9 +34,9 @@ const PAGES=[
  ['class.html','응애맘빠','couple','출산을 준비하는 예비부부만을 위한 우리 가족 준비 교실'],
  ['growth-note.html','성장노트','note','불편과 의견을 해결하고, 개선으로 키워가는 공간'],
  ['match.html','번개매칭','bolt','급할 때 가장 빠르게 연결해 드립니다'],
- ['academy.html','평생교육원','school','돌봄 전문가를 위한 교육과 자격 과정'],
  ['branch.html','지사모집','branch','함께 따사로운을 키워갈 지사장님을 모십니다'],
- ['shop.html','따사마켓','shop','친환경 육아용품 · 세제용품']
+ ['shop.html','따사마켓','shop','친환경 육아용품 · 세제용품'],
+ ['academy.html','평생교육원','school','돌봄 전문가를 위한 교육과 자격 과정']
 ];
 const svg=k=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${I[k]}</svg>`;
 const cur=location.pathname.split('/').pop()||'index.html';
@@ -46,7 +46,7 @@ const care=PAGES.filter(p=>CARE.includes(p[0])),rest=PAGES.filter(p=>!CARE.inclu
 const byName=n=>PAGES.find(p=>p[0]===n);
 const topNav=['about.html'].map(byName).map(link).join('')+
  `<div class="dd"><a href="#" class="${CARE.includes(cur)?'on':''}">돌봄 서비스 ▾</a><div class="ddm">${care.map(link).join('')}</div></div>`+
- ['class.html','growth-note.html','match.html','academy.html','shop.html','branch.html'].map(byName).map(link).join('');
+ ['class.html','growth-note.html','match.html','shop.html','branch.html','academy.html'].map(byName).map(link).join('');
 document.body.insertAdjacentHTML('afterbegin',`<header class="site"><div class="wrap">
  <a class="logo notranslate" href="index.html">따사로운</a><nav class="main">${topNav}</nav><div class="langbox notranslate"><button id="lang-btn" type="button" aria-label="Language">${flag("kr")}<small>▾</small></button><div id="lang-menu">${LANGS.map(l=>`<button type="button" data-l="${l[0]}">${flag(l[2])}${l[1]}</button>`).join('')}</div></div></div></header><div id="gt"></div>`);
 document.body.insertAdjacentHTML('beforeend',`<footer class="site"><div class="wrap"><b>따사로운 통합서비스</b> 사업자등록번호: (입력) · 대표: (입력)<br><b>따사로운 평생교육원</b> 사업자등록번호: (입력) · 대표: (입력)<br>주소: (입력) · 전화: (입력) · 이메일: (입력)<br>www.ttassaroun.co.kr<br>© 2026 All rights reserved.</div></footer>`);
