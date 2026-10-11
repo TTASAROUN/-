@@ -45,7 +45,7 @@ const link=p=>p[0]==='academy.html'?`<a href="${p[0]}" class="navimg ${cur===p[0
 const care=PAGES.filter(p=>CARE.includes(p[0])),rest=PAGES.filter(p=>!CARE.includes(p[0])&&p[0]!=='about.html');
 const byName=n=>PAGES.find(p=>p[0]===n);
 const topNav=['about.html'].map(byName).map(link).join('')+
- `<div class="dd"><a href="#" class="${CARE.includes(cur)?'on':''}">서비스 소개</a><div class="ddm">${care.map(link).join('')}</div></div>`+
+ `<div class="dd"><a href="#" class="${CARE.includes(cur)?'on':''}">돌봄 서비스</a><div class="ddm">${care.map(link).join('')}</div></div>`+
  ['class.html','growth-note.html','match.html','branch.html','shop.html','academy.html'].map(byName).map(link).join('');
 document.body.insertAdjacentHTML('afterbegin',`<header class="site"><div class="wrap">
  <a class="logo notranslate" href="index.html">따사로운</a><nav class="main">${topNav}</nav><div class="langbox notranslate"><button id="lang-btn" type="button" aria-label="Language">${flag("kr")}<small>▾</small></button><div id="lang-menu">${LANGS.map(l=>`<button type="button" data-l="${l[0]}">${flag(l[2])}${l[1]}</button>`).join('')}</div></div></div></header><div id="gt"></div>`);
@@ -83,7 +83,7 @@ if(document.querySelector('[data-form],[data-feed],[data-match]')){
  });
 }
 
-// 상단 '서비스 소개' 메뉴: 마우스를 올리거나(PC) 눌러서(모바일 포함) 펼칩니다
+// 상단 '돌봄 서비스' 메뉴: 마우스를 올리거나(PC) 눌러서(모바일 포함) 펼칩니다
 (function(){
  const dd=document.querySelector('.dd');if(!dd)return;
  dd.querySelector(':scope > a').addEventListener('click',e=>{e.preventDefault();e.stopPropagation();dd.classList.toggle('open')});
