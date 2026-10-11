@@ -41,7 +41,8 @@ function matchList_(p){
   if (!sh || sh.getLastRow() < 2) return out({ ok: true, items: [] });
   const v = sh.getDataRange().getValues(), h = v[0].map(String);
   const rows = v.slice(1).filter(r => r[0]).map(r => { const o = {}; h.forEach((k, i) => o[k] = r[i]); return o; });
-  const q = { service: p.service, region: p.region, start: p.start, end: p.end,
-              traits: (p.traits || '').split(',').filter(Boolean), extras: (p.extras || '').split(',').filter(Boolean) };
+  const q = { service: (p.service || '').split(',').filter(Boolean), region: p.region, start: p.start, end: p.end,
+              traits: (p.traits || '').split(',').filter(Boolean), extras: (p.extras || '').split(',').filter(Boolean),
+              ages: (p.ages || '').split(',').filter(Boolean), mbti: p.mbti || '', minYears: p.minYears || '' };
   return out({ ok: true, items: MatchCore.match(rows, q) });
 }

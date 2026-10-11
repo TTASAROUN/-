@@ -51,8 +51,8 @@ function match(rows,q,now){
     if(extras.indexOf('먼거리')>-1&&String(r['먼거리가능']||'').trim()!=='가능')return;
     if(extras.indexOf('휴일')>-1&&!yes(r['휴·공휴일가능']))return;
     if(+q.minYears&&!((+r['경력(년)']||0)>=+q.minYears))return;
-    var bands=['50대','60대'].filter(function(b){return extras.indexOf(b)>-1});
-    if(bands.length&&bands.indexOf(band)<0)return;
+    var ages=(q.ages||[]).concat(['50대','60대'].filter(function(b){return extras.indexOf(b)>-1}));
+    if(ages.length&&ages.indexOf(band)<0)return;
     // 성향은 거르지 않고 우선순위에만 반영
     var mine=csv(r['성향']),hit=traits.filter(function(t){return mine.indexOf(t)>-1});
     var mp=String(q.mbti||''),mm=String(r['MBTI']||'').toUpperCase(),mSet=0,mHit=0;

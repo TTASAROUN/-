@@ -127,3 +127,15 @@ section.blk h2{font-size:1.5rem}
 .mbti{display:grid;grid-template-columns:repeat(4,auto);gap:8px 18px;justify-content:start}.mbti .chips{flex-wrap:nowrap}
 .tag.ok{background:#e8f2ef}
 @media(max-width:640px){.mbti{grid-template-columns:repeat(2,auto)}}
+
+/* 선택 상자(드롭다운) */
+.fgrid{display:grid;grid-template-columns:1fr 1fr;gap:0 16px}.fgrid .full{grid-column:1/-1}
+.dd2{position:relative}
+.ddb{width:100%;display:flex;justify-content:space-between;align-items:center;gap:8px;padding:11px 14px;border:1px solid #d9d2c3;border-radius:10px;background:#fff;font:inherit;cursor:pointer;text-align:left;color:var(--ink)}
+.ddb i{font-style:normal;color:var(--mute);font-size:.8rem}.ddv.empty{color:#9a9a8f}
+.dd2.open .ddb{border-color:var(--green);box-shadow:0 0 0 2px #a9d3c8}
+.pop{display:none;position:absolute;left:0;top:calc(100% + 6px);z-index:30;background:#fff;border:1px solid var(--sand);border-radius:14px;padding:16px;box-shadow:0 12px 32px rgba(0,0,0,.14);min-width:100%;width:max-content;max-width:92vw}
+.dd2.right .pop{left:auto;right:0}.dd2.open .pop{display:block}.pop.wide{width:min(660px,100%)}
+.popf{margin-top:12px;text-align:right}.btn.sm{padding:8px 22px;font-size:.9rem;border:0;font-weight:700;cursor:pointer}
+.pop .mbti{grid-template-columns:repeat(2,auto)}.pop .hint{margin:10px 0 0;font-size:.82rem}
+@media(max-width:640px){.fgrid{grid-template-columns:1fr}.pop,.dd2.right .pop{position:fixed;left:0;right:0;bottom:0;top:auto;width:auto;max-width:none;min-width:0;border-radius:18px 18px 0 0;max-height:82vh;overflow:auto;padding-bottom:22px}.pop.wide{width:auto}}
