@@ -21,7 +21,9 @@ function doPost(e){
 
 // 성장노트: '공개승인(Y)' 열에 Y가 입력된 건만 사이트에 공개
 function doGet(e){
-  if (!e.parameter || e.parameter.list !== 'growth') return out({ ok: true });
+  const p = e.parameter || {};
+  if (p.list === 'match') return matchList_(p);
+  if (p.list !== 'growth') return out({ ok: true });
   const sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('growth');
   if (!sh || sh.getLastRow() < 2) return out({ ok: true, items: [] });
   const v = sh.getDataRange().getValues(), h = v[0];
@@ -30,4 +32,16 @@ function doGet(e){
     return o;
   });
   return out({ ok: true, items: items });
+}
+
+// 번개매칭: '관리사' 탭에서 조건에 맞는 선생님만 골라 공개 가능한 정보(마스킹된 이름·경력·성향 등)만 반환
+// 전화번호·주소·생년월일·서류 정보는 절대 반환하지 않음 (Match.gs의 match 함수가 필터링)
+function matchList_(p){
+  const sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('관리사');
+  if (!sh || sh.getLastRow() < 2) return out({ ok: true, items: [] });
+  const v = sh.getDataRange().getValues(), h = v[0].map(String);
+  const rows = v.slice(1).filter(r => r[0]).map(r => { const o = {}; h.forEach((k, i) => o[k] = r[i]); return o; });
+  const q = { service: p.service, region: p.region, start: p.start, end: p.end,
+              traits: (p.traits || '').split(',').filter(Boolean), extras: (p.extras || '').split(',').filter(Boolean) };
+  return out({ ok: true, items: MatchCore.match(rows, q) });
 }

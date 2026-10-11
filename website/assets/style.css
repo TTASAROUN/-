@@ -80,3 +80,46 @@ section.blk h2{font-size:1.5rem}
 .formbox .btn{border:0;font:inherit;font-weight:700;cursor:pointer}.formbox .btn:disabled{opacity:.6}
 .fmsg{margin:12px 0 0;font-size:.92rem}.fmsg.ok{color:var(--green-d);font-weight:600}.fmsg.err{color:#b3261e}.fmsg.warn{color:#7a4a22}
 .res{font-size:.88rem!important;border-top:1px solid var(--sand);margin-top:10px!important;padding-top:8px}
+/* 번개매칭 */
+.mcard{background:#fff;border:1px solid var(--sand);border-radius:var(--r);padding:28px;max-width:760px}
+.mcard h3{margin:0 0 18px;color:var(--green-d)}
+.mstep{display:flex;gap:8px;list-style:none;padding:0;margin:0 0 18px;max-width:760px}
+.mstep li{flex:1;display:flex;align-items:center;gap:8px;font-size:.9rem;color:var(--mute);padding:8px 10px;border-radius:10px;background:var(--sand)}
+.mstep b{display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:#fff;font-size:.8rem}
+.mstep li.on{background:var(--green);color:#fff}.mstep li.on b{color:var(--green-d)}.mstep li.done{background:#d5e9e3;color:var(--green-d)}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip input{position:absolute;opacity:0;pointer-events:none}
+.chip span{display:inline-block;padding:9px 16px;border:1px solid #d9d2c3;border-radius:999px;background:#fff;cursor:pointer;font-size:.93rem}
+.chip input:checked+span{background:var(--green);border-color:var(--green);color:#fff}
+.chip input:focus-visible+span{outline:2px solid #a9d3c8}
+.cal{border:1px solid #d9d2c3;border-radius:14px;padding:14px;background:#fff}
+.cal-nav{display:flex;justify-content:space-between;margin-bottom:-30px;position:relative;z-index:1}
+.cal-nav button{border:0;background:var(--sand);width:32px;height:32px;border-radius:50%;font-size:1.1rem;cursor:pointer}.cal-nav button:disabled{opacity:.3;cursor:default}
+.cal-months{display:grid;grid-template-columns:1fr 1fr;gap:28px}
+.cal-t{text-align:center;font-weight:700;margin-bottom:8px}
+.cal-g{display:grid;grid-template-columns:repeat(7,1fr);row-gap:2px;text-align:center}
+.cal-w{font-size:.78rem;color:var(--mute);padding:4px 0}.sun{color:#c0392b}
+.cal-d{border:0;background:none;font:inherit;font-size:.92rem;height:38px;cursor:pointer;border-radius:0;color:var(--ink)}
+.cal-d.sun{color:#c0392b}.cal-d:disabled{color:#c9c3b6;cursor:default}
+.cal-d:not(:disabled):hover{background:var(--sand);border-radius:50%}
+.cal-d.in{background:#d5e9e3}.cal-d.sel{background:var(--green);color:#fff;border-radius:50%}
+.cal-d.first.sel{border-radius:50% 0 0 50%}.cal-d.lastd.sel{border-radius:0 50% 50% 0}
+.cal-sum{margin:12px 0 0;text-align:center;font-size:.93rem;color:var(--green-d)}.cal-sum small{color:var(--mute)}
+.msum{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:14px;max-width:760px}
+.msum span{background:var(--sand);color:var(--green-d);padding:4px 12px;border-radius:999px;font-size:.85rem}
+.link{border:0;background:none;color:var(--green);text-decoration:underline;cursor:pointer;font:inherit;font-size:.88rem}
+.mh{margin:18px 0 12px;color:var(--green-d)}.mh b{color:var(--accent)}
+.mlist{display:grid;gap:12px;max-width:760px}
+.tcard{display:flex;gap:16px;align-items:center;background:#fff;border:1px solid var(--sand);border-radius:var(--r);padding:18px}
+.av{flex:none;display:grid;place-items:center;width:56px;height:56px;border-radius:50%;background:#e8f2ef;color:var(--green-d);font-weight:800;font-size:1.3rem}
+.tb{flex:1;min-width:0}.tb h4{margin:0 0 4px;font-size:1.05rem}.tb p{margin:2px 0}
+.tm{font-size:.88rem;color:var(--mute)}.ts{font-size:.9rem;color:var(--ink)}
+.hit{margin-left:8px;background:#fff3e0;color:#b25e1a;font-size:.72rem;padding:2px 8px;border-radius:999px;font-weight:600;vertical-align:middle}
+.tcard .btn,.mbtns .btn,#m-go,#m-again,#m-nopick{border:0;font:inherit;font-weight:700;cursor:pointer;white-space:nowrap}
+.btn.ghost2{background:var(--sand);color:var(--ink)}
+.msel{display:flex;gap:12px;align-items:center;background:var(--cream);border-radius:12px;padding:12px 14px;margin-bottom:18px}
+.msel .av{width:44px;height:44px;font-size:1.1rem}
+.mbtns{display:flex;gap:10px;justify-content:flex-end}
+.hint{display:block;color:var(--mute);margin-top:4px}
+.mdone{text-align:center}.mdone .ok{width:60px;height:60px;line-height:60px;border-radius:50%;background:var(--green);color:#fff;font-size:1.8rem;margin:0 auto 14px}
+@media(max-width:640px){.cal-months{grid-template-columns:1fr}.cal-months .cal-m:nth-child(2){display:none}.tcard{flex-wrap:wrap}.tcard .btn{width:100%}.mstep li{font-size:.78rem;padding:6px}.mstep b{display:none}.mcard{padding:20px}}

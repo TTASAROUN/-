@@ -6,8 +6,6 @@ const SVC=['산모신생아 건강관리','영유아 관리','가사관리','정
 const FORMS={
  consult:{title:'상담 신청',btn:'상담 신청하기',f:[
   {k:'서비스',t:'select',o:SVC},{k:'이름'},{k:'연락처',t:'tel'},{k:'지역',ph:'예: 서울 강남구'},{k:'희망 시작일',ph:'예: 11월 초 / 출산 예정일',opt:1},{k:'문의 내용',t:'textarea',opt:1}]},
- match:{title:'번개매칭 신청',btn:'매칭 신청하기',f:[
-  {k:'서비스',t:'select',o:SVC},{k:'지역',ph:'예: 서울 강남구'},{k:'희망 일시',ph:'예: 내일 오전 9시'},{k:'이름'},{k:'연락처',t:'tel'},{k:'요청 사항',t:'textarea',opt:1}]},
  growth:{title:'성장노트에 의견 남기기',btn:'의견 남기기',f:[
   {k:'구분',t:'select',o:['칭찬','불편','제안']},{k:'서비스',t:'select',o:SVC.concat(['응애맘빠','평생교육원','따사마켓','기타'])},{k:'내용',t:'textarea',ph:'어떤 일이 있었는지 편하게 적어 주세요.'},
   {k:'표시 이름(선택)',ph:'공개 시 보여질 이름 (예: 김OO 고객님)',opt:1},{k:'연락처(선택)',t:'tel',ph:'처리 결과를 안내받으실 번호 (비공개)',opt:1},
@@ -21,6 +19,16 @@ const FORMS={
  academy:{title:'수강 문의',btn:'수강 문의하기',f:[
   {k:'과정',t:'select',o:['산모신생아 건강관리사 양성','영유아 관리사 양성','가사관리 실무','기타']},{k:'이름'},{k:'연락처',t:'tel'},{k:'문의 내용',t:'textarea',opt:1}]}
 };
+// 접수 전송 (다른 스크립트에서도 사용): 접수처 미연결이면 'test', 성공이면 'ok'
+async function send(payload){
+ if(!CFG.endpoint){
+  const q=JSON.parse(localStorage.getItem('ttasa_test')||'[]');q.push(payload);localStorage.setItem('ttasa_test',JSON.stringify(q));
+  await new Promise(r=>setTimeout(r,500));return 'test';
+ }
+ const r=await fetch(CFG.endpoint,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload)});
+ const j=await r.json();if(!j.ok)throw new Error(j.error||'fail');return 'ok';
+}
+window.TtasaSend=send;
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 function field(x,i){
  const id='f'+Math.random().toString(36).slice(2,7),req=x.opt?'':' required';
@@ -49,15 +57,9 @@ document.querySelectorAll('[data-form]').forEach(box=>{
   const payload={form:box.dataset.form,title:def.title,labels:def.f.map(x=>x.k),values,page:location.pathname,lang:(document.cookie.match(/googtrans=\/ko\/([\w-]+)/)||[])[1]||'ko'};
   btn.disabled=true;msg.className='fmsg';msg.textContent='전송 중입니다…';
   try{
-   if(!CFG.endpoint){ // 아직 저장소가 연결되지 않은 테스트 모드
-    const q=JSON.parse(localStorage.getItem('ttasa_test')||'[]');q.push(payload);localStorage.setItem('ttasa_test',JSON.stringify(q));
-    await new Promise(r=>setTimeout(r,500));
-    msg.className='fmsg warn';msg.textContent='테스트 모드: 아직 접수처가 연결되지 않아 전송되지 않았습니다. (config.js 설정 필요)';
-   }else{
-    const r=await fetch(CFG.endpoint,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload)});
-    const j=await r.json();if(!j.ok)throw new Error(j.error||'fail');
-    form.reset();msg.className='fmsg ok';msg.textContent='접수되었습니다. 확인 후 빠르게 연락드리겠습니다. 감사합니다.';
-   }
+   const res=await send(payload);
+   if(res==='test'){msg.className='fmsg warn';msg.textContent='테스트 모드: 아직 접수처가 연결되지 않아 전송되지 않았습니다. (config.js 설정 필요)'}
+   else{form.reset();msg.className='fmsg ok';msg.textContent='접수되었습니다. 확인 후 빠르게 연락드리겠습니다. 감사합니다.'}
   }catch(err){msg.className='fmsg err';msg.textContent='전송에 실패했습니다. 잠시 후 다시 시도하시거나 전화로 문의해 주세요.'}
   btn.disabled=false;
  };
