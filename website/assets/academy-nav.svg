@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 132 46" role="img" aria-label="평생교육원">
+ <g stroke="#1f5b4d" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M66 2 V8" /><path d="M66 2 L76 5 L66 8" fill="#e8955a" stroke="#e8955a" stroke-width="2"/>
+  <path d="M5 19 L66 7 L127 19 Z" fill="#e8f2ef"/>
+  <path d="M5 43 H127"/>
+ </g>
+ <path d="M12 22 V40 M120 22 V40" stroke="#1f5b4d" stroke-width="3" stroke-linecap="round"/>
+ <rect x="19" y="23" width="94" height="17" rx="3" fill="#1f5b4d"/>
+ <text x="66" y="36" text-anchor="middle" font-family="'Pretendard','Noto Sans KR','Malgun Gothic',sans-serif" font-weight="800" font-size="15" fill="#fff" letter-spacing=".5">평생교육원</text>
+</svg>

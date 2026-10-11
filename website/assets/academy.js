@@ -22,10 +22,3 @@ document.addEventListener('click',e=>{
  if(box)box.scrollIntoView({behavior:'smooth',block:'center'});
 });
 })();
-// 페이지 상단에 간판 건물 이미지(평생교육원 엠블럼) 추가
-(function(){
- const w=document.querySelector('#pagehead .wrap');if(!w)return;
- const t=document.createElement('div');while(w.firstChild)t.appendChild(w.firstChild);
- w.classList.add('has-emblem');w.appendChild(t);
- w.insertAdjacentHTML('beforeend','<img class="pg-emblem" src="assets/academy-emblem.svg" alt="따사로운 평생교육원 건물" width="220">');
-})();

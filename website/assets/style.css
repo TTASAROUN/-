@@ -184,6 +184,18 @@ html{scroll-behavior:smooth;scroll-padding-top:130px}
 
 .dd.open .ddm{display:block}
 .dd>a::after{content:'';display:inline-block;margin-left:6px;border:4px solid transparent;border-top-color:currentColor;border-bottom:0;vertical-align:middle}
-.pagehead .wrap.has-emblem{display:flex;align-items:center;justify-content:space-between;gap:24px}
-.pg-emblem{flex:none;max-width:38%;height:auto}
-@media(max-width:640px){.pagehead .wrap.has-emblem{flex-direction:column;align-items:flex-start}.pg-emblem{max-width:180px}}
+
+nav.main a.navimg{padding:4px 8px;display:flex;align-items:center}nav.main a.navimg img{display:block;height:44px;width:auto}
+/* 모바일: 돌봄 서비스 하위 메뉴를 가로 스크롤 메뉴에 펼쳐 놓음 */
+@media(max-width:900px){
+ nav.main{flex-wrap:nowrap;gap:2px}
+ nav.main .dd{display:contents}
+ nav.main .dd>a{display:none}
+ nav.main .dd .ddm,nav.main .dd.open .ddm{display:contents}
+ nav.main a{flex:none}
+}
+@media(max-width:900px){
+ header.site .wrap{row-gap:0}
+ .logo{order:1}.langbox{order:2;margin-left:auto}nav.main{order:3;width:100%}
+ header.site .wrap{padding-top:6px;padding-bottom:2px}
+}

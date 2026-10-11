@@ -41,7 +41,7 @@ const PAGES=[
 const svg=k=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${I[k]}</svg>`;
 const cur=location.pathname.split('/').pop()||'index.html';
 const CARE=['maternity.html','infant.html','housekeeping.html','organize.html'];
-const link=p=>`<a href="${p[0]}" class="${cur===p[0]?'on':''}">${p[1]}</a>`;
+const link=p=>p[0]==='academy.html'?`<a href="${p[0]}" class="navimg ${cur===p[0]?'on':''}" title="${p[1]}" aria-label="${p[1]}"><img src="assets/academy-nav.svg" alt="${p[1]}" height="44"></a>`:`<a href="${p[0]}" class="${cur===p[0]?'on':''}">${p[1]}</a>`;
 const care=PAGES.filter(p=>CARE.includes(p[0])),rest=PAGES.filter(p=>!CARE.includes(p[0])&&p[0]!=='about.html');
 const byName=n=>PAGES.find(p=>p[0]===n);
 const topNav=['about.html'].map(byName).map(link).join('')+
