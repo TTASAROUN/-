@@ -3,7 +3,7 @@
 const mem={};
 const LS={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return mem[k]!==undefined?mem[k]:d}},set(k,v){mem[k]=v;try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const NAME={consult:'상담 신청',match:'번개매칭',growth:'성장노트',class:'응애맘빠',branch:'지사 문의',academy:'수강 문의',quote:'정리수납 견적',share:'무료나눔 등록',shareReq:'나눔 신청',post:'커뮤니티 글',comment:'커뮤니티 댓글',report:'신고',letter:'영상편지'};
+const NAME={consult:'상담 신청',match:'번개매칭',growth:'성장노트',class:'응애맘빠',branch:'지사 문의',academy:'수강 문의',quote:'정리수납 견적',share:'무료나눔 등록',shareReq:'나눔 신청',post:'따사마을 글',comment:'따사마을 댓글',report:'신고',letter:'영상편지'};
 const STATUS=['접수','연락중','확정','완료','보류'];
 const CG=window.SAMPLE_CAREGIVERS||[];
 let tab='inbox',filter='all',open=null;
@@ -13,7 +13,7 @@ const setMeta=(ts,o)=>{const m=meta();m[ts]=Object.assign(m[ts]||{},o);LS.set('t
 const st=p=>(meta()[p.ts]||{}).status||'접수';
 const when=ts=>{const d=new Date(ts);return `${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`};
 const who=p=>p.values['성명']||p.values['신청자 이름']||p.values['이름']||p.values['표시 이름(선택)']||'-';
-const one=p=>{const v=p.values;return p.form==='match'?`${v['매칭 분야']} · ${v['지역']} · ${v['일정 시작']}~${v['일정 종료']}`:p.form==='growth'?`[${v['구분']}] ${v['내용']}`:p.form==='class'?`출산 예정 ${v['출산 예정월']}`:p.form==='branch'?`희망 ${v['희망 지역']}`:p.form==='consult'?`${v['서비스']} · ${v['지역']}`:p.form==='post'?`[${v['게시판']}] ${v['제목']}`:p.form==='comment'?`댓글: ${v['내용']}`:p.form==='report'?`신고: 글 ${v['글번호']}`:p.form==='letter'?`영상편지 · 전달 ${v['전달 시기']} · 영상 ${v['영상 파일']||'링크'}`:p.form==='share'?`${v['물품명']} · ${v['분류']} · ${v['동네']}`:p.form==='shareReq'?`${v['나눔 물품']} · ${v['받으러 오실 수 있는 날']}`:p.form==='quote'?`${v['견적 방법']} · ${v['정리할 공간']} · ${v['동네']}`:(v['과정']||'')};
+const one=p=>{const v=p.values;return p.form==='match'?`${v['매칭 분야']} · ${v['지역']} · ${v['일정 시작']}~${v['일정 종료']}`:p.form==='growth'?`[${v['구분']}] ${v['내용']}`:p.form==='class'?`출산 예정 ${v['출산 예정월']}`:p.form==='branch'?`희망 ${v['희망 지역']}`:p.form==='consult'?`${v['서비스']} · ${v['지역']}`:p.form==='post'?`[${v['게시판']}] ${v['제목']}`:p.form==='comment'?`댓글: ${v['내용']}`:p.form==='report'?`신고: 글 ${v['글번호']}`:p.form==='letter'?`영상편지 · ${v['태명']} · ${v['영상 파일']||'링크'}`:p.form==='share'?`${v['물품명']} · ${v['분류']} · ${v['동네']}`:p.form==='shareReq'?`${v['나눔 물품']} · ${v['받으러 오실 수 있는 날']}`:p.form==='quote'?`${v['견적 방법']} · ${v['정리할 공간']} · ${v['동네']}`:(v['과정']||'')};
 const docDays=c=>{const ks=['건강진단서 만료일','범죄경력조회 만료일','아동학대범죄경력 만료일'];const now=new Date();now.setHours(0,0,0,0);let m=1e9;ks.forEach(k=>{const d=new Date(c[k]);m=Math.min(m,isNaN(d)?-1:Math.round((d-now)/864e5))});return m};
 const docPill=c=>{const d=docDays(c);return d<0?'<span class="pill b">서류 만료</span>':d<60?`<span class="pill w">서류 ${d}일 남음</span>`:'<span class="pill o">서류 정상</span>'};
 const stSel=p=>`<select data-st="${p.ts}">${STATUS.map(s=>`<option${s===st(p)?' selected':''}>${s}</option>`).join('')}</select>`;

@@ -66,7 +66,7 @@ const BOARD_FIELDS={
 Object.keys(BOARD_FIELDS).forEach(key=>{
  const b=BOARD_FIELDS[key];
  FORMS['post_'+key]={title:b.name+' 글쓰기',btn:'글 올리기',formName:'post',note:(b.note?b.note+' ':'')+'글은 확인 후 공개됩니다. 개인정보와 아이 얼굴이 나온 사진은 올리지 말아 주세요.',
-  agree:'수집 항목: 작성하신 글·사진·닉네임 · 목적: 커뮤니티 게시 · 공개: 승인 후 닉네임과 글 내용이 공개됩니다 · 보유: 삭제 요청 시 지체 없이 파기',
+  agree:'수집 항목: 작성하신 글·사진·닉네임 · 목적: 따사마을 게시 · 공개: 승인 후 닉네임과 글 내용이 공개됩니다 · 보유: 삭제 요청 시 지체 없이 파기',
   f:[{k:'제목'}].concat(b.extra,[{k:'내용',t:'textarea',ph:'자유롭게 적어 주세요.'},{k:'사진 첨부',t:'file',max:3,opt:1,photoHint:'아이 얼굴·간판의 전화번호 등이 보이지 않게 해 주세요.'},{k:'닉네임',ph:'예: 하늘맘'}]),
   pack:(v,def)=>{const extras=b.extra.map(e=>v[e.k]?`${e.k}: ${v[e.k]}`:'').filter(Boolean).join(' · ');
    const id=Date.now().toString(36)+Math.random().toString(36).slice(2,5);

@@ -241,3 +241,9 @@ nav.main a{flex:none}
 .lt-ctl{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.lt-ctl .btn{border:0;font-weight:700;cursor:pointer}
 @media(max-width:760px){.lt-hero{grid-template-columns:1fr;padding:24px}}
 section.blk .lt-hero h2{color:#fff;margin:0 0 10px}
+.lt-wall{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px}
+.lt-card{background:#fff;border:1px solid var(--sand);border-radius:var(--r);padding:18px;display:flex;flex-direction:column;gap:10px}.lt-card.pend{border-style:dashed;background:#fffdf8}
+.lt-card h3{margin:0 0 2px;color:var(--green-d)}.lt-card header p{margin:0;font-size:.88rem}
+.lt-v{width:100%;aspect-ratio:16/9;border:0;border-radius:12px;background:#111;display:block}
+.lt-ph{display:grid;place-items:center;color:#fff;background:linear-gradient(135deg,#2f7d6b,#1f5b4d)}.lt-ph span{font-size:2.2rem;line-height:1}.lt-ph small{opacity:.85}
+.lt-msg{margin:0;font-size:.95rem;white-space:pre-wrap}

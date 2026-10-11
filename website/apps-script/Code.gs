@@ -1,14 +1,17 @@
 // 따사로운 — 접수 폼 → 구글 시트 저장 + 이메일 알림 + 성장노트 공개 목록
 const OWNER_EMAIL = '';  // 알림 받을 이메일 (비워두면 알림 없음)
 const TAIL = ['상태', '공개승인(Y)', '처리결과', '개선내용']; // 시트에서 직접 관리하는 열
-const TAIL_LETTER = ['상태', '전달 예정일', '전달 메모']; // 영상편지 탭 전용 열
 
 function out(o){ return ContentService.createTextOutput(JSON.stringify(o)).setMimeType(ContentService.MimeType.JSON); }
 
 function doPost(e){
   try{
     const d = JSON.parse(e.postData.contents);
-    if (d.form === 'letter' && d.files && d.files.length) { d.values['영상 파일'] = saveLetter_(d); d.files = null; }
+    if (d.form === 'letter') { // 영상편지: 영상은 드라이브에 저장하고 공개 승인 시 사이트에서 재생
+      const r = (d.files && d.files.length) ? saveLetter_(d) : { url: '', id: '' };
+      if (r.url) d.values['영상 파일'] = r.url;
+      d.labels = d.labels.concat(['영상ID']); d.values['영상ID'] = r.id; d.files = null;
+    }
     if (d.files && d.files.length) { // 사진은 드라이브에 저장하고 링크를 시트에 기록
       const r = saveFiles_(d);
       d.values['사진 첨부'] = r.urls;
@@ -16,10 +19,9 @@ function doPost(e){
     } else if (isPublicPhoto_(d.form)) { d.labels = d.labels.concat(['사진ID']); d.values['사진ID'] = ''; }
     const ss = SpreadsheetApp.getActiveSpreadsheet();
     let sh = ss.getSheetByName(d.form) || ss.insertSheet(d.form);
-    const tail = d.form === 'letter' ? TAIL_LETTER : TAIL;
-    const head = ['접수일시'].concat(d.labels, ['언어'], tail);
+    const head = ['접수일시'].concat(d.labels, ['언어'], TAIL);
     if (sh.getLastRow() === 0) { sh.appendRow(head); sh.setFrozenRows(1); }
-    const row = [new Date()].concat(d.labels.map(l => String(d.values[l] || '').slice(0, 2000)), [d.lang || 'ko'], d.form === 'letter' ? ['접수', (d.values['전달 희망일'] || ''), ''] : ['접수', '', '', '']);
+    const row = [new Date()].concat(d.labels.map(l => String(d.values[l] || '').slice(0, 2000)), [d.lang || 'ko'], ['접수', '', '', '']);
     sh.appendRow(row);
     if (OWNER_EMAIL) MailApp.sendEmail(OWNER_EMAIL, '[따사로운] 새 접수: ' + d.title,
       d.labels.map(l => l + ': ' + (d.values[l] || '')).join('\n') + '\n\n시트에서 확인하세요: ' + ss.getUrl());
@@ -33,6 +35,7 @@ function doGet(e){
   if (p.list === 'match') return matchList_(p);
   if (p.list === 'share') return shareList_();
   if (p.list === 'community') return communityList_();
+  if (p.list === 'letters') return lettersList_();
   if (p.list !== 'growth') return out({ ok: true });
   const sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('growth');
   if (!sh || sh.getLastRow() < 2) return out({ ok: true, items: [] });
@@ -112,31 +115,32 @@ function communityList_(){
   return out({ ok: true, posts: posts, comments: comments });
 }
 
-// ── 아기에게 영상편지 (완전 비공개) ──
-// 영상은 '따사로운 영상편지(비공개)' 폴더에 저장하고 공유하지 않습니다. 직원 계정만 열 수 있습니다.
+// ── 영상편지 (공개 모아보기) ──
+// 영상은 '따사로운 영상편지' 폴더에 저장하고 '링크가 있는 사람은 볼 수 있음'으로 공유합니다.
+// 시트 letter 탭의 '공개승인(Y)'이 Y인 영상만 사이트에 나타납니다. 연락처·이메일은 내려보내지 않습니다.
 function saveLetter_(d){
   const f = d.files[0];
-  if (!/^video\//.test(f.type) || String(f.data).length > 30e6) return '(영상이 너무 커서 저장하지 못했습니다 — 영상 링크로 받으세요)';
-  const it = DriveApp.getFoldersByName('따사로운 영상편지(비공개)');
-  const folder = it.hasNext() ? it.next() : DriveApp.createFolder('따사로운 영상편지(비공개)');
+  if (!/^video\//.test(f.type) || String(f.data).length > 30e6) return { url: '', id: '' };
+  const it = DriveApp.getFoldersByName('따사로운 영상편지');
+  const folder = it.hasNext() ? it.next() : DriveApp.createFolder('따사로운 영상편지');
   const ext = f.type.indexOf('mp4') > -1 ? 'mp4' : f.type.indexOf('quicktime') > -1 ? 'mov' : 'webm';
-  const name = Utilities.formatDate(new Date(), 'Asia/Seoul', 'yyMMdd-HHmmss') + '_' + String(d.values['아기 태명'] || '').replace(/[^가-힣A-Za-z0-9]/g, '') + '.' + ext;
-  return folder.createFile(Utilities.newBlob(Utilities.base64Decode(f.data), f.type, name)).getUrl();
+  const name = Utilities.formatDate(new Date(), 'Asia/Seoul', 'yyMMdd-HHmmss') + '_' + String(d.values['태명'] || '').replace(/[^가-힣A-Za-z0-9]/g, '') + '.' + ext;
+  const file = folder.createFile(Utilities.newBlob(Utilities.base64Decode(f.data), f.type, name));
+  file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+  return { url: file.getUrl(), id: file.getId() };
 }
 
-// 전달일 알림: Apps Script '트리거'에서 이 함수를 매일 1회 실행하도록 설정하세요.
-// 'letter' 탭의 '전달 예정일'이 오늘이고 '상태'가 '전달완료'가 아니면, 직원(OWNER_EMAIL)에게 알려 줍니다.
-// (부모님께 실제 전달은 직원이 연락해 진행 — 영상 열람 권한은 직원이 시트의 링크에서 부모님 이메일로 직접 공유)
-function remindLetters(){
-  const sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('letter');
-  if (!sh || sh.getLastRow() < 2 || !OWNER_EMAIL) return;
-  const v = sh.getDataRange().getValues(), h = v[0].map(String), g = k => h.indexOf(k);
-  const today = Utilities.formatDate(new Date(), 'Asia/Seoul', 'yyyy-MM-dd');
-  const due = v.slice(1).filter(r => {
-    const d = r[g('전달 예정일')];
-    const ds = d instanceof Date ? Utilities.formatDate(d, 'Asia/Seoul', 'yyyy-MM-dd') : String(d).slice(0, 10);
-    return ds === today && r[g('상태')] !== '전달완료';
-  });
-  if (due.length) MailApp.sendEmail(OWNER_EMAIL, '[따사로운] 오늘 전달할 영상편지 ' + due.length + '건',
-    due.map(r => r[g('산모 성함')] + ' / ' + r[g('연락처')] + ' / ' + r[g('영상 파일')]).join('\n'));
+function lettersList_(){
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const day = d => d instanceof Date ? Utilities.formatDate(d, 'Asia/Seoul', 'yyyy-MM-dd') : String(d).slice(0, 10);
+  const rowsOf = name => {
+    const sh = ss.getSheetByName(name);
+    if (!sh || sh.getLastRow() < 2) return [];
+    const v = sh.getDataRange().getValues(), h = v[0].map(String);
+    return v.slice(1).filter(r => r[h.indexOf('공개승인(Y)')] === 'Y').reverse().map(r => { const o = {}; h.forEach((k, i) => o[k] = r[i]); return o; });
+  };
+  const letters = rowsOf('letter').slice(0, 60).map(r => ({ id: r['글번호'], nick: r['표시 이름'], baby: r['태명'], due: r['출산 예정월'],
+    msg: r['한마디'], link: r['영상 링크'], vid: r['영상ID'], date: day(r['접수일시']) }));
+  const comments = rowsOf('comment').slice(0, 300).map(r => ({ pid: r['글번호'], nick: r['닉네임'], body: r['내용'], date: day(r['접수일시']) }));
+  return out({ ok: true, letters: letters, comments: comments });
 }
