@@ -1,6 +1,8 @@
 // 신청/문의/의견 폼. 각 페이지에 <div data-form="이름"></div> 를 두면 자동으로 만들어집니다.
 (function(){
 const CFG=window.SITE_CONFIG||{};
+window.cookieLang=()=>{try{return(document.cookie.match(/googtrans=\/ko\/([\w-]+)/)||[])[1]||'ko'}catch(e){return 'ko'}};
+const cookieLang=window.cookieLang;
 const SVC=['산모신생아 건강관리','영유아 관리','가사관리','정리수납'];
 // k:내부키(시트 제목 겸용) t:종류 o:선택지 opt:선택입력 ph:안내문구
 const FORMS={
@@ -22,7 +24,8 @@ const FORMS={
 // 접수 전송 (다른 스크립트에서도 사용): 접수처 미연결이면 'test', 성공이면 'ok'
 async function send(payload){
  if(!CFG.endpoint){
-  const q=JSON.parse(localStorage.getItem('ttasa_test')||'[]');q.push(payload);localStorage.setItem('ttasa_test',JSON.stringify(q));
+  payload.ts=Date.now();
+  try{const q=JSON.parse(localStorage.getItem('ttasa_test')||'[]');q.push(payload);localStorage.setItem('ttasa_test',JSON.stringify(q))}catch(e){}
   await new Promise(r=>setTimeout(r,500));return 'test';
  }
  const r=await fetch(CFG.endpoint,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload)});
@@ -54,7 +57,7 @@ document.querySelectorAll('[data-form]').forEach(box=>{
   if(!form.reportValidity())return;
   if(form._hp&&form._hp.value)return;
   const values={};def.f.forEach((x,i)=>{const el=form.elements[x.k];values[x.k]=el?el.value.trim():''});
-  const payload={form:box.dataset.form,title:def.title,labels:def.f.map(x=>x.k),values,page:location.pathname,lang:(document.cookie.match(/googtrans=\/ko\/([\w-]+)/)||[])[1]||'ko'};
+  const payload={form:box.dataset.form,title:def.title,labels:def.f.map(x=>x.k),values,page:location.pathname,lang:cookieLang()};
   btn.disabled=true;msg.className='fmsg';msg.textContent='전송 중입니다…';
   try{
    const res=await send(payload);

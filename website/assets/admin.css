@@ -1,0 +1,39 @@
+:root{--bg:#f4f6f5;--panel:#fff;--ink:#1f2a27;--mute:#66736f;--line:#e1e7e4;--brand:#2f7d6b;--brand-d:#1f5b4d;--soft:#e8f2ef;--warn:#b25e1a;--warn-bg:#fff1e0;--bad:#b3261e;--bad-bg:#fde8e6;--ok:#1f7a4d;--ok-bg:#e3f4ea}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.55 "Pretendard","Noto Sans KR","Malgun Gothic",sans-serif}
+.top{background:var(--brand-d);color:#fff;position:sticky;top:0;z-index:5}
+.top .in{max-width:1180px;margin:0 auto;padding:12px 20px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.top b{font-size:1.1rem}.badge{background:#ffffff26;border-radius:999px;padding:2px 10px;font-size:.78rem}
+.top a{color:#d6ebe5;margin-left:auto;text-decoration:none;font-size:.9rem}
+main{max-width:1180px;margin:0 auto;padding:20px}
+.tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
+.tile{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.tile small{color:var(--mute);display:block}.tile b{font-size:1.7rem;font-variant-numeric:tabular-nums}
+.tile.alert b{color:var(--warn)}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:16px;overflow-x:auto}
+.tabs button{border:0;background:none;font:inherit;padding:10px 16px;cursor:pointer;color:var(--mute);border-bottom:3px solid transparent;white-space:nowrap}
+.tabs button.on{color:var(--brand-d);border-color:var(--brand);font-weight:700}
+.tabs .n{background:var(--brand);color:#fff;border-radius:999px;padding:0 7px;font-size:.75rem;margin-left:4px}
+.bar{display:flex;gap:10px;align-items:center;margin-bottom:12px;flex-wrap:wrap}
+select,input,textarea,.btn{font:inherit;border:1px solid var(--line);border-radius:8px;padding:7px 10px;background:var(--panel);color:var(--ink)}
+.btn{cursor:pointer}.btn.p{background:var(--brand);border-color:var(--brand);color:#fff;font-weight:600}.btn.s{padding:4px 10px;font-size:.85rem}
+.tw{overflow-x:auto;background:var(--panel);border:1px solid var(--line);border-radius:12px}
+table{width:100%;border-collapse:collapse;min-width:640px}
+th{text-align:left;font-weight:600;color:var(--mute);font-size:.82rem;padding:10px 12px;border-bottom:1px solid var(--line);background:#fafcfb}
+td{padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+tbody tr:last-child td{border-bottom:0}tbody tr.row{cursor:pointer}tbody tr.row:hover{background:#f6faf8}
+.pill{display:inline-block;padding:1px 9px;border-radius:999px;font-size:.78rem;background:var(--soft);color:var(--brand-d)}
+.pill.w{background:var(--warn-bg);color:var(--warn)}.pill.b{background:var(--bad-bg);color:var(--bad)}.pill.o{background:var(--ok-bg);color:var(--ok)}
+.mute{color:var(--mute)}.empty{padding:36px;text-align:center;color:var(--mute);background:var(--panel);border:1px dashed var(--line);border-radius:12px}
+.cards{display:grid;gap:12px}
+.mc{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;display:grid;grid-template-columns:1fr auto;gap:8px 16px}
+.mc h4{margin:0 0 4px;font-size:1rem}.mc .meta{color:var(--mute);font-size:.88rem}
+.mc .act{display:flex;gap:6px;align-items:flex-start;flex-wrap:wrap;justify-content:flex-end}
+.mc .cg{grid-column:1/-1;background:#f6faf8;border-radius:8px;padding:10px 12px;font-size:.88rem}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(440px,100%);background:var(--panel);border-left:1px solid var(--line);padding:20px;overflow:auto;z-index:10;transform:translateX(100%);transition:transform .2s}
+.drawer.open{transform:none;box-shadow:-12px 0 30px #0002}.drawer h3{margin:0 0 12px}
+.drawer dl{margin:0;display:grid;grid-template-columns:110px 1fr;gap:6px 12px}.drawer dt{color:var(--mute)}.drawer dd{margin:0;word-break:break-word}
+.drawer textarea{width:100%;min-height:80px;margin-top:6px}
+.note{background:var(--warn-bg);color:var(--warn);border-radius:10px;padding:10px 14px;margin-bottom:14px;font-size:.88rem}
+@media(max-width:760px){.tiles{grid-template-columns:repeat(2,1fr)}.mc{grid-template-columns:1fr}.mc .act{justify-content:flex-start}}
+@media (prefers-reduced-motion:reduce){.drawer{transition:none}}

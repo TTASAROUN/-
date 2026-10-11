@@ -67,10 +67,10 @@ function setLang(code){
 (function(){
  const btn=document.getElementById('lang-btn'),menu=document.getElementById('lang-menu');if(!btn)return;
  const show=c=>{const l=LANGS.find(x=>x[0]===c)||LANGS[0];btn.firstElementChild.src=flagSrc(l[2])};
- const m=document.cookie.match(/googtrans=\/ko\/([\w-]+)/);if(m)show(m[1]);
+ let m=null;try{m=document.cookie.match(/googtrans=\/ko\/([\w-]+)/)}catch(e){}if(m)show(m[1]);
  btn.onclick=e=>{e.stopPropagation();menu.classList.toggle('open')};
  document.addEventListener('click',()=>menu.classList.remove('open'));
- menu.querySelectorAll('button').forEach(b=>b.onclick=()=>{const c=b.dataset.l;if(c==='ko')document.cookie='googtrans=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/';show(c);setLang(c);menu.classList.remove('open')});
+ menu.querySelectorAll('button').forEach(b=>b.onclick=()=>{const c=b.dataset.l;if(c==='ko')try{document.cookie='googtrans=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/'}catch(e){};show(c);setLang(c);menu.classList.remove('open')});
  window.googleTranslateElementInit=()=>new google.translate.TranslateElement({pageLanguage:'ko',includedLanguages:LANGS.map(l=>l[0]).filter(c=>c!=='ko').join(','),autoDisplay:false},'gt');
  const sc=document.createElement('script');sc.src='https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';document.head.appendChild(sc);
 })();

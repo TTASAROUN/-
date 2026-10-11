@@ -2,6 +2,7 @@
 (function(){
 const root=document.querySelector('[data-match]');if(!root)return;
 const CFG=window.SITE_CONFIG||{};
+const cookieLang=window.cookieLang||(()=>'ko');
 const SERVICES=['산후관리사','영유아 관리사','가사관리사','정리수납전문가','이유식전문가'];
 const TRAITS=['차분','조용','쾌활·유쾌','사교','전문'];
 const ENV=[['다태아','다태아(쌍둥이 이상)'],['먼거리','먼 거리 가능'],['휴일','휴·공휴일 근무'],['입주','야간·입주'],['자차','자차 보유']];
@@ -172,7 +173,7 @@ function step3(){
   if(f._hp&&f._hp.value)return;
   const v={'선택 선생님':pick?pick.name+' 선생님':'(기관 추천 요청)','선택 관리번호':pick?pick.id:'','매칭 분야':q.service.join(', '),'지역':q.region,'일정 시작':q.start,'일정 종료':q.end,'희망 성향':q.traits.join(', ')||'상관없음','기타 조건':q.extras.join(', ')||'무관','희망 MBTI':q.mbti.replace(/-/g,'·')==='····'?'상관없음':q.mbti.replace(/-/g,'·'),'희망 연령대':q.ages.join(', ')||'상관없음','희망 최소경력':q.minYears?q.minYears+'년 이상':'상관없음',
    '요청 사항':g('요청 사항'),'성명':g('성명'),'생년월일':g('생년월일'),'전화번호':g('전화번호'),'상세주소':g('상세주소'),'주차·현관 안내':g('주차·현관 안내'),'상담 방법':f.querySelector('[name=상담\\ 방법]:checked').value,'이용 경로':g('이용 경로')};
-  const payload={form:'match',title:'번개매칭 신청',labels:Object.keys(v),values:v,page:location.pathname,lang:(document.cookie.match(/googtrans=\/ko\/([\w-]+)/)||[])[1]||'ko'};
+  const payload={form:'match',title:'번개매칭 신청',labels:Object.keys(v),values:v,page:location.pathname,lang:cookieLang()};
   const btn=f.querySelector('[type=submit]');btn.disabled=true;msg.className='fmsg';msg.textContent='전송 중입니다…';
   try{const r=await window.TtasaSend(payload);done(r==='test')}catch(e){msg.className='fmsg err';msg.textContent='전송에 실패했습니다. 잠시 후 다시 시도하시거나 전화로 문의해 주세요.';btn.disabled=false}
  };
