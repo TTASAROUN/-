@@ -74,3 +74,9 @@ function setLang(code){
  window.googleTranslateElementInit=()=>new google.translate.TranslateElement({pageLanguage:'ko',includedLanguages:LANGS.map(l=>l[0]).filter(c=>c!=='ko').join(','),autoDisplay:false},'gt');
  const sc=document.createElement('script');sc.src='https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';document.head.appendChild(sc);
 })();
+
+// 폼/피드가 있는 페이지에서만 설정과 폼 스크립트를 불러옵니다
+if(document.querySelector('[data-form],[data-feed]')){
+ const ld=src=>new Promise(r=>{const e=document.createElement('script');e.src=src;e.onload=r;document.head.appendChild(e)});
+ ld('assets/config.js').then(()=>ld('assets/forms.js'));
+}

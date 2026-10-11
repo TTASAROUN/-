@@ -68,3 +68,15 @@ section.blk h2{font-size:1.5rem}
 .flag{width:22px;height:16px;object-fit:cover;border-radius:2px;box-shadow:0 0 0 1px rgba(0,0,0,.12)}
 #lang-menu{display:none;position:absolute;right:0;top:calc(100% + 6px);background:#fff;border:1px solid var(--sand);border-radius:12px;padding:6px;min-width:150px;box-shadow:0 8px 24px rgba(0,0,0,.08)}
 #lang-menu.open{display:block}
+
+/* 폼 */
+.formbox form{background:#fff;border:1px solid var(--sand);border-radius:var(--r);padding:28px;max-width:640px;position:relative}
+.formbox h3{margin:0 0 16px;color:var(--green-d)}
+.fld{margin-bottom:14px}.fld label{display:block;font-weight:600;font-size:.92rem;margin-bottom:4px}.fld em{font-weight:400;color:var(--mute);font-style:normal;font-size:.82rem}
+.fld input,.fld select,.fld textarea{width:100%;padding:11px 12px;border:1px solid #d9d2c3;border-radius:10px;font:inherit;background:#fff}
+.fld input:focus,.fld select:focus,.fld textarea:focus{outline:2px solid #a9d3c8;border-color:var(--green)}
+.agree{display:block;font-size:.88rem;margin:16px 0}.agree small{color:var(--mute)}
+.fnote{font-size:.88rem;color:var(--mute);background:var(--cream);padding:10px 12px;border-radius:8px}
+.formbox .btn{border:0;font:inherit;font-weight:700;cursor:pointer}.formbox .btn:disabled{opacity:.6}
+.fmsg{margin:12px 0 0;font-size:.92rem}.fmsg.ok{color:var(--green-d);font-weight:600}.fmsg.err{color:#b3261e}.fmsg.warn{color:#7a4a22}
+.res{font-size:.88rem!important;border-top:1px solid var(--sand);margin-top:10px!important;padding-top:8px}
