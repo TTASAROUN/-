@@ -26,13 +26,13 @@ function csv(v){return String(v||'').split(',').map(function(s){return s.trim()}
 // rows: 시트 한 줄이 객체(헤더=키)인 배열, q: {service,region,start,end,traits[],extras[]}
 function match(rows,q,now){
   now=now||new Date();
-  var col=SVC[q.service];if(!col)return [];
+  var svcs=[].concat(q.service||[]).filter(function(x){return SVC[x]});if(!svcs.length)return [];
   var start=toDate(q.start),end=toDate(q.end||q.start);if(!start||!end)return [];
   var extras=q.extras||[],traits=q.traits||[];
   var out=[];
   rows.forEach(function(r){
     if(String(r['활동상태']||'').trim()!=='활동중')return;
-    if(!yes(r[col]))return;
+    if(!svcs.every(function(x){return yes(r[SVC[x]])}))return;
     if(!regionOK(q.region,r['활동지역']))return;
     if(!yes(r['서류완비']))return;
     var ok=true;
@@ -47,16 +47,24 @@ function match(rows,q,now){
     if(extras.indexOf('입주')>-1&&!yes(r['야간(입주)가능']))return;
     if(extras.indexOf('반려견')>-1&&(pet==='불가'||pet==='고양이만'))return;
     if(extras.indexOf('반려묘')>-1&&(pet==='불가'||pet==='강아지만'))return;
+    if(extras.indexOf('다태아')>-1&&!yes(r['다태아가능']))return;
+    if(extras.indexOf('먼거리')>-1&&String(r['먼거리가능']||'').trim()!=='가능')return;
+    if(extras.indexOf('휴일')>-1&&!yes(r['휴·공휴일가능']))return;
+    if(+q.minYears&&!((+r['경력(년)']||0)>=+q.minYears))return;
     var bands=['50대','60대'].filter(function(b){return extras.indexOf(b)>-1});
     if(bands.length&&bands.indexOf(band)<0)return;
     // 성향은 거르지 않고 우선순위에만 반영
     var mine=csv(r['성향']),hit=traits.filter(function(t){return mine.indexOf(t)>-1});
+    var mp=String(q.mbti||''),mm=String(r['MBTI']||'').toUpperCase(),mSet=0,mHit=0;
+    for(var i=0;i<4;i++){if(mp.charAt(i)&&mp.charAt(i)!=='-'){mSet++;if(mm.charAt(i)===mp.charAt(i))mHit++}}
+    var tags=[];if(yes(r['자차보유']))tags.push('자차');if(yes(r['야간(입주)가능']))tags.push('야간·입주');if(yes(r['휴·공휴일가능']))tags.push('휴·공휴일');if(yes(r['다태아가능']))tags.push('다태아');if(String(r['먼거리가능']||'').trim()==='가능')tags.push('먼거리');
+    var pets=pet==='무관'?'':'반려동물 '+pet;
     out.push({
       id:r['관리번호'],name:maskName(r['성명']),
       services:Object.keys(SVC).filter(function(k){return yes(r[SVC[k]])}),
       years:r['경력(년)'],traits:mine,traitHit:hit,mbti:r['MBTI']||'',strength:r['장점']||'',
-      rating:r['평균평점']||'',age:band,car:yes(r['자차보유']),live:yes(r['야간(입주)가능']),
-      _s:hit.length*100+(+r['평균평점']||0)*10+(+r['경력(년)']||0)
+      rating:r['평균평점']||'',age:band,tags:tags,pet:pets,edu:r['학력']||'',school:r['수료기관']||'',mbtiHit:mSet>0?mHit+'/'+mSet:'',mbtiFull:mSet>0&&mHit===mSet,
+      _s:mHit*60+hit.length*100+(+r['평균평점']||0)*10+(+r['경력(년)']||0)
     });
   });
   out.sort(function(a,b){return b._s-a._s});

@@ -4,7 +4,11 @@ const root=document.querySelector('[data-match]');if(!root)return;
 const CFG=window.SITE_CONFIG||{};
 const SERVICES=['산후관리사','영유아 관리사','가사관리사','정리수납전문가','이유식전문가'];
 const TRAITS=['차분','조용','쾌활·유쾌','사교','전문'];
-const EXTRAS=[['자차','자차 보유'],['반려견','댁에 반려견이 있어요'],['반려묘','댁에 반려묘가 있어요'],['50대','50대 선호'],['60대','60대 선호'],['입주','입주 가능'],['무관','무관']];
+const ENV=[['다태아','다태아(쌍둥이 이상)'],['먼거리','먼 거리 가능'],['휴일','휴·공휴일 근무'],['입주','야간·입주'],['자차','자차 보유']];
+const PETS=[['반려견','댁에 반려견이 있어요'],['반려묘','댁에 반려묘가 있어요']];
+const AGES=[['50대','50대 선호'],['60대','60대 선호']];
+const MB=[['E','외향 E'],['I','내향 I'],['S','현실 S'],['N','직관 N'],['T','사고 T'],['F','감정 F'],['J','계획 J'],['P','탐색 P']];
+const YEARS=[['','상관없음'],['3','3년 이상'],['5','5년 이상'],['10','10년 이상']];
 const WD='일월화수목금토';
 const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const pad=n=>n<10?'0'+n:''+n;
@@ -12,7 +16,7 @@ const iso=d=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
 const parse=s=>{const [y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d)};
 const fmt=s=>{const d=parse(s);return `${d.getMonth()+1}월 ${d.getDate()}일(${WD[d.getDay()]})`};
 const days=(a,b)=>Math.round((parse(b)-parse(a))/864e5)+1;
-let q={service:'',region:'',start:'',end:'',traits:[],extras:[]},pick=null,items=[];
+let q={service:[],region:'',start:'',end:'',traits:[],extras:[],mbti:'----',minYears:''},pick=null,items=[];
 
 const chips=(name,list,type)=>list.map(x=>{const v=Array.isArray(x)?x[0]:x,l=Array.isArray(x)?x[1]:x;return `<label class="chip"><input type="${type}" name="${name}" value="${esc(v)}"><span>${esc(l)}</span></label>`}).join('');
 const stepper=n=>`<ol class="mstep">${['조건 선택','선생님 선택','신청 정보'].map((t,i)=>`<li class="${i+1===n?'on':i+1<n?'done':''}"><b>${i+1}</b>${t}</li>`).join('')}</ol>`;
@@ -53,26 +57,31 @@ function Calendar(box,onChange){
 // ── 1단계: 조건 ──
 function step1(msg){
  root.innerHTML=`${stepper(1)}<div class="mcard"><h3>원하는 조건을 선택하세요</h3>
- <div class="fld"><label>매칭 분야</label><div class="chips">${chips('service',SERVICES,'radio')}</div></div>
+ <h4 class="fgh">기본 조건</h4>
+ <div class="fld"><label>매칭 분야 <em>(여러 개 선택 가능 · 선택한 분야를 모두 하실 수 있는 분만 보여드려요)</em></label><div class="chips">${chips('service',SERVICES,'checkbox')}</div></div>
  <div class="fld"><label for="m-region">지역</label><input id="m-region" placeholder="예: 서울 강남구" autocomplete="off"></div>
  <div class="fld"><label>매칭 일정</label><div id="m-cal"></div></div>
- <div class="fld"><label>원하는 성향 <em>(여러 개 선택 · 선택하지 않으면 상관없음)</em></label><div class="chips">${chips('traits',TRAITS,'checkbox')}</div></div>
- <div class="fld"><label>기타 조건 <em>(해당하는 것을 모두 선택)</em></label><div class="chips">${chips('extras',EXTRAS,'checkbox')}</div></div>
+ <h4 class="fgh">댁의 상황</h4>
+ <div class="fld"><label>필요한 조건 <em>(해당하는 것을 모두 선택)</em></label><div class="chips">${chips('extras',ENV,'checkbox')}</div></div>
+ <div class="fld"><label>반려동물 <em>(있다면 선택 · 돌볼 수 있는 분만 보여드려요)</em></label><div class="chips">${chips('extras',PETS,'checkbox')}</div></div>
+ <h4 class="fgh">선호하는 선생님</h4>
+ <div class="fld"><label>성향 <em>(여러 개 선택 · 선택하지 않으면 상관없음)</em></label><div class="chips">${chips('traits',TRAITS,'checkbox')}</div></div>
+ <div class="fld"><label>MBTI <em>(알고 싶은 축만 선택하세요 · 일치하는 분을 먼저 보여드려요)</em></label><div class="mbti">${[0,1,2,3].map(i=>`<div class="chips">${chips('mb'+i,MB.slice(i*2,i*2+2),'checkbox')}</div>`).join('')}</div></div>
+ <div class="fld"><label>연령대 <em>(선택)</em></label><div class="chips">${chips('extras',AGES,'checkbox')}</div></div>
+ <div class="fld"><label for="m-years">경력</label><select id="m-years">${YEARS.map(y=>`<option value="${y[0]}">${y[1]}</option>`).join('')}</select></div>
  <p class="fmsg err" id="m-err">${msg||''}</p><button class="btn" id="m-go" type="button"><span>가능한 선생님 찾기</span></button></div>`;
  const f=(n)=>[...root.querySelectorAll(`[name=${n}]`)];
- if(q.service)f('service').forEach(i=>i.checked=i.value===q.service);
- root.querySelector('#m-region').value=q.region;
+ f('service').forEach(i=>i.checked=q.service.includes(i.value));
+ root.querySelector('#m-region').value=q.region;root.querySelector('#m-years').value=q.minYears;
  f('traits').forEach(i=>i.checked=q.traits.includes(i.value));f('extras').forEach(i=>i.checked=q.extras.includes(i.value));
+ [0,1,2,3].forEach(k=>f('mb'+k).forEach(i=>{i.checked=q.mbti[k]===i.value;i.onchange=()=>{if(i.checked)f('mb'+k).forEach(o=>{if(o!==i)o.checked=false})}}));
  Calendar(root.querySelector('#m-cal'),(s,e)=>{q.start=s;q.end=e});
- f('extras').forEach(i=>i.onchange=()=>{ // '무관'은 단독 선택
-  if(i.value==='무관'&&i.checked)f('extras').forEach(o=>{if(o!==i)o.checked=false});
-  else if(i.checked)f('extras').forEach(o=>{if(o.value==='무관')o.checked=false});
- });
  root.querySelector('#m-go').onclick=async()=>{
-  const sv=f('service').find(i=>i.checked);q.region=root.querySelector('#m-region').value.trim();
-  q.traits=f('traits').filter(i=>i.checked).map(i=>i.value);q.extras=f('extras').filter(i=>i.checked).map(i=>i.value).filter(x=>x!=='무관');q.service=sv?sv.value:'';
+  q.service=f('service').filter(i=>i.checked).map(i=>i.value);q.region=root.querySelector('#m-region').value.trim();
+  q.traits=f('traits').filter(i=>i.checked).map(i=>i.value);q.extras=f('extras').filter(i=>i.checked).map(i=>i.value);
+  q.mbti=[0,1,2,3].map(k=>{const c=f('mb'+k).find(i=>i.checked);return c?c.value:'-'}).join('');q.minYears=root.querySelector('#m-years').value;
   if(q.start&&!q.end)q.end=q.start;
-  const err=!q.service?'매칭 분야를 선택해 주세요.':!q.region?'지역을 입력해 주세요.':!q.start?'달력에서 일정을 선택해 주세요.':'';
+  const err=!q.service.length?'매칭 분야를 하나 이상 선택해 주세요.':!q.region?'지역을 입력해 주세요.':!q.start?'달력에서 일정을 선택해 주세요.':'';
   if(err){root.querySelector('#m-err').textContent=err;return}
   const b=root.querySelector('#m-go');b.disabled=true;b.textContent='찾는 중…';
   try{items=await find()}catch(e){items=[];step1('조회에 실패했습니다. 잠시 후 다시 시도해 주세요.');return}
@@ -81,13 +90,13 @@ function step1(msg){
 }
 async function find(){
  if(CFG.endpoint){
-  const p=new URLSearchParams({list:'match',service:q.service,region:q.region,start:q.start,end:q.end,traits:q.traits.join(','),extras:q.extras.join(',')});
+  const p=new URLSearchParams({list:'match',service:q.service.join(','),region:q.region,start:q.start,end:q.end,traits:q.traits.join(','),extras:q.extras.join(','),mbti:q.mbti,minYears:q.minYears});
   const j=await (await fetch(CFG.endpoint+'?'+p)).json();if(!j.ok)throw 0;return j.items;
  }
  await new Promise(r=>setTimeout(r,500));
  return window.MatchCore.match(window.SAMPLE_CAREGIVERS,q);
 }
-const summary=()=>`<div class="msum"><span>${esc(q.service)}</span><span>${esc(q.region)}</span><span>${fmt(q.start)}${q.end!==q.start?' ~ '+fmt(q.end):''}</span>${q.traits.map(t=>`<span>${esc(t)}</span>`).join('')}${q.extras.map(t=>`<span>${esc(t)}</span>`).join('')}<button type="button" class="link" id="m-edit">조건 수정</button></div>`;
+const summary=()=>`<div class="msum">${q.service.map(t=>`<span>${esc(t)}</span>`).join('')}<span>${esc(q.region)}</span><span>${fmt(q.start)}${q.end!==q.start?' ~ '+fmt(q.end):''}</span>${q.traits.map(t=>`<span>${esc(t)}</span>`).join('')}${q.mbti.replace(/-/g,'').length?`<span>MBTI ${esc(q.mbti.replace(/-/g,'·'))}</span>`:''}${q.minYears?`<span>경력 ${q.minYears}년 이상</span>`:''}${q.extras.map(t=>`<span>${esc(t)}</span>`).join('')}<button type="button" class="link" id="m-edit">조건 수정</button></div>`;
 
 // ── 2단계: 후보 목록 ──
 function step2(){
@@ -105,8 +114,9 @@ function card(it,i){
  return `<div class="tcard"><div class="av">${esc(it.name.charAt(0))}</div><div class="tb">
  <h4>${esc(it.name)} 선생님${it.traitHit&&it.traitHit.length?`<span class="hit">원하시는 성향 일치</span>`:''}</h4>
  <p class="tl">${it.services.map(s=>`<span class="tag">${esc(s)}</span>`).join(' ')}</p>
- <p class="tm">경력 ${esc(it.years)}년${it.rating?` · ★ ${esc(it.rating)}`:''}${it.age?` · ${esc(it.age)}`:''}${it.mbti?` · ${esc(it.mbti)}`:''}</p>
- <p class="tm">${it.traits.map(t=>esc(t)).join(' · ')}${it.car?' · 자차':''}${it.live?' · 입주 가능':''}</p>
+ <p class="tm">경력 ${esc(it.years)}년${it.rating?` · ★ ${esc(it.rating)}`:''}${it.age?` · ${esc(it.age)}`:''}${it.mbti?` · MBTI ${esc(it.mbti)}`:''}${it.mbtiFull?' <span class="hit">MBTI 일치</span>':''}</p>
+ <p class="tm">성향: ${it.traits.map(t=>esc(t)).join(' · ')||'-'}${it.edu?` · 학력 ${esc(it.edu)}`:''}${it.school?` · 수료 ${esc(it.school)}`:''}${it.pet?` · ${esc(it.pet)}`:''}</p>
+ ${it.tags.length?`<p class="tl">${it.tags.map(t=>`<span class="tag ok">${esc(t)}</span>`).join(' ')}</p>`:''}
  ${it.strength?`<p class="ts">“${esc(it.strength)}”</p>`:''}</div>
  <button class="btn" type="button" data-pick="${i}">선택하기</button></div>`;
 }
@@ -136,7 +146,7 @@ function step3(){
   const bad=!g('성명')?'성명을 입력해 주세요.':!/^\d{4}-\d{2}-\d{2}$/.test(g('생년월일'))?'생년월일을 8자리 숫자로 입력해 주세요. (예: 19900521)':!/^0\d{1,2}-?\d{3,4}-?\d{4}$/.test(g('전화번호'))?'전화번호를 확인해 주세요.':!g('상세주소')?'상세주소를 입력해 주세요.':!f.querySelector('[name=상담\\ 방법]:checked')?'선호하는 상담 방법을 선택해 주세요.':!g('이용 경로')?'알게 된 경로를 선택해 주세요.':!f.querySelector('#n8').checked?'개인정보 수집·이용에 동의해 주세요.':'';
   if(bad){msg.className='fmsg err';msg.textContent=bad;return}
   if(f._hp&&f._hp.value)return;
-  const v={'선택 선생님':pick?pick.name+' 선생님':'(기관 추천 요청)','선택 관리번호':pick?pick.id:'','매칭 분야':q.service,'지역':q.region,'일정 시작':q.start,'일정 종료':q.end,'희망 성향':q.traits.join(', ')||'상관없음','기타 조건':q.extras.join(', ')||'무관',
+  const v={'선택 선생님':pick?pick.name+' 선생님':'(기관 추천 요청)','선택 관리번호':pick?pick.id:'','매칭 분야':q.service.join(', '),'지역':q.region,'일정 시작':q.start,'일정 종료':q.end,'희망 성향':q.traits.join(', ')||'상관없음','기타 조건':q.extras.join(', ')||'무관','희망 MBTI':q.mbti.replace(/-/g,'·')==='····'?'상관없음':q.mbti.replace(/-/g,'·'),'희망 최소경력':q.minYears?q.minYears+'년 이상':'상관없음',
    '요청 사항':g('요청 사항'),'성명':g('성명'),'생년월일':g('생년월일'),'전화번호':g('전화번호'),'상세주소':g('상세주소'),'주차·현관 안내':g('주차·현관 안내'),'상담 방법':f.querySelector('[name=상담\\ 방법]:checked').value,'이용 경로':g('이용 경로')};
   const payload={form:'match',title:'번개매칭 신청',labels:Object.keys(v),values:v,page:location.pathname,lang:(document.cookie.match(/googtrans=\/ko\/([\w-]+)/)||[])[1]||'ko'};
   const btn=f.querySelector('[type=submit]');btn.disabled=true;msg.className='fmsg';msg.textContent='전송 중입니다…';
@@ -149,7 +159,7 @@ function done(test){
  <p>${pick?`<b>${esc(pick.name)} 선생님</b> 매칭 요청을`:'매칭 요청을'} 받았어요.<br>기관에서 선택하신 방법으로 연락드려 상담한 뒤 <b>최종 확정</b>해 드립니다.</p>
  ${test?'<p class="fnote">접수처가 아직 연결되지 않아 실제로 전송되지는 않았습니다.</p>':''}
  <button class="btn" type="button" id="m-again">처음으로</button></div>`;
- root.querySelector('#m-again').onclick=()=>{q={service:'',region:'',start:'',end:'',traits:[],extras:[]};pick=null;step1()};
+ root.querySelector('#m-again').onclick=()=>{q={service:[],region:'',start:'',end:'',traits:[],extras:[],mbti:'----',minYears:''};pick=null;step1()};
 }
 step1();
 })();

@@ -123,3 +123,7 @@ section.blk h2{font-size:1.5rem}
 .hint{display:block;color:var(--mute);margin-top:4px}
 .mdone{text-align:center}.mdone .ok{width:60px;height:60px;line-height:60px;border-radius:50%;background:var(--green);color:#fff;font-size:1.8rem;margin:0 auto 14px}
 @media(max-width:640px){.cal-months{grid-template-columns:1fr}.cal-months .cal-m:nth-child(2){display:none}.tcard{flex-wrap:wrap}.tcard .btn{width:100%}.mstep li{font-size:.78rem;padding:6px}.mstep b{display:none}.mcard{padding:20px}}
+.fgh{margin:26px 0 12px;padding-top:18px;border-top:1px solid var(--sand);color:var(--green-d);font-size:1rem}.fgh:first-of-type{margin-top:0;border-top:0;padding-top:0}
+.mbti{display:grid;grid-template-columns:repeat(4,auto);gap:8px 18px;justify-content:start}.mbti .chips{flex-wrap:nowrap}
+.tag.ok{background:#e8f2ef}
+@media(max-width:640px){.mbti{grid-template-columns:repeat(2,auto)}}
