@@ -7,6 +7,7 @@ const I={
  note:'<path d="M5 3h11l3 3v15H5zM9 9h6M9 13h6M9 17h3"/><path d="M15 3v4h4"/>',
  bolt:'<path d="M13 2L4 14h7l-1 8 9-12h-7z"/>',
  school:'<path d="M3 10l9-6 9 6M5 10v10M19 10v10M9 20v-6h6v6M3 20h18"/><path d="M12 4V2l3 1-3 1M12 8.5h.01"/>',
+ branch:'<path d="M12 21s-6-5.5-6-11a6 6 0 0 1 12 0c0 5.5-6 11-6 11z"/><circle cx="12" cy="10" r="2"/>',
  shop:'<path d="M4 8h16l-1 12H5zM8 8a4 4 0 0 1 8 0"/><path d="M12 12c-2 1-2 3 0 5 2-2 2-4 0-5z"/>'
 };
 const PAGES=[
@@ -17,14 +18,15 @@ const PAGES=[
  ['growth-note.html','성장노트','note','불편과 의견을 해결하고, 개선으로 키워가는 공간'],
  ['match.html','번개매칭','bolt','급할 때 가장 빠르게 연결해 드립니다'],
  ['academy.html','평생교육원','school','돌봄 전문가를 위한 교육과 자격 과정'],
- ['shop.html','우리마켓','shop','친환경 육아용품 · 세제용품']
+ ['branch.html','지사모집','branch','함께 따사로운을 키워갈 지사장님을 모십니다'],
+ ['shop.html','따사마켓','shop','친환경 육아용품 · 세제용품']
 ];
 const svg=k=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${I[k]}</svg>`;
 const cur=location.pathname.split('/').pop()||'index.html';
 document.body.insertAdjacentHTML('afterbegin',`<header class="site"><div class="wrap">
- <a class="logo" href="index.html">(기관명)<small>돌봄 · 교육 · 나눔</small></a>
+ <a class="logo" href="index.html">따사로운<small>돌봄 · 교육 · 나눔</small></a>
  <nav class="main">${PAGES.map(p=>`<a href="${p[0]}" class="${cur===p[0]?'on':''}" title="${p[1]}">${svg(p[2])}<span>${p[1]}</span></a>`).join('')}</nav></div></header>`);
-document.body.insertAdjacentHTML('beforeend',`<footer class="site"><div class="wrap"><b>(기관명)</b><br>주소: (입력) · 전화: (입력) · 이메일: (입력)<br>사업자등록번호: (입력) · 대표: (입력)<br>© 2026 All rights reserved.</div></footer>`);
+document.body.insertAdjacentHTML('beforeend',`<footer class="site"><div class="wrap"><b>따사로운 통합서비스</b> 사업자등록번호: (입력) · 대표: (입력)<br><b>따사로운 평생교육원</b> 사업자등록번호: (입력) · 대표: (입력)<br>주소: (입력) · 전화: (입력) · 이메일: (입력)<br>© 2026 All rights reserved.</div></footer>`);
 const grid=document.getElementById('menu-cards');
 if(grid)grid.innerHTML=PAGES.map(p=>`<a class="card" href="${p[0]}">${svg(p[2])}<h3>${p[1]}</h3><p>${p[3]}</p></a>`).join('');
 const ph=document.getElementById('pagehead');

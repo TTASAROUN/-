@@ -37,3 +37,4 @@ a.card:hover{transform:translateY(-3px);transition:.2s}
 footer.site{background:var(--green-d);color:#cfe3dd;padding:32px 0;font-size:.88rem;margin-top:40px}
 footer.site b{color:#fff}
 @media(max-width:640px){.hero h1{font-size:1.6rem}nav.main a span{display:none}nav.main a{padding:8px}}
+.tabs{display:flex;gap:8px;margin-bottom:12px}.tabs button{border:0;background:var(--sand);padding:8px 18px;border-radius:999px;font:inherit;cursor:pointer;color:var(--mute)}.tabs button.on{background:var(--green);color:#fff}
