@@ -9,6 +9,7 @@ const I={
  bolt:'<path d="M13 2L4 14h7l-1 8 9-12h-7z"/>',
  school:'<path d="M3 10l9-6 9 6M5 10v10M19 10v10M9 20v-6h6v6M3 20h18"/><path d="M12 4V2l3 1-3 1M12 8.5h.01"/>',
  branch:'<path d="M12 21s-6-5.5-6-11a6 6 0 0 1 12 0c0 5.5-6 11-6 11z"/><circle cx="12" cy="10" r="2"/>',
+ couple:'<circle cx="8" cy="8" r="3"/><circle cx="16.5" cy="9" r="2.5"/><path d="M2.5 20c.5-4 3-6 5.5-6s5 2 5.5 6M14.5 14.5c2.5-.5 5.5 1 6 5.5"/>',
  shop:'<path d="M4 8h16l-1 12H5zM8 8a4 4 0 0 1 8 0"/><path d="M12 12c-2 1-2 3 0 5 2-2 2-4 0-5z"/>'
 };
 const PAGES=[
@@ -17,6 +18,7 @@ const PAGES=[
  ['infant.html','영유아 관리사','baby','영유아 성장 단계에 맞춘 안전한 돌봄'],
  ['housekeeping.html','가사관리','home','깔끔하고 믿을 수 있는 가사 서비스'],
  ['organize.html','정리수납','organize','공간을 정돈해 일상을 가볍게'],
+ ['class.html','응애맘빠','couple','출산을 준비하는 예비부부만을 위한 우리 가족 준비 교실'],
  ['growth-note.html','성장노트','note','불편과 의견을 해결하고, 개선으로 키워가는 공간'],
  ['match.html','번개매칭','bolt','급할 때 가장 빠르게 연결해 드립니다'],
  ['academy.html','평생교육원','school','돌봄 전문가를 위한 교육과 자격 과정'],
@@ -27,11 +29,11 @@ const svg=k=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-
 const cur=location.pathname.split('/').pop()||'index.html';
 const CARE=['maternity.html','infant.html','housekeeping.html','organize.html'];
 const link=p=>`<a href="${p[0]}" class="${cur===p[0]?'on':''}">${p[1]}</a>`;
-const care=PAGES.filter(p=>CARE.includes(p[0])),rest=PAGES.filter(p=>!CARE.includes(p[0]));
+const care=PAGES.filter(p=>CARE.includes(p[0])),rest=PAGES.filter(p=>!CARE.includes(p[0])&&p[0]!=='about.html');
 const byName=n=>PAGES.find(p=>p[0]===n);
 const topNav=['about.html'].map(byName).map(link).join('')+
  `<div class="dd"><a href="#" class="${CARE.includes(cur)?'on':''}">돌봄 서비스 ▾</a><div class="ddm">${care.map(link).join('')}</div></div>`+
- ['growth-note.html','match.html','academy.html','shop.html','branch.html'].map(byName).map(link).join('');
+ ['class.html','growth-note.html','match.html','academy.html','shop.html','branch.html'].map(byName).map(link).join('');
 document.body.insertAdjacentHTML('afterbegin',`<header class="site"><div class="wrap">
  <a class="logo" href="index.html">따사로운</a><nav class="main">${topNav}</nav></div></header>`);
 document.body.insertAdjacentHTML('beforeend',`<footer class="site"><div class="wrap"><b>따사로운 통합서비스</b> 사업자등록번호: (입력) · 대표: (입력)<br><b>따사로운 평생교육원</b> 사업자등록번호: (입력) · 대표: (입력)<br>주소: (입력) · 전화: (입력) · 이메일: (입력)<br>www.ttassaroun.co.kr<br>© 2026 All rights reserved.</div></footer>`);
