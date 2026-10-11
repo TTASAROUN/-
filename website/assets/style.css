@@ -184,3 +184,6 @@ html{scroll-behavior:smooth;scroll-padding-top:130px}
 
 .dd.open .ddm{display:block}
 .dd>a::after{content:'';display:inline-block;margin-left:6px;border:4px solid transparent;border-top-color:currentColor;border-bottom:0;vertical-align:middle}
+.pagehead .wrap.has-emblem{display:flex;align-items:center;justify-content:space-between;gap:24px}
+.pg-emblem{flex:none;max-width:38%;height:auto}
+@media(max-width:640px){.pagehead .wrap.has-emblem{flex-direction:column;align-items:flex-start}.pg-emblem{max-width:180px}}
