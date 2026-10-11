@@ -10,7 +10,7 @@ const FORMS={
   {k:'서비스',t:'select',o:SVC},{k:'이름'},{k:'연락처',t:'tel'},{k:'지역',ph:'예: 서울 강남구'},{k:'희망 시작일',ph:'예: 11월 초 / 출산 예정일',opt:1},{k:'문의 내용',t:'textarea',opt:1}]},
  growth:{title:'성장노트에 의견 남기기',btn:'의견 남기기',f:[
   {k:'구분',t:'select',o:['칭찬','불편','제안']},{k:'서비스',t:'select',o:SVC.concat(['응애맘빠','평생교육원','따사마켓','기타'])},{k:'내용',t:'textarea',ph:'어떤 일이 있었는지 편하게 적어 주세요.'},
-  {k:'표시 이름(선택)',ph:'공개 시 보여질 이름 (예: 김OO 고객님)',opt:1},{k:'연락처(선택)',t:'tel',ph:'처리 결과를 안내받으실 번호 (비공개)',opt:1},
+  {k:'사진 첨부',t:'file',opt:1},{k:'표시 이름(선택)',ph:'공개 시 보여질 이름 (예: 김OO 고객님)',opt:1},{k:'연락처(선택)',t:'tel',ph:'처리 결과를 안내받으실 번호 (비공개)',opt:1},
   {k:'공개 동의',t:'select',o:['개인정보를 가리고 사례로 공개해도 좋습니다','공개하지 말아 주세요']}],
   note:'접수된 의견은 삭제하지 않고 처리 과정과 결과를 기록합니다. 공개 시 이름·연락처 등 개인정보는 가려집니다.'},
  class:{title:'응애맘빠 참가 신청',btn:'참가 신청하기',f:[
@@ -19,28 +19,38 @@ const FORMS={
  branch:{title:'지사 문의',btn:'문의하기',f:[
   {k:'이름'},{k:'연락처',t:'tel'},{k:'희망 지역'},{k:'관련 경력/현재 사업',opt:1,t:'textarea'},{k:'문의 내용',t:'textarea',opt:1}]},
  academy:{title:'수강 문의',btn:'수강 문의하기',f:[
-  {k:'과정',t:'select',o:['산모신생아 건강관리사 양성','영유아 관리사 양성','가사관리 실무','기타']},{k:'이름'},{k:'연락처',t:'tel'},{k:'문의 내용',t:'textarea',opt:1}]}
+  {k:'과정',t:'select',o:()=>(window.COURSES||[]).map(c=>c.name).concat(['기타'])},{k:'내일배움카드',t:'select',o:['있어요(소지)','없어요(발급 필요)','발급 신청 중','잘 모르겠어요']},{k:'이름'},{k:'연락처',t:'tel'},{k:'문의 내용',t:'textarea',opt:1}]}
 };
 // 접수 전송 (다른 스크립트에서도 사용): 접수처 미연결이면 'test', 성공이면 'ok'
 async function send(payload){
  if(!CFG.endpoint){
   payload.ts=Date.now();
-  try{const q=JSON.parse(localStorage.getItem('ttasa_test')||'[]');q.push(payload);localStorage.setItem('ttasa_test',JSON.stringify(q))}catch(e){}
+  const slim=Object.assign({},payload,{fileCount:(payload.files||[]).length});delete slim.files;
+  try{const q=JSON.parse(localStorage.getItem('ttasa_test')||'[]');q.push(slim);localStorage.setItem('ttasa_test',JSON.stringify(q))}catch(e){}
   await new Promise(r=>setTimeout(r,500));return 'test';
  }
- const r=await fetch(CFG.endpoint,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload)});
+ const body=Object.assign({},payload);delete body.thumbs;
+ const r=await fetch(CFG.endpoint,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(body)});
  const j=await r.json();if(!j.ok)throw new Error(j.error||'fail');return 'ok';
 }
 window.TtasaSend=send;
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const MAXF=3;
 function field(x,i){
  const id='f'+Math.random().toString(36).slice(2,7),req=x.opt?'':' required';
  const lab=`<label for="${id}">${x.k.replace('(선택)','')}${x.opt?' <em>(선택)</em>':''}</label>`;
  let inp;
- if(x.t==='select')inp=`<select id="${id}" name="${esc(x.k)}"${req}>${x.o.map(o=>`<option>${esc(o)}</option>`).join('')}</select>`;
+ if(x.t==='file')inp=`<div class="upl" data-upl><input id="${id}" name="${esc(x.k)}" type="file" accept="image/*" multiple hidden><label for="${id}" class="btn ghost2 upbtn">사진 선택</label> <span class="hint">최대 ${MAXF}장 · 얼굴, 주소, 전화번호 등 개인정보가 보이지 않게 가려 주세요.</span><div class="thumbs"></div></div>`;
+ else if(x.t==='select')inp=`<select id="${id}" name="${esc(x.k)}"${req}>${(typeof x.o==='function'?x.o():x.o).map(o=>`<option>${esc(o)}</option>`).join('')}</select>`;
  else if(x.t==='textarea')inp=`<textarea id="${id}" name="${esc(x.k)}" rows="4" placeholder="${esc(x.ph||'')}"${req}></textarea>`;
  else inp=`<input id="${id}" name="${esc(x.k)}" type="${x.t||'text'}" placeholder="${esc(x.ph||'')}"${req}>`;
  return `<div class="fld">${lab}${inp}</div>`;
+}
+async function shrink(file,max,q){
+ const url=URL.createObjectURL(file),img=new Image();
+ await new Promise((ok,no)=>{img.onload=ok;img.onerror=no;img.src=url});
+ const draw=m=>{const r=Math.min(1,m/Math.max(img.width,img.height)),c=document.createElement('canvas');c.width=Math.max(1,Math.round(img.width*r));c.height=Math.max(1,Math.round(img.height*r));const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);x.drawImage(img,0,0,c.width,c.height);return c.toDataURL('image/jpeg',q)};
+ const out={name:file.name,type:'image/jpeg',data:draw(max).split(',')[1],thumb:draw(160)};URL.revokeObjectURL(url);return out;
 }
 document.querySelectorAll('[data-form]').forEach(box=>{
  const def=FORMS[box.dataset.form];if(!def)return;
@@ -52,17 +62,34 @@ document.querySelectorAll('[data-form]').forEach(box=>{
  <button class="btn" type="submit">${def.btn}</button><p class="fmsg" role="status"></p></form>`;
  const form=box.querySelector('form'),msg=box.querySelector('.fmsg'),btn=form.querySelector('button');
  if(box.dataset.service){const s=form.querySelector('select');if(s&&SVC.includes(box.dataset.service))s.value=box.dataset.service}
+  box._files=[];
+ const upl=form.querySelector('[data-upl]');
+ if(upl){
+  const inp=upl.querySelector('input'),th=upl.querySelector('.thumbs');
+  const drawT=()=>{th.innerHTML=box._files.map((f,i)=>`<span class="th"><img src="${f.thumb}" alt="첨부 사진 ${i+1}"><button type="button" data-rm="${i}" aria-label="사진 삭제">×</button></span>`).join('')};
+  th.onclick=e=>{const b=e.target.closest('[data-rm]');if(b){box._files.splice(+b.dataset.rm,1);drawT()}};
+  inp.onchange=async()=>{
+   const list=[...inp.files];inp.value='';msg.className='fmsg';msg.textContent='';
+   for(const f of list){
+    if(box._files.length>=MAXF){msg.className='fmsg err';msg.textContent=`사진은 최대 ${MAXF}장까지 첨부할 수 있어요.`;break}
+    if(!/^image\//.test(f.type)&&!/\.(heic|heif)$/i.test(f.name)){msg.className='fmsg err';msg.textContent='이미지 파일만 첨부할 수 있어요.';continue}
+    if(f.size>15*1024*1024){msg.className='fmsg err';msg.textContent='사진 한 장은 15MB 이하여야 해요.';continue}
+    try{box._files.push(await shrink(f,1280,.82))}catch(err){msg.className='fmsg err';msg.textContent='이 사진은 불러올 수 없어요. 다른 사진(JPG, PNG)을 선택해 주세요.'}
+   }
+   drawT();
+  };
+ }
  form.onsubmit=async e=>{
   e.preventDefault();
   if(!form.reportValidity())return;
   if(form._hp&&form._hp.value)return;
-  const values={};def.f.forEach((x,i)=>{const el=form.elements[x.k];values[x.k]=el?el.value.trim():''});
-  const payload={form:box.dataset.form,title:def.title,labels:def.f.map(x=>x.k),values,page:location.pathname,lang:cookieLang()};
+  const values={};def.f.forEach((x,i)=>{const el=form.elements[x.k];values[x.k]=x.t==='file'?(box._files.length?`사진 ${box._files.length}장`:''):(el?el.value.trim():'')});
+  const payload={form:box.dataset.form,title:def.title,labels:def.f.map(x=>x.k),values,page:location.pathname,lang:cookieLang(),files:box._files.map(f=>({name:f.name,type:f.type,data:f.data})),thumbs:box._files.map(f=>f.thumb)};
   btn.disabled=true;msg.className='fmsg';msg.textContent='전송 중입니다…';
   try{
    const res=await send(payload);
    if(res==='test'){msg.className='fmsg warn';msg.textContent='테스트 모드: 아직 접수처가 연결되지 않아 전송되지 않았습니다. (config.js 설정 필요)'}
-   else{form.reset();msg.className='fmsg ok';msg.textContent='접수되었습니다. 확인 후 빠르게 연락드리겠습니다. 감사합니다.'}
+   else{form.reset();box._files=[];const th2=form.querySelector('.thumbs');if(th2)th2.innerHTML='';msg.className='fmsg ok';msg.textContent='접수되었습니다. 확인 후 빠르게 연락드리겠습니다. 감사합니다.'}
   }catch(err){msg.className='fmsg err';msg.textContent='전송에 실패했습니다. 잠시 후 다시 시도하시거나 전화로 문의해 주세요.'}
   btn.disabled=false;
  };

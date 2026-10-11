@@ -139,3 +139,23 @@ section.blk h2{font-size:1.5rem}
 .popf{margin-top:12px;text-align:right}.btn.sm{padding:8px 22px;font-size:.9rem;border:0;font-weight:700;cursor:pointer}
 .pop .mbti{grid-template-columns:repeat(2,auto)}.pop .hint{margin:10px 0 0;font-size:.82rem}
 @media(max-width:640px){.fgrid{grid-template-columns:1fr}.pop,.dd2.right .pop{position:fixed;left:0;right:0;bottom:0;top:auto;width:auto;max-width:none;min-width:0;border-radius:18px 18px 0 0;max-height:82vh;overflow:auto;padding-bottom:22px}.pop.wide{width:auto}}
+
+.upl .hint{font-size:.82rem;color:var(--mute)}.upbtn{display:inline-block;cursor:pointer;padding:8px 18px;border-radius:999px;font-weight:600;font-size:.9rem;background:var(--sand);color:var(--ink)}
+.thumbs{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}.th{position:relative}.th img{width:84px;height:84px;object-fit:cover;border-radius:10px;border:1px solid var(--sand);display:block}
+.th button{position:absolute;top:-6px;right:-6px;width:22px;height:22px;border-radius:50%;border:0;background:#333;color:#fff;cursor:pointer;line-height:1}
+/* 평생교육원 */
+.subnav{background:#fff;border-bottom:1px solid var(--sand);position:sticky;top:68px;z-index:5}
+.subnav .wrap{display:flex;gap:4px;overflow-x:auto;padding-top:6px;padding-bottom:6px}
+.subnav a{white-space:nowrap;padding:7px 14px;border-radius:999px;font-size:.9rem;color:var(--mute)}.subnav a:hover{background:var(--sand);color:var(--green-d)}
+html{scroll-behavior:smooth;scroll-padding-top:130px}
+.prog{position:relative}.smp{display:inline-block;margin-left:6px;font-size:.72rem;color:#b25e1a;background:#fff3e0;padding:1px 8px;border-radius:999px;vertical-align:middle}
+.prog .tl{margin-top:10px}
+.course{background:#fff;border:1px solid var(--sand);border-radius:var(--r);padding:22px;margin-bottom:16px}
+.course header{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;margin-bottom:14px}.course h3{margin:0 0 6px}
+.kv{display:grid;grid-template-columns:90px 1fr;gap:8px 16px;margin:0 0 16px}.kv dt{color:var(--mute);font-size:.9rem}.kv dd{margin:0}
+.tw2{overflow-x:auto}.tw2 table{width:100%;border-collapse:collapse;min-width:560px}.tw2 th{text-align:left;font-size:.82rem;color:var(--mute);padding:8px 10px;border-bottom:1px solid var(--sand)}.tw2 td{padding:9px 10px;border-bottom:1px solid var(--sand)}.tw2 tr:last-child td{border-bottom:0}
+.pill{display:inline-block;padding:1px 10px;border-radius:999px;font-size:.78rem;background:var(--sand);color:var(--green-d)}.pill.o{background:#e3f4ea;color:#1f7a4d}.pill.w{background:#fff1e0;color:#b25e1a}.pill.b{background:#fde8e6;color:#b3261e}
+.btn.sm{padding:8px 18px;font-size:.88rem;border:0;font-weight:700;cursor:pointer}
+.faq details{background:#fff;border:1px solid var(--sand);border-radius:12px;padding:14px 18px;margin-bottom:8px}.faq summary{cursor:pointer;font-weight:600}.faq details p{margin:10px 0 0;color:var(--mute)}
+.lnk{color:var(--green);text-decoration:underline}.mute{color:var(--mute)}
+@media(max-width:640px){.kv{grid-template-columns:1fr}.kv dt{margin-top:6px}.course header{flex-direction:column}}

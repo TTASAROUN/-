@@ -7,6 +7,7 @@ function out(o){ return ContentService.createTextOutput(JSON.stringify(o)).setMi
 function doPost(e){
   try{
     const d = JSON.parse(e.postData.contents);
+    if (d.files && d.files.length) d.values['사진 첨부'] = saveFiles_(d); // 사진은 드라이브에 저장하고 링크를 시트에 기록
     const ss = SpreadsheetApp.getActiveSpreadsheet();
     let sh = ss.getSheetByName(d.form) || ss.insertSheet(d.form);
     const head = ['접수일시'].concat(d.labels, ['언어'], TAIL);
@@ -45,4 +46,19 @@ function matchList_(p){
               traits: (p.traits || '').split(',').filter(Boolean), extras: (p.extras || '').split(',').filter(Boolean),
               ages: (p.ages || '').split(',').filter(Boolean), mbti: p.mbti || '', minYears: p.minYears || '' };
   return out({ ok: true, items: MatchCore.match(rows, q) });
+}
+
+// 첨부 사진: 드라이브 '따사로운 접수 첨부' 폴더에 저장 (직원만 열람, 외부 공개 안 함)
+function saveFiles_(d){
+  const folder = getFolder_(), urls = [];
+  d.files.slice(0, 3).forEach((f, i) => {
+    if (!/^image\//.test(f.type) || String(f.data).length > 8e6) return;
+    const name = Utilities.formatDate(new Date(), 'Asia/Seoul', 'yyMMdd-HHmmss') + '_' + d.form + '_' + (i + 1) + '.jpg';
+    urls.push(folder.createFile(Utilities.newBlob(Utilities.base64Decode(f.data), 'image/jpeg', name)).getUrl());
+  });
+  return urls.join('\n');
+}
+function getFolder_(){
+  const it = DriveApp.getFoldersByName('따사로운 접수 첨부');
+  return it.hasNext() ? it.next() : DriveApp.createFolder('따사로운 접수 첨부');
 }

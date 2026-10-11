@@ -76,7 +76,7 @@ function openD(ts){
  const p=subs().find(x=>String(x.ts)===String(ts));if(!p)return;open=ts;const m=meta()[ts]||{};
  const d=document.getElementById('drawer');
  d.innerHTML=`<div class="bar"><h3 style="margin:0">${NAME[p.form]} · ${esc(who(p))}</h3><button class="btn s" id="dx" style="margin-left:auto">닫기</button></div><p class="mute">${when(p.ts)} 접수${p.demo?' · 예시 데이터':''}</p><div class="bar">상태 ${stSel(p)}</div>
- <dl>${p.labels.map(l=>`<dt>${esc(l)}</dt><dd>${esc(p.values[l]||'-')}</dd>`).join('')}</dl><h4>상담 메모</h4><textarea id="memo" placeholder="통화 내용, 후속 조치 등">${esc(m.memo||'')}</textarea>`;
+ ${(p.thumbs&&p.thumbs.length)?`<div class="bar">${p.thumbs.map(t=>`<img src="${t}" alt="첨부 사진" style="height:84px;border-radius:8px;border:1px solid var(--line)">`).join('')}</div><p class="mute">테스트 모드의 미리보기입니다. 실제 운영에서는 원본(축소본)이 드라이브 폴더에 저장됩니다.</p>`:''}<dl>${p.labels.map(l=>`<dt>${esc(l)}</dt><dd>${esc(p.values[l]||'-')}</dd>`).join('')}</dl><h4>상담 메모</h4><textarea id="memo" placeholder="통화 내용, 후속 조치 등">${esc(m.memo||'')}</textarea>`;
  d.classList.add('open');
 }
 const closeD=()=>{document.getElementById('drawer').classList.remove('open');open=null};
