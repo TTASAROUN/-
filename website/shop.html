@@ -2,5 +2,42 @@
 <html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>따사마켓 | 따사로운</title><link rel="stylesheet" href="assets/style.css"></head><body>
 <div class="pagehead" id="pagehead"></div>
-<section class="blk"><div class="wrap"><div class="note"><b>운영 전 확인 필요</b> 사회서비스 기관의 판매 가능 여부는 법인 유형(비영리/사회적기업 등)·정관상 목적사업·세무 신고에 따라 다릅니다. 통신판매업 신고, 전자상거래법·KC/친환경 인증 표기 등도 필요합니다. 관할 지자체/세무사 확인 후 오픈하세요.</div><h2 style="margin-top:36px">상품 카테고리</h2><div class="grid"><div class="card"><h3>친환경 육아용품</h3><p>준비중</p></div><div class="card"><h3>친환경 세제·청소용품</h3><p>준비중</p></div><div class="card"><h3>산모용품</h3><p>준비중</p></div></div></div></section>
-<script src="assets/site.js"></script></body></html>
+<section class="blk" data-share><div class="wrap">
+ <div class="tabs mtabs"><button type="button" class="on" data-pane-btn="sale">판매 상품</button><button type="button" data-pane-btn="share">무료나눔</button></div>
+
+ <div data-pane-box="sale">
+  <div class="note"><b>운영 전 확인 필요</b> 사회서비스 기관의 판매 가능 여부는 법인 유형(비영리/사회적기업 등)·정관상 목적사업·세무 신고에 따라 다릅니다. 통신판매업 신고, 전자상거래법·KC/친환경 인증 표기 등도 필요합니다. 관할 지자체/세무사 확인 후 오픈하세요.</div>
+  <h2 style="margin-top:36px">상품 카테고리</h2><div class="grid"><div class="card"><h3>친환경 육아용품</h3><p>준비중</p></div><div class="card"><h3>친환경 세제·청소용품</h3><p>준비중</p></div><div class="card"><h3>산모용품</h3><p>준비중</p></div></div>
+ </div>
+
+ <div data-pane-box="share" hidden>
+  <div class="note share-note"><b>무료나눔이란?</b> 쓰임이 끝난 육아·생활용품을 필요한 분께 무료로 나누는 코너입니다. 따사로운이 중간에서 연결해 드리므로 <b>연락처는 서로에게 공개되지 않아요.</b> 판매 목적의 등록은 받지 않습니다.</div>
+  <h2 style="margin-top:32px">나눔 물품</h2>
+  <p class="mute" id="share-demo"></p>
+  <div class="grid share-grid" id="share-list"></div>
+
+  <h2 style="margin-top:40px" id="share-req-h">나눔 받고 싶어요</h2>
+  <p class="mute">위 목록에서 “받고 싶어요”를 누르면 물품명이 자동으로 입력돼요. 신청이 몰리면 먼저 신청하신 분께 안내하고, 직원이 연락드려 수령 방법을 정합니다.</p>
+  <div data-form="shareReq"></div>
+
+  <h2 style="margin-top:40px">나눔 등록하기</h2>
+  <p class="mute">등록하신 물품은 직원이 확인한 뒤 공개됩니다.</p>
+  <div data-form="share"></div>
+
+  <h2 style="margin-top:40px">나눔 안내</h2>
+  <div class="faq">
+   <details><summary>이런 물품은 나눔할 수 없어요</summary><p>사고 이력이 있거나 사용 기한이 지난 카시트, 리콜 대상 제품, 사용한 젖병·젖꼭지·치발기 등 위생·안전 품목, 식품·의약품·화장품, 파손·오염이 심한 물품. (목록은 확정 후 수정)</p></details>
+   <details><summary>어떻게 전달되나요?</summary><p>직원이 나눔 하시는 분과 받으시는 분을 각각 연락해 방법을 정합니다. 직접 방문 수령, 기관 방문 시 전달 등을 선택할 수 있어요. (확정 후 수정)</p></details>
+   <details><summary>물품 상태에 문제가 있으면요?</summary><p>나눔은 개인 간 무상 양도이므로 물품의 하자에 대해 기관이 보증하지는 않습니다. 등록 시 상태를 정확히 적어 주세요. (확정 후 수정)</p></details>
+  </div>
+ </div>
+</div></section>
+<script src="assets/site.js"></script>
+<script>
+(function(){
+ const btns=document.querySelectorAll('[data-pane-btn]'),boxes=document.querySelectorAll('[data-pane-box]');
+ const show=k=>{btns.forEach(b=>b.classList.toggle('on',b.dataset.paneBtn===k));boxes.forEach(x=>x.hidden=x.dataset.paneBox!==k)};
+ btns.forEach(b=>b.onclick=()=>{show(b.dataset.paneBtn);try{history.replaceState(null,'','#'+b.dataset.paneBtn)}catch(e){}});
+ if(location.hash==='#share')show('share');
+})();
+</script></body></html>

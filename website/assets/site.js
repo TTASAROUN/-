@@ -76,9 +76,10 @@ function setLang(code){
 })();
 
 // 폼/피드가 있는 페이지에서만 설정과 폼 스크립트를 불러옵니다
-if(document.querySelector('[data-form],[data-feed],[data-match]')){
+if(document.querySelector('[data-form],[data-feed],[data-match],[data-share]')){
  const ld=src=>new Promise(r=>{const e=document.createElement('script');e.src=src;e.onload=r;document.head.appendChild(e)});
  ld('assets/config.js').then(()=>ld('assets/forms.js')).then(()=>{
+  if(document.querySelector('[data-share]'))ld('assets/share.js');
   if(document.querySelector('[data-match]'))ld('assets/holidays.js').then(()=>ld('assets/match-core.js')).then(()=>ld('assets/sample-caregivers.js')).then(()=>ld('assets/match.js'));
  });
 }

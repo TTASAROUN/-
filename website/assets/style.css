@@ -199,3 +199,12 @@ nav.main a.navimg{padding:4px 8px;display:flex;align-items:center}nav.main a.nav
  .logo{order:1}.langbox{order:2;margin-left:auto}nav.main{order:3;width:100%}
  header.site .wrap{padding-top:6px;padding-bottom:2px}
 }
+
+/* 무료나눔 */
+.mtabs{margin-bottom:22px}.mtabs button{font-size:1rem;padding:10px 22px}
+.share-note{margin-bottom:0}
+.share-grid{grid-template-columns:repeat(auto-fill,minmax(230px,1fr))}
+.sh{padding:0;overflow:hidden;display:flex;flex-direction:column}.sh>*:not(.shph){margin-left:18px;margin-right:18px}
+.sh h3{margin:2px 18px 4px}.sh p{margin-top:0;margin-bottom:8px}.sh .btn{margin:6px 18px 18px;align-self:flex-start;border:0;font-weight:700;cursor:pointer}.sh .btn:disabled{background:#c9c3b6;cursor:default}
+.shph{aspect-ratio:4/3;display:grid;place-items:center;margin-bottom:12px;color:#5a6b66;font-size:.9rem}.shph img{width:100%;height:100%;object-fit:cover}
+.sh.done{opacity:.6}.sh .tl{margin-top:0}
