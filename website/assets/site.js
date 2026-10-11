@@ -1,4 +1,5 @@
 // 공통 메뉴/푸터 주입 — 메뉴를 바꾸려면 PAGES만 수정하세요.
+const LANGS=[['ko','한국어'],['en','English'],['zh-CN','中文'],['vi','Tiếng Việt'],['tl','Filipino'],['th','ไทย']];
 const I={
  about:'<path d="M5 21V4h9v17M14 9h5v12M3 21h18M8 8h2M8 12h2M8 16h2"/>',
  mom:'<path d="M12 21s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 11c0 5.6-7 10-7 10z"/>',
@@ -35,10 +36,26 @@ const topNav=['about.html'].map(byName).map(link).join('')+
  `<div class="dd"><a href="#" class="${CARE.includes(cur)?'on':''}">돌봄 서비스 ▾</a><div class="ddm">${care.map(link).join('')}</div></div>`+
  ['class.html','growth-note.html','match.html','academy.html','shop.html','branch.html'].map(byName).map(link).join('');
 document.body.insertAdjacentHTML('afterbegin',`<header class="site"><div class="wrap">
- <a class="logo" href="index.html">따사로운</a><nav class="main">${topNav}</nav></div></header>`);
+ <a class="logo notranslate" href="index.html">따사로운</a><nav class="main">${topNav}</nav><select id="lang" class="lang notranslate" aria-label="Language">${LANGS.map(l=>`<option value="${l[0]}">${l[1]}</option>`).join('')}</select></div></header><div id="gt"></div>`);
 document.body.insertAdjacentHTML('beforeend',`<footer class="site"><div class="wrap"><b>따사로운 통합서비스</b> 사업자등록번호: (입력) · 대표: (입력)<br><b>따사로운 평생교육원</b> 사업자등록번호: (입력) · 대표: (입력)<br>주소: (입력) · 전화: (입력) · 이메일: (입력)<br>www.ttassaroun.co.kr<br>© 2026 All rights reserved.</div></footer>`);
 const card=p=>`<a class="card" href="${p[0]}"><i>${svg(p[2])}</i><h3>${p[1]}</h3><p>${p[3]}</p></a>`;
 const g1=document.getElementById('care-cards');if(g1)g1.innerHTML=care.map(card).join('');
 const g2=document.getElementById('more-cards');if(g2)g2.innerHTML=rest.map(card).join('');
 const ph=document.getElementById('pagehead');
 if(ph){const p=PAGES.find(x=>x[0]===cur);if(p)ph.innerHTML=`<div class="wrap"><h1>${svg(p[2])}${p[1]}</h1><p>${p[3]}</p></div>`}
+
+// ── 다국어(자동번역) ─────────────────────────────
+// 언어를 추가하려면 LANGS에 [구글언어코드, 표시이름]만 넣으면 됩니다. (코드 목록: cloud.google.com/translate/docs/languages)
+// 구글 번역 위젯을 사용하므로 페이지 내용을 수정해도 번역이 자동 반영됩니다. (기계번역 — 계약서·안내문 등 중요 문서는 별도 감수 필요)
+function setLang(code){
+ const c=document.querySelector('.goog-te-combo');
+ if(!c){setTimeout(()=>setLang(code),300);return}
+ c.value=code==='ko'?'':code;c.dispatchEvent(new Event('change'));
+}
+(function(){
+ const sel=document.getElementById('lang');if(!sel)return;
+ const m=document.cookie.match(/googtrans=\/ko\/([\w-]+)/);if(m)sel.value=m[1];
+ sel.onchange=()=>{ if(sel.value==='ko'){document.cookie='googtrans=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/'}setLang(sel.value);};
+ window.googleTranslateElementInit=()=>new google.translate.TranslateElement({pageLanguage:'ko',includedLanguages:LANGS.map(l=>l[0]).filter(c=>c!=='ko').join(','),autoDisplay:false},'gt');
+ const sc=document.createElement('script');sc.src='https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';document.head.appendChild(sc);
+})();

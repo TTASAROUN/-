@@ -56,3 +56,8 @@ section.blk h2{font-size:1.5rem}
 @media(max-width:900px){.g4{grid-template-columns:repeat(2,1fr)}.g3{grid-template-columns:repeat(2,1fr)}
  header.site .wrap{flex-wrap:wrap}nav.main{overflow-x:auto;width:100%;padding-bottom:6px}.ddm{position:static;display:block;box-shadow:none;border:0;padding:0;min-width:0}.dd>a{display:none}.ddm{display:contents}}
 @media(max-width:560px){.g4,.g3{grid-template-columns:1fr}.hero h1{font-size:1.7rem}}
+
+/* 언어 선택 */
+.lang{border:1px solid var(--sand);background:#fff;border-radius:8px;padding:7px 8px;font:inherit;font-size:.9rem;color:var(--ink);margin-left:6px;cursor:pointer}
+#gt{position:absolute;left:-9999px;top:0}
+.goog-te-banner-frame,.skiptranslate>iframe{display:none!important}body{top:0!important}
