@@ -79,6 +79,6 @@ function setLang(code){
 if(document.querySelector('[data-form],[data-feed],[data-match]')){
  const ld=src=>new Promise(r=>{const e=document.createElement('script');e.src=src;e.onload=r;document.head.appendChild(e)});
  ld('assets/config.js').then(()=>ld('assets/forms.js')).then(()=>{
-  if(document.querySelector('[data-match]'))ld('assets/match-core.js').then(()=>ld('assets/sample-caregivers.js')).then(()=>ld('assets/match.js'));
+  if(document.querySelector('[data-match]'))ld('assets/holidays.js').then(()=>ld('assets/match-core.js')).then(()=>ld('assets/sample-caregivers.js')).then(()=>ld('assets/match.js'));
  });
 }

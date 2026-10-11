@@ -44,7 +44,8 @@ function matchList_(p){
   const rows = v.slice(1).filter(r => r[0]).map(r => { const o = {}; h.forEach((k, i) => o[k] = r[i]); return o; });
   const q = { service: (p.service || '').split(',').filter(Boolean), region: p.region, start: p.start, end: p.end,
               traits: (p.traits || '').split(',').filter(Boolean), extras: (p.extras || '').split(',').filter(Boolean),
-              ages: (p.ages || '').split(',').filter(Boolean), mbti: p.mbti || '', minYears: p.minYears || '' };
+              ages: (p.ages || '').split(',').filter(Boolean),
+              religions: (p.religions || '').split(',').filter(Boolean), virtues: (p.virtues || '').split(',').filter(Boolean), needHoliday: p.needHoliday || '', mbti: p.mbti || '', minYears: p.minYears || '' };
   return out({ ok: true, items: MatchCore.match(rows, q) });
 }
 

@@ -2,6 +2,8 @@
 // 수정하면 apps-script/Match.gs 에도 동일하게 복사하세요: cp assets/match-core.js ../apps-script/Match.gs
 (function(root){
 var SVC={'산후관리사':'산후관리사','영유아 관리사':'영유아관리사','가사관리사':'가사관리사','정리수납전문가':'정리수납전문가','이유식전문가':'이유식전문가'};
+// 관리사 덕목(평가 항목). 시트의 '평가_덕목명' 열과 이름이 같아야 합니다. 4·5번째는 임시 — 확정되면 이름만 바꾸세요.
+var VIRTUES=['전문성','청결성','성실성','친절·소통','책임감'];
 var REQUIRED_DOCS=['건강진단서 만료일','범죄경력조회 만료일','아동학대범죄경력 만료일']; // 비어 있거나 기간 내 만료되면 제외
 var OPTIONAL_DOCS=['백일해접종 만료일'];                                                // 값이 있고 만료됐을 때만 제외
 function pad(n){return n<10?'0'+n:''+n}
@@ -20,6 +22,8 @@ function regionOK(cust,list){
   return String(list||'').split(',').some(function(it){var n=it.replace(/\s/g,'');return n&&(n.indexOf(c)>-1||c.indexOf(n)>-1)});
 }
 function ageBand(birth,now){var d=toDate(birth);if(!d)return '';var a=now.getFullYear()-d.getFullYear();return Math.floor(a/10)*10+'대'}
+function dongOf(s){var m=String(s||'').match(/[가-힣0-9]+(동|읍|면)(?![가-힣])/g);return m?m[m.length-1]:''}
+function guOf(s){var m=String(s||'').match(/[가-힣]+(구|군)(?![가-힣])/g);return m?m[m.length-1]:''}
 function maskName(n){n=String(n||'').trim();return n?n.charAt(0)+new Array(n.length).join('○'):'선생님'}
 function csv(v){return String(v||'').split(',').map(function(s){return s.trim()}).filter(Boolean)}
 
@@ -49,28 +53,34 @@ function match(rows,q,now){
     if(extras.indexOf('반려묘')>-1&&(pet==='불가'||pet==='강아지만'))return;
     if(extras.indexOf('다태아')>-1&&!yes(r['다태아가능']))return;
     if(extras.indexOf('먼거리')>-1&&String(r['먼거리가능']||'').trim()!=='가능')return;
-    if(extras.indexOf('휴일')>-1&&!yes(r['휴·공휴일가능']))return;
+    if((extras.indexOf('휴일')>-1||String(q.needHoliday)==='Y')&&!yes(r['휴·공휴일가능']))return;
     if(+q.minYears&&!((+r['경력(년)']||0)>=+q.minYears))return;
     var ages=(q.ages||[]).concat(['50대','60대'].filter(function(b){return extras.indexOf(b)>-1}));
     if(ages.length&&ages.indexOf(band)<0)return;
+    var rel=(q.religions||[]).filter(function(x){return x&&x!=='무관'});
+    if(rel.length&&rel.indexOf(String(r['종교']||'').trim())<0)return; // 종교는 매칭에만 사용, 화면에 노출하지 않음
     // 성향은 거르지 않고 우선순위에만 반영
     var mine=csv(r['성향']),hit=traits.filter(function(t){return mine.indexOf(t)>-1});
     var mp=String(q.mbti||''),mm=String(r['MBTI']||'').toUpperCase(),mSet=0,mHit=0;
     for(var i=0;i<4;i++){if(mp.charAt(i)&&mp.charAt(i)!=='-'){mSet++;if(mm.charAt(i)===mp.charAt(i))mHit++}}
+    var cd=dongOf(q.region),cg=guOf(q.region),home=String(r['거주동']||'').replace(/\s/g,'');
+    var near=cd&&home.indexOf(cd)>-1?2:(cg&&home.indexOf(cg)>-1?1:0);
+    var vir={},vs=0;VIRTUES.forEach(function(v){var n=+r['평가_'+v];if(n){vir[v]=n}});
+    (q.virtues||[]).forEach(function(v){vs+=(vir[v]||0)});
     var tags=[];if(yes(r['자차보유']))tags.push('자차');if(yes(r['야간(입주)가능']))tags.push('야간·입주');if(yes(r['휴·공휴일가능']))tags.push('휴·공휴일');if(yes(r['다태아가능']))tags.push('다태아');if(String(r['먼거리가능']||'').trim()==='가능')tags.push('먼거리');
     var pets=pet==='무관'?'':'반려동물 '+pet;
     out.push({
       id:r['관리번호'],name:maskName(r['성명']),
       services:Object.keys(SVC).filter(function(k){return yes(r[SVC[k]])}),
       years:r['경력(년)'],traits:mine,traitHit:hit,mbti:r['MBTI']||'',strength:r['장점']||'',
-      rating:r['평균평점']||'',age:band,tags:tags,pet:pets,edu:r['학력']||'',school:r['수료기관']||'',mbtiHit:mSet>0?mHit+'/'+mSet:'',mbtiFull:mSet>0&&mHit===mSet,
-      _s:mHit*60+hit.length*100+(+r['평균평점']||0)*10+(+r['경력(년)']||0)
+      rating:r['평균평점']||'',age:band,tags:tags,pet:pets,edu:r['학력']||'',school:r['수료기관']||'',near:near===2?'같은 동네':near===1?'같은 구':'',virtues:vir,mbtiHit:mSet>0?mHit+'/'+mSet:'',mbtiFull:mSet>0&&mHit===mSet,
+      _s:near*80+vs*8+mHit*60+hit.length*100+(+r['평균평점']||0)*10+(+r['경력(년)']||0)
     });
   });
   out.sort(function(a,b){return b._s-a._s});
   return out.slice(0,12).map(function(o){delete o._s;return o});
 }
-var api={match:match,toDate:toDate};
+var api={match:match,toDate:toDate,VIRTUES:VIRTUES};
 if(typeof module!=='undefined'&&module.exports)module.exports=api;
 if(root)root.MatchCore=api;
 })(typeof window!=='undefined'?window:this);
