@@ -34,7 +34,7 @@ const topNav=['about.html'].map(byName).map(link).join('')+
  ['growth-note.html','match.html','academy.html','shop.html','branch.html'].map(byName).map(link).join('');
 document.body.insertAdjacentHTML('afterbegin',`<header class="site"><div class="wrap">
  <a class="logo" href="index.html">따사로운</a><nav class="main">${topNav}</nav></div></header>`);
-document.body.insertAdjacentHTML('beforeend',`<footer class="site"><div class="wrap"><b>따사로운 통합서비스</b> 사업자등록번호: (입력) · 대표: (입력)<br><b>따사로운 평생교육원</b> 사업자등록번호: (입력) · 대표: (입력)<br>주소: (입력) · 전화: (입력) · 이메일: (입력)<br>www.ttasaroun.co.kr<br>© 2026 All rights reserved.</div></footer>`);
+document.body.insertAdjacentHTML('beforeend',`<footer class="site"><div class="wrap"><b>따사로운 통합서비스</b> 사업자등록번호: (입력) · 대표: (입력)<br><b>따사로운 평생교육원</b> 사업자등록번호: (입력) · 대표: (입력)<br>주소: (입력) · 전화: (입력) · 이메일: (입력)<br>www.ttassaroun.co.kr<br>© 2026 All rights reserved.</div></footer>`);
 const card=p=>`<a class="card" href="${p[0]}"><i>${svg(p[2])}</i><h3>${p[1]}</h3><p>${p[3]}</p></a>`;
 const g1=document.getElementById('care-cards');if(g1)g1.innerHTML=care.map(card).join('');
 const g2=document.getElementById('more-cards');if(g2)g2.innerHTML=rest.map(card).join('');
