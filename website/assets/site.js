@@ -25,11 +25,18 @@ const PAGES=[
 ];
 const svg=k=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${I[k]}</svg>`;
 const cur=location.pathname.split('/').pop()||'index.html';
+const CARE=['maternity.html','infant.html','housekeeping.html','organize.html'];
+const link=p=>`<a href="${p[0]}" class="${cur===p[0]?'on':''}">${p[1]}</a>`;
+const care=PAGES.filter(p=>CARE.includes(p[0])),rest=PAGES.filter(p=>!CARE.includes(p[0]));
+const byName=n=>PAGES.find(p=>p[0]===n);
+const topNav=['about.html'].map(byName).map(link).join('')+
+ `<div class="dd"><a href="#" class="${CARE.includes(cur)?'on':''}">돌봄 서비스 ▾</a><div class="ddm">${care.map(link).join('')}</div></div>`+
+ ['growth-note.html','match.html','academy.html','shop.html','branch.html'].map(byName).map(link).join('');
 document.body.insertAdjacentHTML('afterbegin',`<header class="site"><div class="wrap">
- <a class="logo" href="index.html">따사로운<small>돌봄 · 교육 · 나눔</small></a>
- <nav class="main">${PAGES.map(p=>`<a href="${p[0]}" class="${cur===p[0]?'on':''}" title="${p[1]}">${svg(p[2])}<span>${p[1]}</span></a>`).join('')}</nav></div></header>`);
-document.body.insertAdjacentHTML('beforeend',`<footer class="site"><div class="wrap"><b>따사로운 통합서비스</b> 사업자등록번호: (입력) · 대표: (입력)<br><b>따사로운 평생교육원</b> 사업자등록번호: (입력) · 대표: (입력)<br>주소: (입력) · 전화: (입력) · 이메일: (입력)<br>© 2026 All rights reserved.</div></footer>`);
-const grid=document.getElementById('menu-cards');
-if(grid)grid.innerHTML=PAGES.map(p=>`<a class="card" href="${p[0]}">${svg(p[2])}<h3>${p[1]}</h3><p>${p[3]}</p></a>`).join('');
+ <a class="logo" href="index.html">따사로운</a><nav class="main">${topNav}</nav></div></header>`);
+document.body.insertAdjacentHTML('beforeend',`<footer class="site"><div class="wrap"><b>따사로운 통합서비스</b> 사업자등록번호: (입력) · 대표: (입력)<br><b>따사로운 평생교육원</b> 사업자등록번호: (입력) · 대표: (입력)<br>주소: (입력) · 전화: (입력) · 이메일: (입력)<br>www.ttasaroun.co.kr<br>© 2026 All rights reserved.</div></footer>`);
+const card=p=>`<a class="card" href="${p[0]}"><i>${svg(p[2])}</i><h3>${p[1]}</h3><p>${p[3]}</p></a>`;
+const g1=document.getElementById('care-cards');if(g1)g1.innerHTML=care.map(card).join('');
+const g2=document.getElementById('more-cards');if(g2)g2.innerHTML=rest.map(card).join('');
 const ph=document.getElementById('pagehead');
 if(ph){const p=PAGES.find(x=>x[0]===cur);if(p)ph.innerHTML=`<div class="wrap"><h1>${svg(p[2])}${p[1]}</h1><p>${p[3]}</p></div>`}

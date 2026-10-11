@@ -36,5 +36,23 @@ a.card:hover{transform:translateY(-3px);transition:.2s}
 .todo{border:2px dashed #cfc6b3;border-radius:var(--r);padding:28px;text-align:center;color:var(--mute);background:rgba(255,255,255,.5)}
 footer.site{background:var(--green-d);color:#cfe3dd;padding:32px 0;font-size:.88rem;margin-top:40px}
 footer.site b{color:#fff}
-@media(max-width:640px){.hero h1{font-size:1.6rem}nav.main a span{display:none}nav.main a{padding:8px}}
+@media(max-width:640px){.hero h1{font-size:1.6rem}}
 .tabs{display:flex;gap:8px;margin-bottom:12px}.tabs button{border:0;background:var(--sand);padding:8px 18px;border-radius:999px;font:inherit;cursor:pointer;color:var(--mute)}.tabs button.on{background:var(--green);color:#fff}
+
+/* v2 정돈 */
+header.site .wrap{flex-wrap:nowrap;min-height:68px}
+.logo{font-size:1.4rem;letter-spacing:-.02em;white-space:nowrap}
+nav.main{gap:2px;align-items:center}
+nav.main a{padding:8px 12px;font-size:.95rem;color:var(--ink);border-radius:8px;white-space:nowrap}
+nav.main a:hover,nav.main a.on{background:var(--sand);color:var(--green-d)}
+.dd{position:relative}.ddm{display:none;position:absolute;top:100%;left:0;background:#fff;border:1px solid var(--sand);border-radius:12px;padding:6px;min-width:190px;box-shadow:0 8px 24px rgba(0,0,0,.08)}
+.dd:hover .ddm,.dd:focus-within .ddm{display:block}.ddm a{display:block}
+.card{box-shadow:none;border:1px solid var(--sand)}
+.card i{display:grid;place-items:center;width:52px;height:52px;border-radius:14px;background:#e8f2ef;margin-bottom:14px}
+.card i svg{width:26px;height:26px;margin:0}
+.g4{grid-template-columns:repeat(4,1fr)}.g3{grid-template-columns:repeat(3,1fr)}
+.hero{padding:96px 0}.hero h1{font-size:2.6rem;letter-spacing:-.02em}
+section.blk h2{font-size:1.5rem}
+@media(max-width:900px){.g4{grid-template-columns:repeat(2,1fr)}.g3{grid-template-columns:repeat(2,1fr)}
+ header.site .wrap{flex-wrap:wrap}nav.main{overflow-x:auto;width:100%;padding-bottom:6px}.ddm{position:static;display:block;box-shadow:none;border:0;padding:0;min-width:0}.dd>a{display:none}.ddm{display:contents}}
+@media(max-width:560px){.g4,.g3{grid-template-columns:1fr}.hero h1{font-size:1.7rem}}
