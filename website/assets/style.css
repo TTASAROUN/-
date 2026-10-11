@@ -167,3 +167,17 @@ html{scroll-behavior:smooth;scroll-padding-top:130px}
 .chip input:disabled+span{opacity:.4;cursor:not-allowed}
 .hit.near{background:#e3f4ea;color:#1f7a4d}
 .vr{display:flex;gap:6px;flex-wrap:wrap;margin:4px 0 !important}.vr span{font-size:.75rem;background:#f3f1ea;border-radius:6px;padding:1px 8px;color:var(--mute)}.vr span.on{background:#fff3e0;color:#b25e1a}.vr b{color:var(--ink)}
+
+/* 공정서비스 권리 안내 */
+.fair{background:var(--green-d);color:#fff;padding:56px 0}
+.fair-eyebrow{margin:0 0 10px;letter-spacing:.12em;font-size:.85rem;color:#a8d3c7}
+.fair h2{margin:0 0 28px;font-size:1.8rem;line-height:1.4;color:#fff;text-wrap:balance}
+.fair-pair{display:grid;grid-template-columns:1fr auto 1fr;gap:18px;align-items:center;margin-bottom:34px}
+.fair-pair p{margin:0;background:#ffffff14;border:1px solid #ffffff26;border-radius:16px;padding:22px;font-size:1.02rem}
+.fair-pair b{color:#ffd9b8}.fair-pair span{font-weight:700;color:#a8d3c7}
+.fair-list{margin:0 0 28px;padding:0;list-style:none;display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+.fair-list li{background:#00000022;border-radius:14px;padding:18px 20px;font-size:.95rem;color:#e3f0ec}.fair-list b{display:block;color:#fff;margin-bottom:4px}
+.fair-list a{color:#ffd9b8;text-decoration:underline}
+.fair-no{background:#fff;color:var(--ink);border-radius:16px;padding:24px}.fair-no h3{margin:0 0 10px;color:var(--green-d)}
+.fair-no ul{margin:0 0 12px;padding-left:20px;columns:2;column-gap:28px}.fair-no li{margin-bottom:4px}.fair-no p{margin:0;color:var(--mute);font-size:.92rem}
+@media(max-width:760px){.fair-pair{grid-template-columns:1fr;text-align:center}.fair-list{grid-template-columns:1fr}.fair-no ul{columns:1}.fair h2{font-size:1.4rem}}
