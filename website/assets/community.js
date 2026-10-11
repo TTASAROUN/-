@@ -12,7 +12,13 @@ const B=[
  {k:'wear',n:'입고파',i:'wear',d:'산모들이 편하게 입는 옷·수유복 추천'},
  {k:'give',n:'주고파',i:'give',d:'쓰던 육아용품을 무료로 나눠요 (따사마켓 무료나눔과 같은 코너예요)'},
  {k:'want',n:'받고파',i:'get',d:'필요한 육아·가정 용품을 알려 주세요'},
- {k:'talk',n:'공유파',i:'talk',d:'육아 고민과 소소한 에피소드를 나눠요'}];
+ {k:'talk',n:'공유파',i:'talk',d:'육아 고민과 소소한 에피소드를 나눠요'},
+ {k:'vent',n:'털어놓고파',i:'heartic',d:'힘든 마음, 서운한 마음을 편하게 털어놓는 곳 (익명 가능)'},
+ {k:'meet',n:'만나고파',i:'couple',d:'같은 달에 출산한 맘, 같은 동네 맘, 또래 육아 친구를 만나요'},
+ {k:'know',n:'알고파',i:'ask',d:'궁금한 것을 묻고, 동네 정보와 병원·센터 후기를 나눠요'},
+ {k:'tip',n:'챙기고파',i:'tip',d:'출산 준비물 체크리스트와 알아두면 좋은 지원 정보'}];
+// 이번 주 이야기: 직원이 매주 바꿔 쓰는 질문 (공유파 글쓰기로 연결)
+const WEEKLY={q:'출산 후 가장 고마웠던 한마디, 있으신가요?',board:'talk'};
 const byName=n=>(B.find(b=>b.n===n)||{}).k;
 const today=()=>new Date().toISOString().slice(0,10);
 const md=d=>String(d||'').slice(5).replace('-','.');
@@ -32,13 +38,19 @@ const SAMPLE=[
  S('wear','임신 후기 편한 레깅스','달님맘','배를 안 조이고 신축성이 좋아요.','품목: 임산부 레깅스 · 시기: 임신 중','2026-09-28'),
  S('want','아기 욕조 구해요','새싹맘','신생아용 욕조 필요해요. 깨끗한 것이면 괜찮아요.','받고 싶은 물품: 아기 욕조 · 분류: 생활·주방용품 · 동네: 서울 강남구 개포동','2026-10-09'),
  S('want','수유 쿠션 받고 싶어요','별빛맘','출산 한 달 전인데 수유 쿠션이 없어요.','받고 싶은 물품: 수유 쿠션 · 분류: 수유용품 · 동네: 서울 서초구 방배동','2026-10-04'),
+ S('vent','밤마다 눈물이 나요','익명','아기는 예쁜데 이유 없이 눈물이 나고 혼자인 것 같아요. 괜찮다는 말이 듣고 싶었어요.','말머리: 힘들어요','2026-10-10'),
+ S('meet','2027년 3월 출산 예정 맘 모여요','봄맘','같은 달 출산 맘끼리 정보도 나누고 응원도 하고 싶어요.','모임 종류: 같은 달 출산 맘 · 출산(예정)월: 2027년 3월 · 지역: 서울 송파구','2026-10-09'),
+ S('meet','강남구 6개월 아기 산책 친구 구해요','구름맘','주 1~2회 평일 오전에 같이 산책해요.','모임 종류: 같은 동네 맘 · 출산(예정)월: 2026년 4월 · 지역: 서울 강남구','2026-10-04'),
+ S('know','부모급여는 어디서 신청하나요?','초보맘','출산하고 나서 어떤 서류가 필요한지 궁금해요.','글 종류: 질문','2026-10-08'),
+ S('know','송파구 야간 진료하는 소아과 정보 나눠요','도담맘','저희가 가본 곳은 접수 마감이 빨랐어요. 가시기 전 전화로 꼭 확인하세요.','글 종류: 병원·센터 후기 · 지역: 서울 송파구','2026-10-06'),
  S('talk','밤수유 너무 힘들 때 어떻게 버티세요?','수면부족','새벽 3시마다 깨니 정신이 없어요. 노하우 공유해요.','말머리: 고민','2026-10-10'),
  S('talk','오늘 아기가 처음 뒤집었어요!','행복맘','100일 지나서 드디어 해냈어요. 영상 찍느라 정신없었어요.','말머리: 자랑','2026-10-08')
 ];
 const SC={}; // 글번호 → 댓글들
 const addC=(pid,n,b,dt)=>{(SC[pid]=SC[pid]||[]).push({pid,nick:n,body:b,date:dt})};
 let posts=SAMPLE,comments=[],mine=[],mineC=[],demo=true,tab=(location.hash||'').slice(1)||'all',writing=false;
-SAMPLE.forEach(p=>{if(p.title.startsWith('밤수유')){addC(p.id,'새벽맘','저는 남편이랑 교대로 자요. 3시간만 자도 훨씬 나아요.','2026-10-10');addC(p.id,'도담맘','수유 텀을 기록해 보면 패턴이 보이더라고요.','2026-10-10')}if(p.title.startsWith('아기 욕조'))addC(p.id,'따사로운','주고파 게시판에 나눔 물품이 올라오면 연결해 드릴게요.','2026-10-09')});
+SAMPLE.forEach(p=>{if(p.title.startsWith('밤수유')){addC(p.id,'새벽맘','저는 남편이랑 교대로 자요. 3시간만 자도 훨씬 나아요.','2026-10-10');addC(p.id,'도담맘','수유 텀을 기록해 보면 패턴이 보이더라고요.','2026-10-10')}if(p.title.startsWith('밤마다 눈물'))addC(p.id,'따사로운','혼자 견디지 않으셔도 돼요. 오늘 많이 힘드셨죠. 필요하시면 상담 연결도 도와드릴게요.','2026-10-10');
+  if(p.title.startsWith('아기 욕조'))addC(p.id,'따사로운','주고파 게시판에 나눔 물품이 올라오면 연결해 드릴게요.','2026-10-09')});
 
 function tilesHTML(){return B.map(b=>`<button type="button" class="cm-tile${tab===b.k?' on':''}" data-tab="${b.k}">${svg(b.i)}<span>${b.n}</span></button>`).join('')}
 const cmts=pid=>(SC[pid]||[]).concat(comments.filter(c=>c.pid===pid),mineC.filter(c=>c.pid===pid));
@@ -56,18 +68,51 @@ function card(p){
 }
 function listHTML(){
  const all=mine.concat(posts).sort((a,b)=>(b.pending?1:0)-(a.pending?1:0)||String(b.date).localeCompare(String(a.date)));
- const L=tab==='all'?all:all.filter(p=>byName(p.boardName)===tab);
+ let L=tab==='all'?all:all.filter(p=>byName(p.boardName)===tab);
+ if(tab==='meet'&&monthF)L=L.filter(p=>(p.detail||'').includes(monthF));
  return L.length?L.map(card).join(''):'<div class="todo">아직 글이 없어요. 첫 글을 남겨 보세요.</div>';
+}
+const CHECK=[
+ {t:'입원 가방 (엄마)',items:['신분증·산모수첩','산모용 속옷·수유 브라','수유 패드','수면 양말·가디건','세면도구','핸드폰 충전기(긴 줄)','물티슈·생리대']},
+ {t:'신생아 용품',items:['배냇저고리·내의','속싸개·겉싸개','손싸개·발싸개','기저귀(신생아용)','거즈 손수건','젖병·소독 도구','카시트(퇴원 시)']},
+ {t:'산후 회복·마음 챙기기',items:['산후 도움 계획(가족·관리사)','산후 식사 준비 방법','지원 제도 확인(지자체)','수면 교대 계획','믿을 만한 상담 연락처','나만의 쉬는 시간 정하기']}];
+const chk=()=>{try{return JSON.parse(localStorage.getItem('ttasa_checks')||'{}')}catch(e){return {}}};
+function tipHTML(){
+ const st=chk();
+ return `<div class="tip-grid">${CHECK.map((g,gi)=>`<section class="tip-card"><h3>${esc(g.t)} <small class="mute" data-prog="${gi}"></small></h3>${g.items.map((it,ii)=>`<label class="tip-i"><input type="checkbox" data-c="${gi}-${ii}"${st[gi+'-'+ii]?' checked':''}><span>${esc(it)}</span></label>`).join('')}</section>`).join('')}</div>
+ <p class="mute" style="font-size:.85rem">체크 표시는 이 기기의 브라우저에만 저장돼요. 준비물은 병원·가정 상황에 따라 달라질 수 있어요.</p>
+ <div class="grid g3" style="margin-top:16px"><div class="card"><h3>지원 제도 확인</h3><p>임신·출산·육아 지원은 지자체마다 달라요. <a class="lnk" href="https://www.bokjiro.go.kr" target="_blank" rel="noopener">복지로</a>, <a class="lnk" href="https://www.childcare.go.kr" target="_blank" rel="noopener">아이사랑</a>에서 확인하세요. 보건복지상담센터 <b>129</b></p></div>
+ <div class="card"><h3>산후 도움 받기</h3><p>산모·신생아 건강관리사 서비스가 궁금하시면 <a class="lnk" href="maternity.html">서비스 안내</a>를 확인하시거나 <a class="lnk" href="match.html">번개매칭</a>을 이용해 보세요.</p></div>
+ <div class="card"><h3>마음이 힘들 때</h3><p>혼자 견디지 마세요. 정신건강 위기상담 <b>1577-0199</b>, 자살예방상담 <b>109</b>, 응급 <b>119</b> (번호는 변경될 수 있어요)</p></div></div>`;
 }
 function giveHTML(){return `<p class="mute" id="share-demo"></p><div class="grid share-grid" id="share-list"></div>
  <h3 style="margin:28px 0 8px">나눔 받고 싶어요</h3><div data-form="shareReq"></div>
  <h3 style="margin:28px 0 8px">나눔 등록하기</h3><div data-form="share"></div>`}
+let monthF='';
+function extraTop(b){
+ let h='';
+ if(b.k==='all'||b.k===WEEKLY.board)h+=`<div class="weekly"><span class="pill">이번 주 이야기</span><b>${esc(WEEKLY.q)}</b><button type="button" class="btn sm" id="wk-go">내 이야기 남기기</button></div>`;
+ if(b.k==='vent')h+=`<div class="help-box"><b>혼자 견디지 마세요.</b> 정신건강 위기상담 <b>1577-0199</b> · 자살예방상담 <b>109</b> · 응급 <b>119</b><br><small>여기 글은 직원이 먼저 확인하고, 마음이 많이 힘들어 보이는 글에는 따뜻한 댓글과 상담 연결을 도와드려요.</small></div>`;
+ if(b.k==='meet'){
+  if(CFG.openChatUrl)h+=`<div class="weekly"><b>오픈채팅으로 바로 이야기해요</b><a class="btn sm" href="${esc(CFG.openChatUrl)}" target="_blank" rel="noopener">오픈채팅 입장</a></div>`;
+  const ms=[...new Set(mine.concat(posts).filter(p=>byName(p.boardName)==='meet').map(p=>((p.detail||'').match(/출산\(예정\)월: ([^·]+)/)||[])[1]).filter(Boolean).map(x=>x.trim()))];
+  if(ms.length)h+=`<div class="chips" style="margin-bottom:12px"><label class="chip"><input type="radio" name="mf" value=""${monthF?'':' checked'}><span>전체</span></label>${ms.map(m=>`<label class="chip"><input type="radio" name="mf" value="${esc(m)}"${monthF===m?' checked':''}><span>${esc(m)}</span></label>`).join('')}</div>`;
+ }
+ return h;
+}
+function bindExtra(){
+ const g=document.getElementById('wk-go');
+ if(g)g.onclick=()=>{tab=WEEKLY.board;render();const w=document.getElementById('cm-write');if(w){w.click();setTimeout(()=>{const t=document.querySelector('[data-form=post_'+WEEKLY.board+'] [name=제목]');if(t){t.value='[이번 주 이야기] ';t.focus()}},200)}};
+ root.querySelectorAll('[name=mf]').forEach(r=>r.onchange=()=>{monthF=r.value;document.getElementById('cm-list').innerHTML=listHTML()});
+}
 function render(){
  tiles.innerHTML=tilesHTML();
  const b=B.find(x=>x.k===tab)||B[0];
+ if(b.k==='tip'){root.innerHTML=`<div class="cm-head"><div><h2>${b.n}</h2><p class="mute">${b.d}</p></div></div>${tipHTML()}`;const upd=()=>{CHECK.forEach((g,gi)=>{const n=g.items.filter((_,ii)=>root.querySelector(`[data-c="${gi}-${ii}"]`).checked).length;root.querySelector(`[data-prog="${gi}"]`).textContent=`${n}/${g.items.length}`})};upd();root.querySelectorAll('[data-c]').forEach(i=>i.onchange=()=>{const st=chk();st[i.dataset.c]=i.checked;try{localStorage.setItem('ttasa_checks',JSON.stringify(st))}catch(e){}upd()});return}
  if(b.k==='give'){root.innerHTML=`<div class="cm-head"><div><h2>${b.n}</h2><p class="mute">${b.d}</p></div></div>${giveHTML()}`;window.TtasaInitForms(root);window.TtasaShareInit&&window.TtasaShareInit();return}
  root.innerHTML=`<div class="cm-head"><div><h2>${b.n}</h2><p class="mute">${b.d}${demo?' (아래 글은 화면 확인용 가상 예시예요)':''}</p></div>${b.k!=='all'?'<button type="button" class="btn" id="cm-write">글쓰기</button>':''}</div>
-  <div id="cm-form" hidden></div><div class="cm-list" id="cm-list">${listHTML()}</div>`;
+  ${extraTop(b)}<div id="cm-form" hidden></div><div class="cm-list" id="cm-list">${listHTML()}</div>`;
+ bindExtra();
  const w=document.getElementById('cm-write');
  if(w)w.onclick=()=>{const f=document.getElementById('cm-form');if(!f.hidden){f.hidden=true;return}f.innerHTML=`<div data-form="post_${b.k}"></div>`;f.hidden=false;window.TtasaInitForms(f);f.scrollIntoView({behavior:'smooth',block:'start'})};
 }
@@ -75,7 +120,7 @@ async function load(){
  if(CFG.endpoint){try{const j=await (await fetch(CFG.endpoint+'?list=community')).json();if(j.ok){posts=j.posts.map(p=>Object.assign(p,{board:byName(p.boardName)}));comments=j.comments;demo=false;SAMPLE.length&&Object.keys(SC).forEach(k=>delete SC[k])}}catch(e){}}
  render();
 }
-tiles.onclick=e=>{const t=e.target.closest('[data-tab]');if(!t)return;tab=t.dataset.tab;try{history.replaceState(null,'','#'+tab)}catch(x){}render()};
+tiles.onclick=e=>{const t=e.target.closest('[data-tab]');if(!t)return;tab=t.dataset.tab;monthF='';try{history.replaceState(null,'','#'+tab)}catch(x){}render()};
 root.addEventListener('click',e=>{
  const o=e.target.closest('[data-open]');if(o){const d=o.closest('.post').querySelector('.pd');d.hidden=!d.hidden;return}
  const r=e.target.closest('[data-report]');if(r){r.disabled=true;r.textContent='신고가 접수됐어요. 확인할게요';window.TtasaSend({form:'report',title:'신고',labels:['글번호','대상'],values:{'글번호':r.dataset.report,'대상':'글/댓글'},page:location.pathname}).catch(()=>{})}
