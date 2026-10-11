@@ -23,6 +23,16 @@ const I={
  school:'<path d="M3 10l9-6 9 6M5 10v10M19 10v10M9 20v-6h6v6M3 20h18"/><path d="M12 4V2l3 1-3 1M12 8.5h.01"/>',
  branch:'<path d="M12 21s-6-5.5-6-11a6 6 0 0 1 12 0c0 5.5-6 11-6 11z"/><circle cx="12" cy="10" r="2"/>',
  couple:'<circle cx="8" cy="8" r="3"/><circle cx="16.5" cy="9" r="2.5"/><path d="M2.5 20c.5-4 3-6 5.5-6s5 2 5.5 6M14.5 14.5c2.5-.5 5.5 1 6 5.5"/>',
+ chat:'<path d="M4 5h16v11H9l-5 4z"/><path d="M8 9h8M8 12h5"/>',
+ video:'<rect x="3" y="6" width="13" height="12" rx="2"/><path d="M16 10l5-3v10l-5-3"/><path d="M9.5 14.5c-1.4-1-1.8-2.6-.8-3.3.7-.5 1.4 0 1.8.7.4-.7 1.1-1.2 1.8-.7 1-.1.6 2.3-2.8 3.3z"/>',
+ go:'<path d="M12 21s-6-5.5-6-11a6 6 0 0 1 12 0c0 5.5-6 11-6 11z"/><circle cx="12" cy="10" r="2"/>',
+ play:'<circle cx="8" cy="8" r="3"/><rect x="13" y="13" width="7" height="7" rx="1"/><path d="M4 20l4-6 4 6z"/>',
+ eat:'<path d="M5 9h11v5a5 5 0 0 1-5 5h-1a5 5 0 0 1-5-5zM16 10h2a2 2 0 0 1 0 5h-2M8 3v3M12 3v3"/>',
+ buy:'<path d="M5 8h14l-1 12H6zM9 8V6a3 3 0 0 1 6 0v2"/>',
+ wear:'<path d="M8 4l-5 4 3 3 2-1v10h8V10l2 1 3-3-5-4a4 4 0 0 1-8 0z"/>',
+ give:'<rect x="3" y="9" width="18" height="4" rx="1"/><path d="M5 13v7h14v-7M12 9v11M12 9c-3 0-4-4-1.5-4S12 9 12 9zm0 0c3 0 4-4 1.5-4S12 9 12 9z"/>',
+ get:'<path d="M4 14l3-8h10l3 8v5H4z"/><path d="M4 14h5l1 2h4l1-2h5"/>',
+ talk:'<path d="M4 5h16v11H11l-4 4v-4H4z"/><path d="M8 9h8M8 12h5"/>',
  shop:'<path d="M4 8h16l-1 12H5zM8 8a4 4 0 0 1 8 0"/><path d="M12 12c-2 1-2 3 0 5 2-2 2-4 0-5z"/>'
 };
 const PAGES=[
@@ -31,7 +41,9 @@ const PAGES=[
  ['infant.html','영유아','baby','영유아 성장 단계에 맞춘 안전한 돌봄'],
  ['housekeeping.html','가사관리','home','깔끔하고 믿을 수 있는 가사 서비스'],
  ['organize.html','정리수납','organize','공간을 정돈해 일상을 가볍게'],
- ['class.html','응애맘빠','couple','출산을 준비하는 예비부부만을 위한 우리 가족 준비 교실'],
+ ['class.html','응애맘빠','couple','출산을 준비하는 예비부부만을 위한 우리 가족 준비 교실','예비부부 교실'],
+ ['letter.html','아기에게 영상편지','video','출산 전, 우리 아기에게 남기는 영상편지 · 우리 가족만 볼 수 있어요'],
+ ['community.html','커뮤니티','chat','산모와 엄마들이 함께 나누는 이야기'],
  ['growth-note.html','성장노트','note','불편과 의견을 해결하고, 개선으로 키워가는 공간'],
  ['match.html','번개매칭','bolt','급할 때 가장 빠르게 연결해 드립니다'],
  ['branch.html','지사모집','branch','함께 따사로운을 키워갈 지사장님을 모십니다'],
@@ -41,12 +53,13 @@ const PAGES=[
 const svg=k=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${I[k]}</svg>`;
 const cur=location.pathname.split('/').pop()||'index.html';
 const CARE=['maternity.html','infant.html','housekeeping.html','organize.html'];
-const link=p=>p[0]==='academy.html'?`<a href="${p[0]}" class="navimg ${cur===p[0]?'on':''}" title="${p[1]}" aria-label="${p[1]}"><img src="assets/academy-nav.svg" alt="${p[1]}" height="44"></a>`:`<a href="${p[0]}" class="${cur===p[0]?'on':''}">${p[1]}</a>`;
+const navLabel=p=>p[4]||p[1];
+const link=p=>p[0]==='academy.html'?`<a href="${p[0]}" class="navimg ${cur===p[0]?'on':''}" title="${p[1]}" aria-label="${p[1]}"><img src="assets/academy-nav.svg" alt="${p[1]}" height="44"></a>`:`<a href="${p[0]}" class="${cur===p[0]?'on':''}">${navLabel(p)}</a>`;
 const care=PAGES.filter(p=>CARE.includes(p[0])),rest=PAGES.filter(p=>!CARE.includes(p[0])&&p[0]!=='about.html');
 const byName=n=>PAGES.find(p=>p[0]===n);
-const topNav=['about.html'].map(byName).map(link).join('')+
- `<div class="dd"><a href="#" class="${CARE.includes(cur)?'on':''}">돌봄 서비스</a><div class="ddm">${care.map(link).join('')}</div></div>`+
- ['class.html','growth-note.html','match.html','branch.html','shop.html','academy.html'].map(byName).map(link).join('');
+const ddGroup=(label,list)=>`<div class="dd"><a href="#" class="${list.includes(cur)?'on':''}">${label}</a><div class="ddm">${list.map(byName).map(link).join('')}</div></div>`;
+const one=n=>link(byName(n));
+const topNav=one('about.html')+ddGroup('돌봄 서비스',CARE)+ddGroup('응애맘빠',['class.html','letter.html'])+['community.html','growth-note.html','match.html','branch.html','shop.html','academy.html'].map(one).join('');
 document.body.insertAdjacentHTML('afterbegin',`<header class="site"><div class="wrap">
  <a class="logo notranslate" href="index.html">따사로운</a><nav class="main">${topNav}</nav><div class="langbox notranslate"><button id="lang-btn" type="button" aria-label="Language">${flag("kr")}<small>▾</small></button><div id="lang-menu">${LANGS.map(l=>`<button type="button" data-l="${l[0]}">${flag(l[2])}${l[1]}</button>`).join('')}</div></div></div></header><div id="gt"></div>`);
 document.body.insertAdjacentHTML('beforeend',`<footer class="site"><div class="wrap"><b>따사로운 통합서비스</b> 사업자등록번호: (입력) · 대표: (입력)<br><b>따사로운 평생교육원</b> 사업자등록번호: (입력) · 대표: (입력)<br>주소: (입력) · 전화: (입력) · 이메일: (입력)<br>www.ttassaroun.co.kr<br>© 2026 All rights reserved.</div></footer>`);
@@ -76,17 +89,18 @@ function setLang(code){
 })();
 
 // 폼/피드가 있는 페이지에서만 설정과 폼 스크립트를 불러옵니다
-if(document.querySelector('[data-form],[data-feed],[data-match],[data-share]')){
+if(document.querySelector('[data-form],[data-feed],[data-match],[data-share],[data-community],[data-letter]')){
  const ld=src=>new Promise(r=>{const e=document.createElement('script');e.src=src;e.onload=r;document.head.appendChild(e)});
  ld('assets/config.js').then(()=>ld('assets/forms.js')).then(()=>{
-  if(document.querySelector('[data-share]'))ld('assets/share.js');
+  if(document.querySelector('[data-share],[data-community]'))ld('assets/share.js').then(()=>{if(document.querySelector('[data-community]'))ld('assets/community.js')});
+  if(document.querySelector('[data-letter]'))ld('assets/letter.js');
   if(document.querySelector('[data-match]'))ld('assets/holidays.js').then(()=>ld('assets/match-core.js')).then(()=>ld('assets/sample-caregivers.js')).then(()=>ld('assets/match.js'));
  });
 }
 
-// 상단 '돌봄 서비스' 메뉴: 마우스를 올리거나(PC) 눌러서(모바일 포함) 펼칩니다
+// 상단 하위 메뉴(돌봄 서비스·응애맘빠): 마우스를 올리거나(PC) 눌러서(모바일 포함) 펼칩니다
 (function(){
- const dd=document.querySelector('.dd');if(!dd)return;
- dd.querySelector(':scope > a').addEventListener('click',e=>{e.preventDefault();e.stopPropagation();dd.classList.toggle('open')});
- document.addEventListener('click',()=>dd.classList.remove('open'));
+ const all=[...document.querySelectorAll('.dd')];
+ all.forEach(dd=>dd.querySelector(':scope > a').addEventListener('click',e=>{e.preventDefault();e.stopPropagation();const o=dd.classList.contains('open');all.forEach(x=>x.classList.remove('open'));if(!o)dd.classList.add('open')}));
+ document.addEventListener('click',()=>all.forEach(x=>x.classList.remove('open')));
 })();
