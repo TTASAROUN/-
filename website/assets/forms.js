@@ -13,6 +13,11 @@ const FORMS={
   {k:'사진 첨부',t:'file',opt:1},{k:'표시 이름(선택)',ph:'공개 시 보여질 이름 (예: 김OO 고객님)',opt:1},{k:'연락처(선택)',t:'tel',ph:'처리 결과를 안내받으실 번호 (비공개)',opt:1},
   {k:'공개 동의',t:'select',o:['개인정보를 가리고 사례로 공개해도 좋습니다','공개하지 말아 주세요']}],
   note:'접수된 의견은 삭제하지 않고 처리 과정과 결과를 기록합니다. 공개 시 이름·연락처 등 개인정보는 가려집니다.'},
+ quote:{title:'정리수납 견적 요청',btn:'견적 요청하기',f:[
+  {k:'견적 방법',t:'select',o:['사진 견적','방문 견적','사진 견적 후 방문 견적']},{k:'정리할 공간',t:'select',o:['주방','옷장·드레스룸','아이방','거실','현관·신발장','베란다·창고','집 전체','이사 전후 정리']},{k:'평수',ph:'예: 32평 (대략이어도 괜찮아요)'},{k:'동네',ph:'예: 서울 강남구 역삼동'},{k:'희망 시기',ph:'예: 11월 둘째 주 평일'},
+  {k:'사진 첨부',t:'file',max:5,opt:1},{k:'요청 사항',t:'textarea',opt:1,ph:'정리하고 싶은 부분, 버리고 싶은 물건, 유의할 점 등'},{k:'이름'},{k:'연락처',t:'tel'}],
+  note:'첨부하신 사진과 상담 내용은 견적 상담에만 사용하며 담당 직원만 열람합니다. 홈페이지나 성장노트에 공개하지 않습니다.',
+  agree:'수집 항목: 위에 입력하신 내용과 첨부 사진 · 목적: 정리수납 견적 상담 · 열람: 담당 직원만 · 보유: 견적 상담 종료 후 지체 없이 파기'},
  class:{title:'응애맘빠 참가 신청',btn:'참가 신청하기',f:[
   {k:'신청자 이름'},{k:'배우자 이름'},{k:'연락처',t:'tel'},{k:'출산 예정월',ph:'예: 2027년 3월'},{k:'희망 일정',ph:'예: 주말 오전',opt:1},{k:'문의 내용',t:'textarea',opt:1}],
   note:'예비부부만 신청할 수 있습니다. 자격 확인 방법은 접수 후 개별 안내드립니다.'},
@@ -40,7 +45,7 @@ function field(x,i){
  const id='f'+Math.random().toString(36).slice(2,7),req=x.opt?'':' required';
  const lab=`<label for="${id}">${x.k.replace('(선택)','')}${x.opt?' <em>(선택)</em>':''}</label>`;
  let inp;
- if(x.t==='file')inp=`<div class="upl" data-upl><input id="${id}" name="${esc(x.k)}" type="file" accept="image/*" multiple hidden><label for="${id}" class="btn ghost2 upbtn">사진 선택</label> <span class="hint">최대 ${MAXF}장 · 얼굴, 주소, 전화번호 등 개인정보가 보이지 않게 가려 주세요.</span><div class="thumbs"></div></div>`;
+ if(x.t==='file')inp=`<div class="upl" data-upl><input id="${id}" name="${esc(x.k)}" type="file" accept="image/*" multiple hidden><label for="${id}" class="btn ghost2 upbtn">사진 선택</label> <span class="hint">최대 ${x.max||MAXF}장 · 얼굴, 주소, 전화번호 등 개인정보가 보이지 않게 가려 주세요.${x.max>3?' 공간 전체와 수납장 안쪽이 보이게 찍어 주시면 견적이 정확해요.':''}</span><div class="thumbs"></div></div>`;
  else if(x.t==='select')inp=`<select id="${id}" name="${esc(x.k)}"${req}>${(typeof x.o==='function'?x.o():x.o).map(o=>`<option>${esc(o)}</option>`).join('')}</select>`;
  else if(x.t==='textarea')inp=`<textarea id="${id}" name="${esc(x.k)}" rows="4" placeholder="${esc(x.ph||'')}"${req}></textarea>`;
  else inp=`<input id="${id}" name="${esc(x.k)}" type="${x.t||'text'}" placeholder="${esc(x.ph||'')}"${req}>`;
@@ -57,12 +62,12 @@ document.querySelectorAll('[data-form]').forEach(box=>{
  box.classList.add('formbox');
  box.innerHTML=`<form novalidate><h3>${def.title}</h3>${def.f.map(field).join('')}
  <input type="text" name="_hp" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px" aria-hidden="true">
- <label class="agree"><input type="checkbox" required> 개인정보 수집·이용에 동의합니다. ${CFG.privacyUrl?`<a href="${CFG.privacyUrl}" target="_blank">보기</a>`:''}<br><small>수집 항목: 위에 입력하신 내용 · 목적: 상담 및 서비스 안내 · 보유: 목적 달성 후 지체 없이 파기</small></label>
+ <label class="agree"><input type="checkbox" required> 개인정보 수집·이용에 동의합니다. ${CFG.privacyUrl?`<a href="${CFG.privacyUrl}" target="_blank">보기</a>`:''}<br><small>${def.agree||'수집 항목: 위에 입력하신 내용 · 목적: 상담 및 서비스 안내 · 보유: 목적 달성 후 지체 없이 파기'}</small></label>
  ${def.note?`<p class="fnote">${def.note}</p>`:''}
  <button class="btn" type="submit">${def.btn}</button><p class="fmsg" role="status"></p></form>`;
  const form=box.querySelector('form'),msg=box.querySelector('.fmsg'),btn=form.querySelector('button');
  if(box.dataset.service){const s=form.querySelector('select');if(s&&SVC.includes(box.dataset.service))s.value=box.dataset.service}
-  box._files=[];
+  box._files=[];const fdef=def.f.find(x=>x.t==='file'),MAX=fdef&&fdef.max||MAXF;
  const upl=form.querySelector('[data-upl]');
  if(upl){
   const inp=upl.querySelector('input'),th=upl.querySelector('.thumbs');
@@ -71,7 +76,7 @@ document.querySelectorAll('[data-form]').forEach(box=>{
   inp.onchange=async()=>{
    const list=[...inp.files];inp.value='';msg.className='fmsg';msg.textContent='';
    for(const f of list){
-    if(box._files.length>=MAXF){msg.className='fmsg err';msg.textContent=`사진은 최대 ${MAXF}장까지 첨부할 수 있어요.`;break}
+    if(box._files.length>=MAX){msg.className='fmsg err';msg.textContent=`사진은 최대 ${MAX}장까지 첨부할 수 있어요.`;break}
     if(!/^image\//.test(f.type)&&!/\.(heic|heif)$/i.test(f.name)){msg.className='fmsg err';msg.textContent='이미지 파일만 첨부할 수 있어요.';continue}
     if(f.size>15*1024*1024){msg.className='fmsg err';msg.textContent='사진 한 장은 15MB 이하여야 해요.';continue}
     try{box._files.push(await shrink(f,1280,.82))}catch(err){msg.className='fmsg err';msg.textContent='이 사진은 불러올 수 없어요. 다른 사진(JPG, PNG)을 선택해 주세요.'}

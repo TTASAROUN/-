@@ -52,7 +52,7 @@ function matchList_(p){
 // 첨부 사진: 드라이브 '따사로운 접수 첨부' 폴더에 저장 (직원만 열람, 외부 공개 안 함)
 function saveFiles_(d){
   const folder = getFolder_(), urls = [];
-  d.files.slice(0, 3).forEach((f, i) => {
+  d.files.slice(0, 5).forEach((f, i) => {
     if (!/^image\//.test(f.type) || String(f.data).length > 8e6) return;
     const name = Utilities.formatDate(new Date(), 'Asia/Seoul', 'yyMMdd-HHmmss') + '_' + d.form + '_' + (i + 1) + '.jpg';
     urls.push(folder.createFile(Utilities.newBlob(Utilities.base64Decode(f.data), 'image/jpeg', name)).getUrl());
