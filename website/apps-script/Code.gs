@@ -35,7 +35,7 @@ function doGet(e){
   return out({ ok: true, items: items });
 }
 
-// 번개매칭: '관리사' 탭에서 조건에 맞는 선생님만 골라 공개 가능한 정보(마스킹된 이름·경력·성향 등)만 반환
+// 번개매칭: '관리사' 탭에서 조건에 맞는 관리사님만 골라 공개 가능한 정보(마스킹된 이름·경력·성향 등)만 반환
 // 전화번호·주소·생년월일·서류 정보는 절대 반환하지 않음 (Match.gs의 match 함수가 필터링)
 function matchList_(p){
   const sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('관리사');

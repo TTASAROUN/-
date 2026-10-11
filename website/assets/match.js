@@ -1,4 +1,4 @@
-// 번개매칭: 조건 선택 → 가능한 선생님 목록 → 선택 → 신청 정보 → 접수(기관이 연락 후 확정)
+// 번개매칭: 조건 선택 → 가능한 관리사님 목록 → 선택 → 신청 정보 → 접수(기관이 연락 후 확정)
 (function(){
 const root=document.querySelector('[data-match]');if(!root)return;
 const CFG=window.SITE_CONFIG||{};
@@ -30,7 +30,7 @@ const needHol=()=>svcDays().some(k=>{const d=parse(k).getDay();return d===0||d==
 
 const chips=(name,list,type)=>list.map(x=>{const v=Array.isArray(x)?x[0]:x,l=Array.isArray(x)?x[1]:x;return `<label class="chip"><input type="${type}" name="${name}" value="${esc(v)}"><span>${esc(l)}</span></label>`}).join('');
 const anyChips=(name,list)=>chips(name,[[ANY,'무관']].concat(list.map(x=>Array.isArray(x)?x:[x,x])),'checkbox');
-const stepper=n=>`<ol class="mstep">${['조건 선택','선생님 선택','신청 정보'].map((t,i)=>`<li class="${i+1===n?'on':i+1<n?'done':''}"><b>${i+1}</b>${t}</li>`).join('')}</ol>`;
+const stepper=n=>`<ol class="mstep">${['조건 선택','관리사님 선택','신청 정보'].map((t,i)=>`<li class="${i+1===n?'on':i+1<n?'done':''}"><b>${i+1}</b>${t}</li>`).join('')}</ol>`;
 
 // ── 달력 (항공권 예약처럼 시작일 → 종료일, 토·일·공휴일 표시와 제외) ──
 function Calendar(box,onChange,init,getEx){
@@ -90,7 +90,7 @@ function step1(msg){
  ${dd('service','매칭 분야',`<div class="chips">${chips('service',SERVICES,'checkbox')}</div>`,{full:1,hint:'여러 개 선택 가능 · 선택한 분야를 모두 하실 수 있는 분만 보여드려요'})}
  <div class="fld"><label for="m-region">동네 <em>(시·구·동까지)</em></label><input id="m-region" placeholder="예: 서울 강남구 역삼동" autocomplete="off"></div>
  <div class="fld"><label for="m-apt">아파트·건물명 <em>(선택)</em></label><input id="m-apt" placeholder="예: 래미안 역삼" autocomplete="off"></div>
- <p class="hint full" style="margin:-6px 0 12px">가까이 사는 선생님을 먼저 보여드리기 위해 사용해요. 정확한 주소는 마지막 단계에서 입력합니다.</p>
+ <p class="hint full" style="margin:-6px 0 12px">가까이 사는 관리사님을 먼저 보여드리기 위해 사용해요. 정확한 주소는 마지막 단계에서 입력합니다.</p>
  ${dd('when','매칭 일정',`<div id="m-cal"></div><div class="exrow"><b>서비스가 필요 없는 날</b><div class="chips">${chips('excl',[['토','토요일'],['일','일요일'],['공휴일','공휴일']],'checkbox')}</div></div>`,{full:1,wide:1})}
  ${dd('env','필요한 조건',`<div class="chips">${anyChips('extras',ENV)}</div>`,{hint:'해당하는 것 모두'})}
  ${dd('pet','반려동물',`<div class="chips">${chips('pets',[[ANY,'없음·무관']].concat(PETS),'checkbox')}</div>`,{right:1,hint:'있다면 선택'})}
@@ -99,9 +99,9 @@ function step1(msg){
  ${dd('ages','연령대',`<div class="chips">${anyChips('ages',AGES)}</div>`,{hint:'여러 개 선택'})}
  ${dd('years','경력',`<div class="chips">${chips('years',YEARS,'radio')}</div>`,{right:1})}
  ${dd('virtues','중요하게 보는 덕목',`<div class="chips">${anyChips('virtues',VIRTUES)}</div><p class="hint">최대 2개까지 고를 수 있어요. 해당 평가가 높은 분을 먼저 보여드려요.</p>`,{hint:'최대 2개'})}
- ${dd('religions','종교',`<div class="chips">${anyChips('religions',RELIGIONS)}</div><p class="hint">선택 사항이에요. 선생님 정보에는 표시되지 않고, 매칭에만 사용됩니다.</p>`,{right:1,hint:'선호하는 경우만'})}
+ ${dd('religions','종교',`<div class="chips">${anyChips('religions',RELIGIONS)}</div><p class="hint">선택 사항이에요. 관리사님 정보에는 표시되지 않고, 매칭에만 사용됩니다.</p>`,{right:1,hint:'선호하는 경우만'})}
  </div>
- <p class="fmsg err" id="m-err">${msg||''}</p><button class="btn" id="m-go" type="button"><span>가능한 선생님 찾기</span></button></div>`;
+ <p class="fmsg err" id="m-err">${msg||''}</p><button class="btn" id="m-go" type="button"><span>가능한 관리사님 찾기</span></button></div>`;
  const f=n=>[...root.querySelectorAll(`[name=${n}]`)];
  const PETN=['반려견','반려묘'];
  // 상태 → 화면
@@ -166,11 +166,11 @@ const summary=()=>`<div class="msum">${q.service.map(t=>`<span>${esc(t)}</span>`
 
 // ── 2단계: 후보 목록 ──
 function step2(){
- const demo=!CFG.endpoint?'<p class="fnote">테스트 화면입니다. 아래 선생님은 가상의 샘플이며, 접수처 연결 후 실제 선생님 정보로 바뀝니다.</p>':'';
+ const demo=!CFG.endpoint?'<p class="fnote">테스트 화면입니다. 아래 관리사님은 가상의 샘플이며, 접수처 연결 후 실제 관리사님 정보로 바뀝니다.</p>':'';
  root.innerHTML=`${stepper(2)}${summary()}${demo}
- <h3 class="mh">${items.length?`조건에 맞는 선생님 <b>${items.length}명</b>`:'조건에 맞는 선생님을 찾지 못했어요'}</h3>
- ${items.length?`<div class="mlist">${items.map((it,i)=>card(it,i)).join('')}</div><p class="fnote">선택하신 선생님은 <b>확정이 아닙니다.</b> 기관이 연락드려 상담한 뒤 최종 확정됩니다.</p>`
- :`<div class="note">조건에 꼭 맞는 선생님이 지금은 없어요. 요청을 남겨 주시면 기관에서 조건에 가장 가까운 선생님을 직접 찾아 연락드립니다.</div><p style="margin-top:16px"><button class="btn" id="m-nopick" type="button">그래도 상담 요청하기</button></p>`}`;
+ <h3 class="mh">${items.length?`조건에 맞는 관리사님 <b>${items.length}명</b>`:'조건에 맞는 관리사님을 찾지 못했어요'}</h3>
+ ${items.length?`<div class="mlist">${items.map((it,i)=>card(it,i)).join('')}</div><p class="fnote">선택하신 관리사님은 <b>확정이 아닙니다.</b> 기관이 연락드려 상담한 뒤 최종 확정됩니다.</p>`
+ :`<div class="note">조건에 꼭 맞는 관리사님이 지금은 없어요. 요청을 남겨 주시면 기관에서 조건에 가장 가까운 관리사님을 직접 찾아 연락드립니다.</div><p style="margin-top:16px"><button class="btn" id="m-nopick" type="button">그래도 상담 요청하기</button></p>`}`;
  root.querySelector('#m-edit').onclick=()=>step1();
  root.querySelectorAll('[data-pick]').forEach(b=>b.onclick=()=>{pick=items[+b.dataset.pick];step3()});
  const np=root.querySelector('#m-nopick');if(np)np.onclick=()=>{pick=null;step3()};
@@ -178,7 +178,7 @@ function step2(){
 }
 function card(it,i){
  return `<div class="tcard"><div class="av">${esc(it.name.charAt(0))}</div><div class="tb">
- <h4>${esc(it.name)} 선생님${it.near?`<span class="hit near">${esc(it.near)}</span>`:''}${it.traitHit&&it.traitHit.length?`<span class="hit">원하시는 성향 일치</span>`:''}</h4>
+ <h4>${esc(it.name)} 관리사님${it.near?`<span class="hit near">${esc(it.near)}</span>`:''}${it.traitHit&&it.traitHit.length?`<span class="hit">원하시는 성향 일치</span>`:''}</h4>
  <p class="tl">${it.services.map(s=>`<span class="tag">${esc(s)}</span>`).join(' ')}</p>
  <p class="tm">경력 ${esc(it.years)}년${it.rating?` · ★ ${esc(it.rating)}`:''}${it.age?` · ${esc(it.age)}`:''}${it.mbti?` · MBTI ${esc(it.mbti)}`:''}${it.mbtiFull?' <span class="hit">MBTI 일치</span>':''}</p>
  <p class="tm">성향: ${it.traits.map(t=>esc(t)).join(' · ')||'-'}${it.edu?` · 학력 ${esc(it.edu)}`:''}${it.school?` · 수료 ${esc(it.school)}`:''}${it.pet?` · ${esc(it.pet)}`:''}</p>
@@ -190,7 +190,7 @@ function card(it,i){
 
 // ── 3단계: 신청 정보 ──
 function step3(){
- const sel=pick?`<div class="msel"><div class="av">${esc(pick.name.charAt(0))}</div><div><b>${esc(pick.name)} 선생님</b><br><small>${esc(pick.services.join(' · '))} · 경력 ${esc(pick.years)}년</small></div></div>`:`<div class="msel"><div><b>기관 추천 요청</b><br><small>조건에 맞는 선생님을 기관에서 찾아 연락드립니다</small></div></div>`;
+ const sel=pick?`<div class="msel"><div class="av">${esc(pick.name.charAt(0))}</div><div><b>${esc(pick.name)} 관리사님</b><br><small>${esc(pick.services.join(' · '))} · 경력 ${esc(pick.years)}년</small></div></div>`:`<div class="msel"><div><b>기관 추천 요청</b><br><small>조건에 맞는 관리사님을 기관에서 찾아 연락드립니다</small></div></div>`;
  root.innerHTML=`${stepper(3)}${summary()}<form class="mcard" id="m-form" novalidate><h3>신청 정보를 입력해 주세요</h3>${sel}
  <div class="fld"><label for="n1">성명</label><input id="n1" name="성명" required autocomplete="name"></div>
  <div class="fld"><label for="n2">생년월일</label><input id="n2" name="생년월일" required inputmode="numeric" placeholder="예: 19900521" maxlength="10" autocomplete="bday"></div>
@@ -213,7 +213,7 @@ function step3(){
   const bad=!g('성명')?'성명을 입력해 주세요.':!/^\d{4}-\d{2}-\d{2}$/.test(g('생년월일'))?'생년월일을 8자리 숫자로 입력해 주세요. (예: 19900521)':!/^0\d{1,2}-?\d{3,4}-?\d{4}$/.test(g('전화번호'))?'전화번호를 확인해 주세요.':!g('상세주소')?'상세주소를 입력해 주세요.':!f.querySelector('[name=상담\\ 방법]:checked')?'선호하는 상담 방법을 선택해 주세요.':!g('이용 경로')?'알게 된 경로를 선택해 주세요.':!f.querySelector('#n8').checked?'개인정보 수집·이용에 동의해 주세요.':'';
   if(bad){msg.className='fmsg err';msg.textContent=bad;return}
   if(f._hp&&f._hp.value)return;
-  const v={'선택 선생님':pick?pick.name+' 선생님':'(기관 추천 요청)','선택 관리번호':pick?pick.id:'','매칭 분야':q.service.join(', '),'지역':q.region,'아파트명':q.apt,'일정 시작':q.start,'일정 종료':q.end,'제외일':q.excl.join(', ')||'없음','서비스 일수':svcDays().length,'휴·공휴일 근무 필요':needHol()?'예':'아니오','희망 성향':q.traits.join(', ')||'상관없음','기타 조건':q.extras.join(', ')||'무관','희망 MBTI':q.mbti.replace(/-/g,'·')==='····'?'상관없음':q.mbti.replace(/-/g,'·'),'희망 덕목':q.virtues.join(', ')||'무관','희망 종교':q.religions.join(', ')||'무관','희망 연령대':q.ages.join(', ')||'상관없음','희망 최소경력':q.minYears?q.minYears+'년 이상':'상관없음',
+  const v={'선택 관리사님':pick?pick.name+' 관리사님':'(기관 추천 요청)','선택 관리번호':pick?pick.id:'','매칭 분야':q.service.join(', '),'지역':q.region,'아파트명':q.apt,'일정 시작':q.start,'일정 종료':q.end,'제외일':q.excl.join(', ')||'없음','서비스 일수':svcDays().length,'휴·공휴일 근무 필요':needHol()?'예':'아니오','희망 성향':q.traits.join(', ')||'상관없음','기타 조건':q.extras.join(', ')||'무관','희망 MBTI':q.mbti.replace(/-/g,'·')==='····'?'상관없음':q.mbti.replace(/-/g,'·'),'희망 덕목':q.virtues.join(', ')||'무관','희망 종교':q.religions.join(', ')||'무관','희망 연령대':q.ages.join(', ')||'상관없음','희망 최소경력':q.minYears?q.minYears+'년 이상':'상관없음',
    '요청 사항':g('요청 사항'),'성명':g('성명'),'생년월일':g('생년월일'),'전화번호':g('전화번호'),'상세주소':g('상세주소'),'주차·현관 안내':g('주차·현관 안내'),'상담 방법':f.querySelector('[name=상담\\ 방법]:checked').value,'이용 경로':g('이용 경로')};
   const payload={form:'match',title:'번개매칭 신청',labels:Object.keys(v),values:v,page:location.pathname,lang:cookieLang()};
   const btn=f.querySelector('[type=submit]');btn.disabled=true;msg.className='fmsg';msg.textContent='전송 중입니다…';
@@ -223,7 +223,7 @@ function step3(){
 }
 function done(test){
  root.innerHTML=`<div class="mcard mdone"><div class="ok">✓</div><h3>${test?'테스트 접수 완료':'신청이 접수되었습니다'}</h3>
- <p>${pick?`<b>${esc(pick.name)} 선생님</b> 매칭 요청을`:'매칭 요청을'} 받았어요.<br>기관에서 선택하신 방법으로 연락드려 상담한 뒤 <b>최종 확정</b>해 드립니다.</p>
+ <p>${pick?`<b>${esc(pick.name)} 관리사님</b> 매칭 요청을`:'매칭 요청을'} 받았어요.<br>기관에서 선택하신 방법으로 연락드려 상담한 뒤 <b>최종 확정</b>해 드립니다.</p>
  ${test?'<p class="fnote">접수처가 아직 연결되지 않아 실제로 전송되지는 않았습니다.</p>':''}
  <button class="btn" type="button" id="m-again">처음으로</button></div>`;
  root.querySelector('#m-again').onclick=()=>{q=fresh();pick=null;step1()};

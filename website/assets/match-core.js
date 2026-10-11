@@ -24,7 +24,7 @@ function regionOK(cust,list){
 function ageBand(birth,now){var d=toDate(birth);if(!d)return '';var a=now.getFullYear()-d.getFullYear();return Math.floor(a/10)*10+'대'}
 function dongOf(s){var m=String(s||'').match(/[가-힣0-9]+(동|읍|면)(?![가-힣])/g);return m?m[m.length-1]:''}
 function guOf(s){var m=String(s||'').match(/[가-힣]+(구|군)(?![가-힣])/g);return m?m[m.length-1]:''}
-function maskName(n){n=String(n||'').trim();return n?n.charAt(0)+new Array(n.length).join('○'):'선생님'}
+function maskName(n){n=String(n||'').trim();return n?n.charAt(0)+new Array(n.length).join('○'):'관리사님'}
 function csv(v){return String(v||'').split(',').map(function(s){return s.trim()}).filter(Boolean)}
 
 // rows: 시트 한 줄이 객체(헤더=키)인 배열, q: {service,region,start,end,traits[],extras[]}
