@@ -34,8 +34,8 @@ const PAGES=[
  ['class.html','응애맘빠','couple','출산을 준비하는 예비부부만을 위한 우리 가족 준비 교실'],
  ['growth-note.html','성장노트','note','불편과 의견을 해결하고, 개선으로 키워가는 공간'],
  ['match.html','번개매칭','bolt','급할 때 가장 빠르게 연결해 드립니다'],
- ['shop.html','따사마켓','shop','친환경 육아용품 · 세제용품'],
  ['branch.html','지사모집','branch','함께 따사로운을 키워갈 지사장님을 모십니다'],
+ ['shop.html','따사마켓','shop','친환경 육아용품 · 세제용품'],
  ['academy.html','평생교육원','school','돌봄 전문가를 위한 교육과 자격 과정']
 ];
 const svg=k=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${I[k]}</svg>`;
