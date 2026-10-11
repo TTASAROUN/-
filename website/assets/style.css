@@ -58,6 +58,13 @@ section.blk h2{font-size:1.5rem}
 @media(max-width:560px){.g4,.g3{grid-template-columns:1fr}.hero h1{font-size:1.7rem}}
 
 /* 언어 선택 */
-.lang{border:1px solid var(--sand);background:#fff;border-radius:8px;padding:7px 8px;font:inherit;font-size:.9rem;color:var(--ink);margin-left:6px;cursor:pointer}
+
 #gt{position:absolute;left:-9999px;top:0}
 .goog-te-banner-frame,.skiptranslate>iframe{display:none!important}body{top:0!important}
+.langbox{position:relative;margin-left:6px}
+.langbox button{display:flex;align-items:center;gap:8px;border:0;background:none;font:inherit;font-size:.92rem;color:var(--ink);cursor:pointer;padding:8px 10px;border-radius:8px;width:100%;white-space:nowrap}
+.langbox button:hover{background:var(--sand)}
+#lang-btn{border:1px solid var(--sand);background:#fff;gap:6px}
+.flag{width:22px;height:16px;object-fit:cover;border-radius:2px;box-shadow:0 0 0 1px rgba(0,0,0,.12)}
+#lang-menu{display:none;position:absolute;right:0;top:calc(100% + 6px);background:#fff;border:1px solid var(--sand);border-radius:12px;padding:6px;min-width:150px;box-shadow:0 8px 24px rgba(0,0,0,.08)}
+#lang-menu.open{display:block}
