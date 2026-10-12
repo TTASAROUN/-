@@ -3,7 +3,7 @@
 const mem={};
 const LS={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return mem[k]!==undefined?mem[k]:d}},set(k,v){mem[k]=v;try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const NAME={consult:'상담 신청',match:'번개매칭',growth:'성장노트',class:'응애맘빠',branch:'지사 문의',academy:'수강 문의',quote:'정리수납 견적',share:'무료나눔 등록',shareReq:'나눔 신청',post:'따사마을 글',comment:'따사마을 댓글',report:'신고',letter:'영상편지'};
+const NAME={consult:'상담 신청',match:'번개매칭',growth:'열린 의견함',class:'응애맘빠',branch:'지사 문의',academy:'수강 문의',quote:'정리수납 견적',share:'무료나눔 등록',shareReq:'나눔 신청',post:'따사마을 글',comment:'따사마을 댓글',report:'신고',letter:'영상편지'};
 const STATUS=['접수','연락중','확정','완료','보류'];
 const CG=window.SAMPLE_CAREGIVERS||[];
 let tab='inbox',filter='all',open=null;
@@ -40,7 +40,7 @@ function tiles(){
 }
 function tabs(){
  const S=subs();
- const T=[['inbox','접수함',S.length],['match','번개매칭',S.filter(p=>p.form==='match').length],['cg','관리사',CG.length],['growth','성장노트',S.filter(p=>p.form==='growth').length]];
+ const T=[['inbox','접수함',S.length],['match','번개매칭',S.filter(p=>p.form==='match').length],['cg','관리사',CG.length],['growth','열린 의견함',S.filter(p=>p.form==='growth').length]];
  const el=document.getElementById('tabs');
  el.innerHTML=T.map(t=>`<button data-tab="${t[0]}" class="${tab===t[0]?'on':''}">${t[1]}<span class="n">${t[2]}</span></button>`).join('');
  el.onclick=e=>{const b=e.target.closest('[data-tab]');if(b){tab=b.dataset.tab;closeD();render()}};

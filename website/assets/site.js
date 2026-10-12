@@ -48,7 +48,7 @@ const PAGES=[
  ['organize.html','정리수납','organize','공간을 정돈해 일상을 가볍게'],
  ['class.html','응애맘빠','couple','출산을 준비하는 예비부부만을 위한 우리 가족 준비 교실'],
  ['letter.html','영상편지','video','아기가 태어나기 전, 엄마 아빠가 남기는 영상편지를 함께 보고 응원해요'],
- ['growth-note.html','성장노트','note','불편과 의견을 해결하고, 개선으로 키워가는 공간'],
+ ['growth-note.html','열린 의견함','note','불편과 의견을 해결하고, 개선으로 키워가는 공간'],
  ['match.html','번개매칭','bolt','급할 때 가장 빠르게 연결해 드립니다'],
  ['branch.html','지사모집','branch','함께 따사로운을 키워갈 지사장님을 모십니다'],
  ['community.html','따사마을','chat','산모와 엄마들이 함께 나누는 이야기'],
@@ -64,7 +64,7 @@ const care=PAGES.filter(p=>CARE.includes(p[0])),rest=PAGES.filter(p=>!CARE.inclu
 const byName=n=>PAGES.find(p=>p[0]===n);
 const ddGroup=(label,list)=>`<div class="dd"><a href="#" class="${list.includes(cur)?'on':''}">${label}</a><div class="ddm">${list.map(byName).map(link).join('')}</div></div>`;
 const one=n=>link(byName(n));
-const topNav=one('about.html')+ddGroup('돌봄 서비스',CARE)+ddGroup('응애맘빠',['class.html','letter.html'])+['growth-note.html','match.html','branch.html','community.html','shop.html','academy.html'].map(one).join('');
+const topNav=one('about.html')+ddGroup('돌봄 서비스',CARE)+ddGroup('응애맘빠',['class.html','letter.html'])+['match.html','growth-note.html','branch.html','community.html','shop.html','academy.html'].map(one).join('');
 document.body.insertAdjacentHTML('afterbegin',`<header class="site"><div class="wrap">
  <a class="logo notranslate" href="index.html">따사로운</a><nav class="main">${topNav}</nav><div class="langbox notranslate"><button id="lang-btn" type="button" aria-label="Language">${flag("kr")}</button><div id="lang-menu">${LANGS.map(l=>`<button type="button" data-l="${l[0]}">${flag(l[2])}${l[1]}</button>`).join('')}</div></div></div></header><div id="gt"></div>`);
 document.body.insertAdjacentHTML('beforeend',`<footer class="site"><div class="wrap"><b>따사로운 통합서비스</b> 사업자등록번호: (입력) · 대표: (입력)<br><b>따사로운 평생교육원</b> 사업자등록번호: (입력) · 대표: (입력)<br>주소: (입력) · 전화: (입력) · 이메일: (입력)<br>www.ttassaroun.co.kr<br>© 2026 All rights reserved.</div></footer>`);

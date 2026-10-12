@@ -1,4 +1,4 @@
-// 따사로운 — 접수 폼 → 구글 시트 저장 + 이메일 알림 + 성장노트 공개 목록
+// 따사로운 — 접수 폼 → 구글 시트 저장 + 이메일 알림 + 열린 의견함 공개 목록
 const OWNER_EMAIL = '';  // 알림 받을 이메일 (비워두면 알림 없음)
 const TAIL = ['상태', '공개승인(Y)', '처리결과', '개선내용']; // 시트에서 직접 관리하는 열
 
@@ -29,7 +29,7 @@ function doPost(e){
   }catch(err){ return out({ ok: false, error: String(err) }); }
 }
 
-// 성장노트: '공개승인(Y)' 열에 Y가 입력된 건만 사이트에 공개
+// 열린 의견함: '공개승인(Y)' 열에 Y가 입력된 건만 사이트에 공개
 function doGet(e){
   const p = e.parameter || {};
   if (p.list === 'match') return matchList_(p);
