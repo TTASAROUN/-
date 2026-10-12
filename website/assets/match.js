@@ -91,7 +91,7 @@ function step1(msg){
  <div class="fld"><label for="m-region">동네 <em>(시·구·동까지)</em></label><input id="m-region" placeholder="예: 서울 강남구 역삼동" autocomplete="off"></div>
  <div class="fld"><label for="m-apt">아파트·건물명 <em>(선택)</em></label><input id="m-apt" placeholder="예: 래미안 역삼" autocomplete="off"></div>
  <p class="hint full" style="margin:-6px 0 12px">가까이 사는 관리사님을 먼저 보여드리기 위해 사용해요. 정확한 주소는 마지막 단계에서 입력합니다.</p>
- ${dd('when','매칭 일정',`<div id="m-cal"></div><div class="exrow"><b>서비스가 필요 없는 날</b><div class="chips">${chips('excl',[['토','토요일'],['일','일요일'],['공휴일','공휴일']],'checkbox')}</div></div>`,{full:1,wide:1})}
+ ${dd('when','매칭 일정',`<div class="exrow top"><b>제외할 날 선택 <small>체크한 날은 서비스 일수에서 빠져요</small></b><div class="chips">${chips('excl',[['토','토요일 제외'],['일','일요일 제외'],['공휴일','공휴일 제외']],'checkbox')}<button type="button" class="chip-all" id="ex-all">토·일·공휴일 모두 제외</button></div></div><div id="m-cal"></div>`,{full:1,wide:1})}
  ${dd('env','필요한 조건',`<div class="chips">${anyChips('extras',ENV)}</div>`,{hint:'해당하는 것 모두'})}
  ${dd('pet','반려동물',`<div class="chips">${chips('pets',[[ANY,'없음·무관']].concat(PETS),'checkbox')}</div>`,{right:1,hint:'있다면 선택'})}
  ${dd('traits','성향',`<div class="chips">${anyChips('traits',TRAITS)}</div>`,{hint:'여러 개 선택'})}
@@ -136,6 +136,7 @@ function step1(msg){
   if(cal)cal.paint();
  };
  root.querySelectorAll('.pop input').forEach(i=>i.addEventListener('change',refresh));
+ root.querySelector('#ex-all').addEventListener('click',()=>{const a=f('excl'),all=a.every(i=>i.checked);a.forEach(i=>i.checked=!all);refresh()});
  root.querySelector('#m-region').addEventListener('input',read);root.querySelector('#m-apt').addEventListener('input',read);
  cal=Calendar(root.querySelector('#m-cal'),(s,e)=>{q.start=s;q.end=e;refresh()},{s:q.start,e:q.end},()=>q.excl);refresh();
  // 선택 상자 열고 닫기

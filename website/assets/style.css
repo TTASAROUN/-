@@ -284,3 +284,10 @@ header.site .wrap{max-width:none;padding-left:28px;padding-right:28px}
  nav.main .dd.open .ddm{display:block}
  nav.main .dd .ddm a{display:block;padding:12px 14px}
 }
+.hero-photo{object-position:60% 50%;animation:herozoom 40s ease-in-out infinite alternate;transform-origin:70% 50%}
+@keyframes herozoom{from{transform:scale(1)}to{transform:scale(1.06)}}
+@media(prefers-reduced-motion:reduce){.hero-photo{animation:none}}
+@media(max-width:760px){.hero-photo{object-position:68% 50%}}
+
+.exrow.top{margin:0 0 14px;padding:0 0 14px;border-top:0;border-bottom:1px solid var(--sand)}.exrow.top b small{font-weight:400;color:var(--mute);margin-left:6px}
+.chip-all{border:1.5px dashed var(--green);background:#fff;color:var(--green-d);border-radius:999px;padding:7px 14px;font:inherit;font-size:.9rem;cursor:pointer}.chip-all:hover{background:var(--sand)}
