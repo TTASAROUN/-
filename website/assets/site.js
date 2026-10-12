@@ -119,26 +119,23 @@ if(document.querySelector('[data-form],[data-feed],[data-match],[data-share],[da
  document.addEventListener('click',()=>all.forEach(x=>x.classList.remove('open')));
 })();
 
-// 마우스 커서: 작은 점과 부드럽게 따라오는 원. 누를 수 있는 곳에서는 원이 커져요. (마우스가 없는 기기에서는 적용 안 됨)
+// 마우스 커서: 작은 원 하나. 누를 수 있는 곳에서는 조금 커져요. (마우스가 없는 기기에서는 적용 안 됨)
 (function(){
  if(!window.matchMedia||!matchMedia('(hover:hover) and (pointer:fine)').matches)return;
  const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
  const st=document.createElement('style');
  st.textContent=`html.cur,html.cur *{cursor:none!important}html.cur input:not([type=checkbox]):not([type=radio]),html.cur textarea{cursor:text!important}
-.cur-dot,.cur-ring{position:fixed;left:0;top:0;z-index:99999;pointer-events:none;border-radius:50%;opacity:0;transition:opacity .2s}
-.cur-dot{width:5px;height:5px;margin:-2.5px 0 0 -2.5px;background:var(--green,#e25f14)}
-.cur-ring{width:20px;height:20px;margin:-10px 0 0 -10px;border:1.2px solid var(--green,#e25f14);transition:opacity .2s,width .2s,height .2s,margin .2s,background .2s}
-.cur-ring.on{width:32px;height:32px;margin:-16px 0 0 -16px;background:rgba(226,95,20,.12)}
-.cur-ring.dn{width:15px;height:15px;margin:-7.5px 0 0 -7.5px}
-html.cur-in .cur-dot,html.cur-in .cur-ring{opacity:1}`;
+.cur-ring{position:fixed;left:0;top:0;z-index:99999;pointer-events:none;width:12px;height:12px;margin:-6px 0 0 -6px;border-radius:50%;border:1.5px solid var(--green,#e25f14);background:rgba(226,95,20,.15);opacity:0;transition:opacity .2s,width .18s,height .18s,margin .18s,background .18s}
+.cur-ring.on{width:22px;height:22px;margin:-11px 0 0 -11px;background:rgba(226,95,20,.22)}
+.cur-ring.dn{width:9px;height:9px;margin:-4.5px 0 0 -4.5px}
+html.cur-in .cur-ring{opacity:1}`;
  document.head.appendChild(st);
- const dot=document.createElement('div'),ring=document.createElement('div');dot.className='cur-dot';ring.className='cur-ring';
- document.body.append(ring,dot);document.documentElement.classList.add('cur');
+ const ring=document.createElement('div');ring.className='cur-ring';document.body.append(ring);document.documentElement.classList.add('cur');
  let x=-100,y=-100,rx=x,ry=y;
  const SEL='a,button,[role=button],label,select,summary,.btn,.chip,input[type=checkbox],input[type=radio],.cal-d,.ddb';
- document.addEventListener('mousemove',e=>{x=e.clientX;y=e.clientY;dot.style.transform=`translate(${x}px,${y}px)`;document.documentElement.classList.add('cur-in');
-  ring.classList.toggle('on',!!(e.target.closest&&e.target.closest(SEL)));if(reduce){ring.style.transform=`translate(${x}px,${y}px)`}},{passive:true});
+ document.addEventListener('mousemove',e=>{x=e.clientX;y=e.clientY;document.documentElement.classList.add('cur-in');
+  ring.classList.toggle('on',!!(e.target.closest&&e.target.closest(SEL)));if(reduce)ring.style.transform=`translate(${x}px,${y}px)`},{passive:true});
  document.addEventListener('mouseleave',()=>document.documentElement.classList.remove('cur-in'));
  document.addEventListener('mousedown',()=>ring.classList.add('dn'));document.addEventListener('mouseup',()=>ring.classList.remove('dn'));
- if(!reduce)(function f(){rx+=(x-rx)*.18;ry+=(y-ry)*.18;ring.style.transform=`translate(${rx}px,${ry}px)`;requestAnimationFrame(f)})();
+ if(!reduce)(function f(){rx+=(x-rx)*.35;ry+=(y-ry)*.35;ring.style.transform=`translate(${rx}px,${ry}px)`;requestAnimationFrame(f)})();
 })();
