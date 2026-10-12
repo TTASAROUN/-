@@ -12,8 +12,11 @@
  <div class="lt-wall" id="lt-wall"></div>
 
  <h2 style="margin-top:40px">우리도 영상편지 남기기</h2>
- <ol class="steps"><li><b>영상 남기기</b><br>촬영하거나 영상 링크를 올려요. (1~3분 추천)</li><li><b>직원 확인</b><br>부적절한 내용이 없는지 확인해요.</li><li><b>공개</b><br>이 페이지에 영상편지가 올라와요.</li><li><b>응원 받기</b><br>다른 가족들의 응원 댓글이 달려요.</li></ol>
- <div class="note" style="margin-top:20px"><b>이런 말을 남겨 보세요</b> · 아기에게 처음 하는 인사 · 아기를 기다리는 지금 마음 · 엄마 아빠가 만난 이야기 · 이름(태명)에 담은 뜻 · 앞으로 바라는 것 (남편과 함께 찍으면 더 좋아요)</div>
+ <ol class="steps"><li><b>영상 남기기</b><br>촬영하거나 영상 링크를 올려요. 30초~1분이면 충분해요.</li><li><b>직원 확인</b><br>부적절한 내용이 없는지 확인해요.</li><li><b>공개</b><br>이 페이지에 영상편지가 올라와요.</li><li><b>응원 받기</b><br>다른 가족들의 응원 댓글이 달려요.</li></ol>
+ <div class="note lt-help" style="margin-top:20px"><b>무슨 말을 할지 모르겠다면, 한 문장만 해도 충분해요</b>
+  <ul class="lt-starters"><li>“안녕, 우리 아기! 엄마 아빠야.”</li><li>“너를 기다리는 지금 마음은 이래.”</li><li>“네 이름(태명)에는 이런 뜻이 담겨 있어.”</li></ul>
+  <span class="lt-sub">남편과 함께 찍으면 더 좋아요.</span> <button type="button" class="chip-all" id="lt-share">배우자에게 링크 보내기</button> <span class="lt-sub" id="lt-share-msg" aria-live="polite"></span></div>
+ <script>(function(){var b=document.getElementById('lt-share'),m=document.getElementById('lt-share-msg');if(!b)return;b.addEventListener('click',function(){var u=location.href.split('#')[0],t='아기에게 보내는 영상편지, 같이 남겨요';if(navigator.share){navigator.share({title:t,url:u}).catch(function(){})}else if(navigator.clipboard){navigator.clipboard.writeText(u).then(function(){m.textContent='링크를 복사했어요. 메신저에 붙여 넣어 보내 주세요.'},function(){m.textContent=u})}else{m.textContent=u}})})();</script>
  <div id="lt-app" style="margin-top:20px"></div>
 
  <div class="faq" style="margin-top:28px">
