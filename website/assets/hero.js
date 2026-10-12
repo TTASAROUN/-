@@ -26,7 +26,7 @@ const OBJ=[
  {k:'balloon',x:1472,y:450,rx:34,ry:36,ax:1512,ay:545,p:4}
 ];
 const img=new Image();img.decoding='async';img.src='assets/hero.jpg';
-let W=0,H=0,dpr=1,sc=1,ox=0,oy=0,ready=false,raf=0,running=false,t0=0;
+let overlay=false,W=0,H=0,dpr=1,sc=1,ox=0,oy=0,ready=false,raf=0,running=false,t0=0;
 // 나비: 종류마다 색이 다르고, 날개를 퍼덕이다 날개를 펴고 미끄러지듯 날기를 반복해요
 const FW=new Path2D('M.8,-2C3,-9 10,-13 14.500,-11.500C16.500,-10.500 15.500,-4 11.500,-.5C8.500,2 4,2 .8,.6Z');
 const HW=new Path2D('M.8,.6C4.500,1.500 9.500,2 11.500,5.500C12.500,9.500 8,12.500 4.500,10.500C2,9 1,5.500 .8,3Z');
@@ -71,8 +71,8 @@ function butterfly(b,x,y,ang,s,flap,glide){
 function draw(t){
  if(!ready)return;
  c.setTransform(1,0,0,1,0,0);c.clearRect(0,0,W,H);
- c.setTransform(sc,0,0,sc,ox,oy);c.drawImage(img,0,0);
- for(const o of OBJ){
+ c.setTransform(sc,0,0,sc,ox,oy);if(!overlay)c.drawImage(img,0,0);
+ for(const o of OBJ){if(overlay)break;
   if(!o.cv)feather(o);
   const s=t+o.p;let tx=0,ty=0,rot=0,z=1,cx=o.x,cy=o.y;
   if(o.k==='crawl'){ // 앞으로 기어갔다가 천천히 돌아오는 느낌
@@ -106,8 +106,12 @@ img.onload=()=>{ready=true;size();start()};
 let rt;window.addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(size,150)});
 document.addEventListener('visibilitychange',()=>document.hidden?stop():start());
 if('IntersectionObserver' in window)new IntersectionObserver(es=>es[0].isIntersecting?start():stop()).observe(hero);
-// 실제 영상이 있으면 우선 사용
-const v=document.createElement('video');v.className='hero-media hero-video';v.src='assets/hero.mp4';v.muted=true;v.loop=true;v.playsInline=true;v.preload='auto';v.setAttribute('aria-hidden','true');v.style.opacity='0';
-if(!reduce){v.addEventListener('canplaythrough',()=>{v.play().then(()=>{v.style.opacity='1';stop();setTimeout(()=>{cv.style.display='none'},900)}).catch(()=>v.remove())},{once:true});v.addEventListener('error',()=>v.remove());cv.after(v)}
+// 실제 영상(assets/hero.mp4)이 있으면 영상이 배경이 되고, 나비는 그 위에서 계속 날아다녀요
+if(!reduce){
+ const v=document.createElement('video');v.className='hero-media hero-video';v.src=(v.canPlayType('video/mp4; codecs="avc1.42E01E"')?'assets/hero.mp4':'assets/hero.webm');v.muted=true;v.loop=true;v.playsInline=true;v.preload='auto';v.setAttribute('aria-hidden','true');v.style.opacity='0';
+ v.addEventListener('canplaythrough',()=>{v.play().then(()=>{v.style.opacity='1';setTimeout(()=>{overlay=true},900)}).catch(()=>v.remove())},{once:true});
+ v.addEventListener('error',()=>v.remove());
+ hero.insertBefore(v,cv);
+}
 window.__hero={draw,size,stop,start};
 })();
