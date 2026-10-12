@@ -125,9 +125,9 @@ if(document.querySelector('[data-form],[data-feed],[data-match],[data-share],[da
  const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
  const st=document.createElement('style');
  st.textContent=`html.cur,html.cur *{cursor:none!important}html.cur input:not([type=checkbox]):not([type=radio]),html.cur textarea{cursor:text!important}
-.cur-ring{position:fixed;left:0;top:0;z-index:99999;pointer-events:none;width:12px;height:12px;margin:-6px 0 0 -6px;border-radius:50%;border:1.5px solid var(--green,#e25f14);background:rgba(226,95,20,.15);opacity:0;transition:opacity .2s,width .18s,height .18s,margin .18s,background .18s}
-.cur-ring.on{width:22px;height:22px;margin:-11px 0 0 -11px;background:rgba(226,95,20,.22)}
-.cur-ring.dn{width:9px;height:9px;margin:-4.5px 0 0 -4.5px}
+.cur-ring{position:fixed;left:0;top:0;z-index:99999;pointer-events:none;width:9px;height:9px;margin:-4.5px 0 0 -4.5px;border-radius:50%;background:radial-gradient(circle at 34% 30%,#ffd2ac 0,#f58a45 38%,#e25f14 66%,#a9440c 100%);box-shadow:0 1px 2px rgba(90,35,0,.45),0 3px 6px rgba(226,95,20,.28);opacity:0;transition:opacity .2s,width .18s,height .18s,margin .18s}
+.cur-ring.on{width:16px;height:16px;margin:-8px 0 0 -8px}
+.cur-ring.dn{width:7px;height:7px;margin:-3.5px 0 0 -3.5px}
 html.cur-in .cur-ring{opacity:1}`;
  document.head.appendChild(st);
  const ring=document.createElement('div');ring.className='cur-ring';document.body.append(ring);document.documentElement.classList.add('cur');
