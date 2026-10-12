@@ -117,3 +117,21 @@ if(document.querySelector('[data-form],[data-feed],[data-match],[data-share],[da
  all.forEach(dd=>dd.querySelector(':scope > a').addEventListener('click',e=>{e.preventDefault();e.stopPropagation();const o=dd.classList.contains('open');all.forEach(x=>x.classList.remove('open'));if(!o){const r=dd.getBoundingClientRect();dd.querySelector('.ddm').style.setProperty('--ddtop',(document.querySelector('header.site').getBoundingClientRect().bottom+4)+'px');dd.classList.add('open')}}));
  document.addEventListener('click',()=>all.forEach(x=>x.classList.remove('open')));
 })();
+
+// 마우스 커서: 평소엔 나비, 누를 수 있는 곳 위에서는 꽃 모양. 움직이면 꽃잎이 살짝 흩날려요.
+(function(){
+ if(!window.matchMedia||!matchMedia('(hover:hover) and (pointer:fine)').matches)return;
+ const svg=b=>'url("data:image/svg+xml,'+encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">${b}</svg>`)+'")';
+ const BUTTERFLY=svg('<g stroke="#7a4a1e" stroke-width=".8" stroke-linejoin="round"><path d="M16 15C11 4 3 5 4 12c.6 5 7 6 12 3z" fill="#f4a259"/><path d="M16 15c5-11 13-10 12-3-.6 5-7 6-12 3z" fill="#f4a259"/><path d="M16 17c-5 0-10 3-8 8 1.5 3.500 6 2 8-5z" fill="#e8955a"/><path d="M16 17c5 0 10 3 8 8-1.500 3.500-6 2-8-5z" fill="#e8955a"/></g><circle cx="9" cy="10" r="2.200" fill="#fff" opacity=".85"/><circle cx="23" cy="10" r="2.200" fill="#fff" opacity=".85"/><rect x="15.200" y="9" width="1.600" height="15" rx=".8" fill="#4a2f14"/><path d="M15.500 9c-1-3-3-4-4-4M16.500 9c1-3 3-4 4-4" stroke="#4a2f14" fill="none" stroke-width=".8" stroke-linecap="round"/>');
+ const FLOWER=svg('<g stroke="#c2527a" stroke-width=".7">'+[0,72,144,216,288].map(a=>`<ellipse cx="16" cy="7.500" rx="4.200" ry="6" transform="rotate(${a} 16 16)" fill="#ffb3c7"/>`).join('')+'</g><circle cx="16" cy="16" r="3.600" fill="#ffd24d" stroke="#d99a00" stroke-width=".7"/>');
+ const st=document.createElement('style');
+ st.textContent=`html,body{cursor:${BUTTERFLY} 16 16,auto}a,button,[role=button],label,select,summary,.btn,.chip,input[type=checkbox],input[type=radio],.cal-d,.ddb{cursor:${FLOWER} 16 16,pointer}input[type=text],input[type=email],input[type=tel],input:not([type]),textarea{cursor:text}.petal{position:fixed;z-index:9999;pointer-events:none;width:12px;height:12px;border-radius:70% 0 70% 0;opacity:.9;animation:petal 1.1s ease-out forwards}@keyframes petal{to{transform:translate(var(--px),var(--py)) rotate(var(--pr));opacity:0}}`;
+ document.head.appendChild(st);
+ if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+ const COL=['#ffb3c7','#ffd9a8','#fff2a8','#ffffff','#d8c4ff'];let last=0,lx=0,ly=0;
+ document.addEventListener('mousemove',e=>{
+  const now=performance.now();if(now-last<70||Math.hypot(e.clientX-lx,e.clientY-ly)<18)return;last=now;lx=e.clientX;ly=e.clientY;
+  const p=document.createElement('i');p.className='petal';p.style.cssText=`left:${e.clientX-6}px;top:${e.clientY-6}px;background:${COL[Math.random()*COL.length|0]};--px:${(Math.random()-.5)*40}px;--py:${12+Math.random()*28}px;--pr:${(Math.random()-.5)*300}deg`;
+  document.body.appendChild(p);setTimeout(()=>p.remove(),1150);
+ },{passive:true});
+})();
