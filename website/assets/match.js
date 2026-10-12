@@ -20,11 +20,11 @@ const iso=d=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
 const parse=s=>{const [y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d)};
 const fmt=s=>{const d=parse(s);return `${d.getMonth()+1}월 ${d.getDate()}일(${WD[d.getDay()]})`};
 const days=(a,b)=>Math.round((parse(b)-parse(a))/864e5)+1;
-const fresh=()=>({service:[],region:'',apt:'',start:'',end:'',excl:[],traits:[],extras:[],ages:[],religions:[],virtues:[],mbti:'----',minYears:''});
+const fresh=()=>({service:[],region:'',apt:'',start:'',end:'',excl:[],only:[],traits:[],extras:[],ages:[],religions:[],virtues:[],mbti:'----',minYears:''});
 let q=fresh(),pick=null,items=[];
 // 선택한 기간 중 서비스가 필요한 날(제외일 뺀 날)과 휴·공휴일 근무 필요 여부
 const HOL=()=>window.HOLIDAYS||{};
-const isOff=(iso,ex)=>{const d=parse(iso).getDay();return (d===6&&ex.includes('토'))||(d===0&&ex.includes('일'))||(!!HOL()[iso]&&ex.includes('공휴일'))};
+const isOff=(iso,ex)=>{const d=parse(iso).getDay();if(q.only.length&&!q.only.includes(WD[d]))return true;return (d===6&&ex.includes('토'))||(d===0&&ex.includes('일'))||(!!HOL()[iso]&&ex.includes('공휴일'))};
 function svcDays(){if(!q.start)return [];const out=[];for(let d=parse(q.start),e=parse(q.end||q.start);d<=e;d.setDate(d.getDate()+1)){const k=iso(d);if(!isOff(k,q.excl))out.push(k)}return out}
 const needHol=()=>svcDays().some(k=>{const d=parse(k).getDay();return d===0||d===6||HOL()[k]});
 
@@ -43,7 +43,7 @@ function Calendar(box,onChange,init,getEx){
   let h=`<div class="cal-m"><div class="cal-t">${m.getFullYear()}년 ${m.getMonth()+1}월</div><div class="cal-g">`+[...WD].map((w,i)=>`<span class="cal-w${i===0?' sun':i===6?' sat':''}">${w}</span>`).join('');
   for(let i=0;i<first.getDay();i++)h+='<span></span>';
   for(let d=1;d<=last.getDate();d++){const dt=new Date(m.getFullYear(),m.getMonth(),d),k=iso(dt),w=dt.getDay();
-   h+=`<button type="button" class="cal-d${w===0||H[k]?' sun':w===6?' sat':''}${H[k]?' hol':''}" data-d="${k}"${H[k]?` title="${esc(H[k])}"`:''}${dt<today||k>END?' disabled':''}>${d}</button>`}
+   h+=`<button type="button" class="cal-d${w===0||H[k]?' sun':w===6?' sat':''}${H[k]?' hol':''}" data-d="${k}"${H[k]?` title="${esc(H[k])}"`:''}${dt<today||k>END?' disabled data-pd="1"':''}>${d}</button>`}
   return h+'</div></div>';
  };
  function paint(){
@@ -53,6 +53,7 @@ function Calendar(box,onChange,init,getEx){
    b.classList.toggle('sel',d===s||d===e);b.classList.toggle('in',!!(s&&end&&d>s&&d<end));
    b.classList.toggle('first',d===s&&!!end&&end!==s);b.classList.toggle('lastd',d===end&&end!==s);
    b.classList.toggle('ex',inr&&isOff(d,ex));
+   if(!b.dataset.pd){const no=!!(q.only.length&&!q.only.includes(WD[parse(d).getDay()]));b.disabled=no;b.classList.toggle('nop',no)}
   });
   let sum;
   if(!s)sum='시작일을 선택하세요';
@@ -91,7 +92,7 @@ function step1(msg){
  <div class="fld"><label for="m-region">동네 <em>(시·구·동까지)</em></label><input id="m-region" placeholder="예: 서울 강남구 역삼동" autocomplete="off"></div>
  <div class="fld"><label for="m-apt">아파트·건물명 <em>(선택)</em></label><input id="m-apt" placeholder="예: 래미안 역삼" autocomplete="off"></div>
  <p class="hint full" style="margin:-6px 0 12px">가까이 사는 관리사님을 먼저 보여드리기 위해 사용해요. 정확한 주소는 마지막 단계에서 입력합니다.</p>
- ${dd('when','매칭 일정',`<div class="exrow top"><b>제외할 날 선택 <small>체크한 날은 서비스 일수에서 빠져요</small></b><div class="chips">${chips('excl',[['토','토요일 제외'],['일','일요일 제외'],['공휴일','공휴일 제외']],'checkbox')}<button type="button" class="chip-all" id="ex-all">토·일·공휴일 모두 제외</button></div></div><div id="m-cal"></div>`,{full:1,wide:1})}
+ ${dd('when','매칭 일정',`<div class="exrow top"><b>제외할 날 선택 <small>체크한 날은 서비스 일수에서 빠져요</small></b><div class="chips">${chips('excl',[['토','토요일 제외'],['일','일요일 제외'],['공휴일','공휴일 제외']],'checkbox')}<button type="button" class="chip-all" id="ex-all">토·일·공휴일 모두 제외</button></div></div><div class="exrow top"><b>특정 요일만 필요하다면 <small>예: 매주 수요일만 · 선택한 요일 외에는 선택할 수 없어요</small></b><div class="chips">${chips('only',[...WD].map(w=>[w,w+'요일']),'checkbox')}</div></div><div id="m-cal"></div>`,{full:1,wide:1})}
  ${dd('env','필요한 조건',`<div class="chips">${anyChips('extras',ENV)}</div>`,{hint:'해당하는 것 모두'})}
  ${dd('pet','반려동물',`<div class="chips">${chips('pets',[[ANY,'없음·무관']].concat(PETS),'checkbox')}</div>`,{right:1,hint:'있다면 선택'})}
  ${dd('traits','성향',`<div class="chips">${anyChips('traits',TRAITS)}</div>`,{hint:'여러 개 선택'})}
@@ -106,7 +107,7 @@ function step1(msg){
  const PETN=['반려견','반려묘'];
  // 상태 → 화면
  f('service').forEach(i=>i.checked=q.service.includes(i.value));root.querySelector('#m-region').value=q.region;root.querySelector('#m-apt').value=q.apt;
- f('excl').forEach(i=>i.checked=q.excl.includes(i.value));
+ f('excl').forEach(i=>i.checked=q.excl.includes(i.value));f('only').forEach(i=>i.checked=q.only.includes(i.value));
  f('extras').forEach(i=>i.checked=q.extras.includes(i.value));f('pets').forEach(i=>i.checked=q.extras.includes(i.value));
  f('traits').forEach(i=>i.checked=q.traits.includes(i.value));f('ages').forEach(i=>i.checked=q.ages.includes(i.value));
  f('religions').forEach(i=>i.checked=q.religions.includes(i.value));f('virtues').forEach(i=>i.checked=q.virtues.includes(i.value));
@@ -116,7 +117,7 @@ function step1(msg){
  // 화면 → 상태
  const val=n=>f(n).filter(i=>i.checked&&i.value!==ANY).map(i=>i.value);
  const read=()=>{
-  q.service=val('service');q.region=root.querySelector('#m-region').value.trim();q.apt=root.querySelector('#m-apt').value.trim();q.excl=val('excl');
+  q.service=val('service');q.region=root.querySelector('#m-region').value.trim();q.apt=root.querySelector('#m-apt').value.trim();q.excl=val('excl');q.only=val('only');
   q.extras=val('extras').concat(val('pets'));q.traits=val('traits');q.ages=val('ages');q.religions=val('religions');q.virtues=val('virtues');
   q.mbti=[0,1,2,3].map(k=>{const c=f('mb'+k).find(i=>i.checked);return c?c.value:'-'}).join('');const y=f('years').find(i=>i.checked);q.minYears=y?y.value:'';
  };
@@ -163,7 +164,7 @@ async function find(){
  await new Promise(r=>setTimeout(r,500));
  return window.MatchCore.match(window.SAMPLE_CAREGIVERS,Object.assign({},q,{needHoliday:needHol()?'Y':'N'}));
 }
-const summary=()=>`<div class="msum">${q.service.map(t=>`<span>${esc(t)}</span>`).join('')}<span>${esc(q.region)}${q.apt?' '+esc(q.apt):''}</span><span>${fmt(q.start)}${q.end!==q.start?' ~ '+fmt(q.end):''}${q.excl.length?` (${q.excl.map(x=>x==='공휴일'?x:x+'요일').join('·')} 제외)`:''}</span>${q.traits.map(t=>`<span>${esc(t)}</span>`).join('')}${q.mbti.replace(/-/g,'').length?`<span>MBTI ${esc(q.mbti.replace(/-/g,'·'))}</span>`:''}${q.ages.map(t=>`<span>${esc(t)}</span>`).join('')}${q.religions.map(t=>`<span>종교 ${esc(t)}</span>`).join('')}${q.virtues.map(t=>`<span>덕목 ${esc(t)}</span>`).join('')}${q.minYears?`<span>경력 ${q.minYears}년 이상</span>`:''}${q.extras.map(t=>`<span>${esc(t)}</span>`).join('')}<button type="button" class="link" id="m-edit">조건 수정</button></div>`;
+const summary=()=>`<div class="msum">${q.service.map(t=>`<span>${esc(t)}</span>`).join('')}<span>${esc(q.region)}${q.apt?' '+esc(q.apt):''}</span><span>${fmt(q.start)}${q.end!==q.start?' ~ '+fmt(q.end):''}${q.only.length?` (매주 ${q.only.join('·')}요일만)`:''}${q.excl.length?` (${q.excl.map(x=>x==='공휴일'?x:x+'요일').join('·')} 제외)`:''}</span>${q.traits.map(t=>`<span>${esc(t)}</span>`).join('')}${q.mbti.replace(/-/g,'').length?`<span>MBTI ${esc(q.mbti.replace(/-/g,'·'))}</span>`:''}${q.ages.map(t=>`<span>${esc(t)}</span>`).join('')}${q.religions.map(t=>`<span>종교 ${esc(t)}</span>`).join('')}${q.virtues.map(t=>`<span>덕목 ${esc(t)}</span>`).join('')}${q.minYears?`<span>경력 ${q.minYears}년 이상</span>`:''}${q.extras.map(t=>`<span>${esc(t)}</span>`).join('')}<button type="button" class="link" id="m-edit">조건 수정</button></div>`;
 
 // ── 2단계: 후보 목록 ──
 function step2(){
@@ -214,7 +215,7 @@ function step3(){
   const bad=!g('성명')?'성명을 입력해 주세요.':!/^\d{4}-\d{2}-\d{2}$/.test(g('생년월일'))?'생년월일을 8자리 숫자로 입력해 주세요. (예: 19900521)':!/^0\d{1,2}-?\d{3,4}-?\d{4}$/.test(g('전화번호'))?'전화번호를 확인해 주세요.':!g('상세주소')?'상세주소를 입력해 주세요.':!f.querySelector('[name=상담\\ 방법]:checked')?'선호하는 상담 방법을 선택해 주세요.':!g('이용 경로')?'알게 된 경로를 선택해 주세요.':!f.querySelector('#n8').checked?'개인정보 수집·이용에 동의해 주세요.':'';
   if(bad){msg.className='fmsg err';msg.textContent=bad;return}
   if(f._hp&&f._hp.value)return;
-  const v={'선택 관리사님':pick?pick.name+' 관리사님':'(기관 추천 요청)','선택 관리번호':pick?pick.id:'','매칭 분야':q.service.join(', '),'지역':q.region,'아파트명':q.apt,'일정 시작':q.start,'일정 종료':q.end,'제외일':q.excl.join(', ')||'없음','서비스 일수':svcDays().length,'휴·공휴일 근무 필요':needHol()?'예':'아니오','희망 성향':q.traits.join(', ')||'상관없음','기타 조건':q.extras.join(', ')||'무관','희망 MBTI':q.mbti.replace(/-/g,'·')==='····'?'상관없음':q.mbti.replace(/-/g,'·'),'희망 덕목':q.virtues.join(', ')||'무관','희망 종교':q.religions.join(', ')||'무관','희망 연령대':q.ages.join(', ')||'상관없음','희망 최소경력':q.minYears?q.minYears+'년 이상':'상관없음',
+  const v={'선택 관리사님':pick?pick.name+' 관리사님':'(기관 추천 요청)','선택 관리번호':pick?pick.id:'','매칭 분야':q.service.join(', '),'지역':q.region,'아파트명':q.apt,'일정 시작':q.start,'일정 종료':q.end,'제외일':q.excl.join(', ')||'없음','지정 요일':q.only.join(', ')||'전체','서비스 일수':svcDays().length,'휴·공휴일 근무 필요':needHol()?'예':'아니오','희망 성향':q.traits.join(', ')||'상관없음','기타 조건':q.extras.join(', ')||'무관','희망 MBTI':q.mbti.replace(/-/g,'·')==='····'?'상관없음':q.mbti.replace(/-/g,'·'),'희망 덕목':q.virtues.join(', ')||'무관','희망 종교':q.religions.join(', ')||'무관','희망 연령대':q.ages.join(', ')||'상관없음','희망 최소경력':q.minYears?q.minYears+'년 이상':'상관없음',
    '요청 사항':g('요청 사항'),'성명':g('성명'),'생년월일':g('생년월일'),'전화번호':g('전화번호'),'상세주소':g('상세주소'),'주차·현관 안내':g('주차·현관 안내'),'상담 방법':f.querySelector('[name=상담\\ 방법]:checked').value,'이용 경로':g('이용 경로')};
   const payload={form:'match',title:'번개매칭 신청',labels:Object.keys(v),values:v,page:location.pathname,lang:cookieLang()};
   const btn=f.querySelector('[type=submit]');btn.disabled=true;msg.className='fmsg';msg.textContent='전송 중입니다…';
