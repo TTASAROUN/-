@@ -36,7 +36,7 @@ const SPECIES={
  white:{a:'#ffffff',b:'#e9eef2',edge:'#8a949c',dots:'',vein:'rgba(110,120,130,.5)'},
  blue:{a:'#8fc8ff',b:'#4f8fe0',edge:'#1d2f55',dots:'#fff',vein:'rgba(20,40,90,.5)'}
 };
-const BF=[['white',.15,.22],['monarch',.5,.62],['swallow',.72,.3],['white',.3,.82],['blue',.86,.7],['white',.62,.14],['monarch',.08,.58]].map((b,i)=>({sp:SPECIES[b[0]],u:b[1],v:b[2],ph:i*1.9,spd:.11+.025*(i%3),ax:.09+.02*(i%4),ay:.06+.02*(i%3),phase:i,hd:0,lt:0,sz:1.6+.25*(i%3)}));
+const BF=[['white',.15,.22],['monarch',.5,.62],['swallow',.72,.3],['white',.3,.82],['blue',.86,.7],['white',.62,.14],['monarch',.08,.58]].map((b,i)=>({sp:SPECIES[b[0]],u:b[1],v:b[2],ph:i*1.9,spd:.11+.025*(i%3),ax:.09+.02*(i%4),ay:.06+.02*(i%3),phase:i,hd:0,lt:0,sz:.62+.1*(i%3)}));
 function feather(o){ // 가장자리가 부드러운 조각을 사진에서 잘라 둡니다
  const w=Math.ceil(o.rx*2+8),h=Math.ceil(o.ry*2+8),p=document.createElement('canvas');p.width=w;p.height=h;const g=p.getContext('2d');
  g.drawImage(img,o.x-w/2,o.y-h/2,w,h,0,0,w,h);
