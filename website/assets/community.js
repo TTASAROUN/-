@@ -3,7 +3,12 @@
 const root=document.getElementById('cm-panel'),tiles=document.getElementById('cm-tiles');if(!root)return;
 const CFG=window.SITE_CONFIG||{};
 const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const B=[
+const MAM=!!document.querySelector('[data-community="mam"]');
+const B=MAM?[
+ {k:'all',n:'전체',i:'talk',d:'관리사님들이 남긴 글을 한눈에 봐요'},
+ {k:'idea',n:'제안',i:'tip',d:'서비스와 일하는 환경을 더 좋게 만드는 제안'},
+ {k:'baby',n:'우리 아기 이랬다',i:'heartic',d:'돌봄하며 만난 아기들의 사랑스러운 순간'},
+ {k:'after',n:'서비스 소감',i:'talk',d:'서비스를 마치고 남기는 소감'}]:[
  {k:'all',n:'전체',i:'talk',d:'모든 게시판의 최신 글을 한눈에 봐요'},
  {k:'go',n:'가고파',i:'go',d:'아가와 함께 갈 수 있는 여행·나들이 추천지'},
  {k:'play',n:'하고파',i:'play',d:'아가와 함께 할 수 있는 놀이'},
@@ -24,7 +29,13 @@ const today=()=>new Date().toISOString().slice(0,10);
 const md=d=>String(d||'').slice(5).replace('-','.');
 // ── 데모용 가상 글 (접수처 연결 후 실제 글로 바뀝니다) ──
 const S=(k,t,n,b,d,dt)=>({id:'s'+Math.random().toString(36).slice(2,7),board:k,boardName:B.find(x=>x.k===k).n,title:t,nick:n,body:b,detail:d||'',date:dt,sample:true});
-const SAMPLE=[
+const SAMPLE=MAM?[
+ S('idea','신생아 용품 체크리스트를 카드로 만들어 주세요','김○○ 관리사','가정에 처음 방문할 때 확인할 항목을 한 장 카드로 정리해 주시면 빠뜨리지 않고 확인할 수 있을 것 같아요.','제안 분야: 서비스 운영','2026-10-10'),
+ S('idea','교육원 보수교육을 주말 오전에도 열어 주세요','박○○ 관리사','평일에 일정이 있는 분들이 많아 주말 오전 수업이 있으면 참석하기 편해요.','제안 분야: 교육·자격','2026-10-08'),
+ S('baby','오늘 처음으로 눈을 맞췄어요','최○○ 관리사','목욕 후 수건에 감싸 안았더니 한참 눈을 맞추고 방긋 웃었어요. 하루의 피로가 싹 풀렸답니다.','아기 월령: 신생아(1개월 미만)','2026-10-09'),
+ S('baby','뒤집기에 성공한 날','한○○ 관리사','며칠을 낑낑대더니 오늘 드디어 뒤집었어요! 같이 박수를 쳤더니 아기도 신나서 웃었어요.','아기 월령: 4~6개월','2026-10-05'),
+ S('after','3주 동안 함께한 시간, 감사했습니다','이○○ 관리사','처음엔 서로 어색했지만 마지막 날에는 아기와 헤어지기가 아쉬웠어요. 건강하게 자라길 바랍니다.','서비스 종류: 산후관리','2026-10-07')
+]:[
  S('go','아이 동반 가족이 많아 마음 편한 패밀리 리조트','튼튼맘','수영장과 키즈카페가 잘 되어 있고, 같이 온 가족들이 대부분 아이 있는 집이라 분위기가 편안했어요. 온돌방이 있어 아기랑 누워 쉬기 좋았어요. (리조트 이름은 확정 후 입력)','장소명: 패밀리 리조트(이름 입력 예정) · 지역: 강원 · 장소 종류: 리조트·숙소 · 손님 분위기: 아이 동반 가족이 많아요 · 편의시설: 키즈풀·유아풀, 키즈카페·놀이방, 온돌·가족실, 유모차 이동 편함','2026-10-11'),
  S('go','돌 전 아기랑 가기 좋은 양평 나들이','하늘맘','수유실이 깔끔하고 유모차 끌고 다니기 편했어요. 평일 오전에 가면 한적해요.','장소명: 양평 어린이정원 · 지역: 경기 양평군 · 편의시설: 유모차 이동 편함, 수유실 있음, 주차 편함','2026-10-09'),
  S('go','실내 놀이터 있는 박물관 추천','봄이엄마','비 오는 날도 괜찮아요. 아기 의자 대여해줘요.','장소명: 가까운 어린이박물관 · 지역: 서울 용산구 · 편의시설: 기저귀 교환대, 실내 공간','2026-10-05'),
@@ -91,7 +102,7 @@ function giveHTML(){return `<p class="mute" id="share-demo"></p><div class="grid
 let monthF='';
 function extraTop(b){
  let h='';
- if(b.k==='all'||b.k===WEEKLY.board)h+=`<div class="weekly"><span class="pill">이번 주 이야기</span><b>${esc(WEEKLY.q)}</b><button type="button" class="btn sm" id="wk-go">내 이야기 남기기</button></div>`;
+ if(!MAM&&(b.k==='all'||b.k===WEEKLY.board))h+=`<div class="weekly"><span class="pill">이번 주 이야기</span><b>${esc(WEEKLY.q)}</b><button type="button" class="btn sm" id="wk-go">내 이야기 남기기</button></div>`;
  if(b.k==='vent')h+=`<div class="help-box"><b>혼자 견디지 마세요.</b> 정신건강 위기상담 <b>1577-0199</b> · 자살예방상담 <b>109</b> · 응급 <b>119</b><br><small>여기 글은 직원이 먼저 확인하고, 마음이 많이 힘들어 보이는 글에는 따뜻한 댓글과 상담 연결을 도와드려요.</small></div>`;
  if(b.k==='meet'){
   if(CFG.openChatUrl)h+=`<div class="weekly"><b>오픈채팅으로 바로 이야기해요</b><a class="btn sm" href="${esc(CFG.openChatUrl)}" target="_blank" rel="noopener">오픈채팅 입장</a></div>`;
@@ -117,7 +128,7 @@ function render(){
  if(w)w.onclick=()=>{const f=document.getElementById('cm-form');if(!f.hidden){f.hidden=true;return}f.innerHTML=`<div data-form="post_${b.k}"></div>`;f.hidden=false;window.TtasaInitForms(f);f.scrollIntoView({behavior:'smooth',block:'start'})};
 }
 async function load(){
- if(CFG.endpoint){try{const j=await (await fetch(CFG.endpoint+'?list=community')).json();if(j.ok){posts=j.posts.map(p=>Object.assign(p,{board:byName(p.boardName)}));comments=j.comments;demo=false;SAMPLE.length&&Object.keys(SC).forEach(k=>delete SC[k])}}catch(e){}}
+ if(CFG.endpoint){try{const j=await (await fetch(CFG.endpoint+'?list=community')).json();if(j.ok){posts=j.posts.map(p=>Object.assign(p,{board:byName(p.boardName)})).filter(p=>p.board);comments=j.comments;demo=false;SAMPLE.length&&Object.keys(SC).forEach(k=>delete SC[k])}}catch(e){}}
  render();
 }
 tiles.onclick=e=>{const t=e.target.closest('[data-tab]');if(!t)return;tab=t.dataset.tab;monthF='';try{history.replaceState(null,'','#'+tab)}catch(x){}render()};

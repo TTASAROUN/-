@@ -293,8 +293,15 @@ header.site .wrap{max-width:none;padding-left:28px;padding-right:28px}
 .chip-all{border:1.5px dashed var(--green);background:#fff;color:var(--green-d);border-radius:999px;padding:7px 14px;font:inherit;font-size:.9rem;cursor:pointer}.chip-all:hover{background:var(--sand)}
 
 .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
-.hero{min-height:560px}@media(max-width:760px){.hero{min-height:420px}}
+.hero{min-height:0;height:clamp(300px,56.25vw,calc(100svh - 88px))}@media(max-width:760px){.hero{height:clamp(300px,62vh,calc(100svh - 120px))}}
 
-.hero-video{object-position:60% 15%}
+.hero-video{object-position:60% 30%}
 .cal-d.nop{opacity:.3;cursor:not-allowed!important}
 .lt-starters{margin:8px 0 10px;padding-left:20px}.lt-starters li{margin:3px 0}.lt-sub{color:var(--mute);font-size:.9rem}.lt-help .chip-all{margin-left:6px}
+/* 데스크톱: 따사로운(로고)을 맨 위에, 메뉴는 그 아래 한 줄로 */
+@media(min-width:901px){
+ header.site .wrap{position:relative;flex-wrap:wrap;justify-content:center;row-gap:0;min-height:0;padding-top:10px;padding-bottom:6px}
+ .logo{order:1;width:100%;text-align:center;line-height:1.3}
+ nav.main{order:2;flex:none;width:100%;justify-content:center;overflow:visible}
+ .langbox{position:absolute;right:28px;top:6px;margin:0}
+}

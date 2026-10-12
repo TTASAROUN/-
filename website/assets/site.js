@@ -52,6 +52,7 @@ const PAGES=[
  ['match.html','번개매칭','bolt','급할 때 가장 빠르게 연결해 드립니다'],
  ['branch.html','지사모집','branch','함께 따사로운을 키워갈 지사장님을 모십니다'],
  ['community.html','따사마을','chat','산모와 엄마들이 함께 나누는 이야기'],
+ ['mam.html','따사맘','heartic','관리사님들이 들려주는 제안 · 우리 아기 이야기 · 서비스 소감'],
  ['shop.html','따사마켓','shop','친환경 육아용품 · 세제용품'],
  ['academy.html','평생교육원','school','돌봄 전문가를 위한 교육과 자격 과정']
 ];
@@ -64,7 +65,7 @@ const care=PAGES.filter(p=>CARE.includes(p[0])),rest=PAGES.filter(p=>!CARE.inclu
 const byName=n=>PAGES.find(p=>p[0]===n);
 const ddGroup=(label,list)=>`<div class="dd"><a href="#" class="${list.includes(cur)?'on':''}">${label}</a><div class="ddm">${list.map(byName).map(link).join('')}</div></div>`;
 const one=n=>link(byName(n));
-const topNav=one('about.html')+ddGroup('돌봄 서비스',CARE)+ddGroup('응애맘빠',['class.html','letter.html'])+['match.html','growth-note.html','branch.html','community.html','shop.html','academy.html'].map(one).join('');
+const topNav=one('about.html')+ddGroup('돌봄 서비스',CARE)+ddGroup('응애맘빠',['class.html','letter.html'])+['match.html','growth-note.html','branch.html','community.html','mam.html','shop.html','academy.html'].map(one).join('');
 document.body.insertAdjacentHTML('afterbegin',`<header class="site"><div class="wrap">
  <a class="logo notranslate" href="index.html">따사로운</a><nav class="main">${topNav}</nav><div class="langbox notranslate"><button id="lang-btn" type="button" aria-label="Language">${flag("kr")}</button><div id="lang-menu">${LANGS.map(l=>`<button type="button" data-l="${l[0]}">${flag(l[2])}${l[1]}</button>`).join('')}</div></div></div></header><div id="gt"></div>`);
 document.body.insertAdjacentHTML('beforeend',`<footer class="site"><div class="wrap"><b>따사로운 통합서비스</b> 사업자등록번호: (입력) · 대표: (입력)<br><b>따사로운 평생교육원</b> 사업자등록번호: (입력) · 대표: (입력)<br>주소: (입력) · 전화: (입력) · 이메일: (입력)<br>www.ttassaroun.co.kr<br>© 2026 All rights reserved.</div></footer>`);
