@@ -1,12 +1,12 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 200" role="img" aria-label="따사로운 평생교육원">
- <g fill="none" stroke="#1f5b4d" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
-  <path d="M120 14 L120 34"/><path d="M120 14 L142 22 L120 30" fill="#e8955a" stroke="#e8955a" stroke-width="3"/>
-  <path d="M22 78 L120 36 L218 78 Z" fill="#e8f2ef"/>
+ <g fill="none" stroke="#3a2a1f" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M120 14 L120 34"/><path d="M120 14 L142 22 L120 30" fill="#e25f14" stroke="#e25f14" stroke-width="3"/>
+  <path d="M22 78 L120 36 L218 78 Z" fill="#fdeee2"/>
   <path d="M34 84 H206"/>
   <path d="M46 84 V158 M86 84 V158 M154 84 V158 M194 84 V158"/>
   <path d="M26 164 H214 M16 178 H224"/>
  </g>
- <rect x="62" y="98" width="116" height="36" rx="6" fill="#1f5b4d"/>
+ <rect x="62" y="98" width="116" height="36" rx="6" fill="#3a2a1f"/>
  <text x="120" y="123" text-anchor="middle" font-family="'Pretendard','Noto Sans KR','Malgun Gothic',sans-serif" font-weight="800" font-size="21" fill="#fff" letter-spacing="1">평생교육원</text>
- <path d="M104 158 V140 h32 v18" fill="#fff" stroke="#1f5b4d" stroke-width="4" stroke-linejoin="round"/>
+ <path d="M104 158 V140 h32 v18" fill="#fff" stroke="#3a2a1f" stroke-width="4" stroke-linejoin="round"/>
 </svg>

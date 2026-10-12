@@ -2,7 +2,7 @@
 // 번역문은 assets/i18n-data.js 에 있습니다. (한 줄 = [한국어, English, 中文, Tiếng Việt, Filipino, ไทย])
 // 번역표에 없는 문구(새로 쓴 글, 이용자가 올린 글 등)는 구글 번역(실제 사이트에서만 동작)이 이어서 번역합니다.
 (function(){
-const COL={en:1,'zh-CN':2,vi:3,tl:4,th:5};
+const COL={en:1,'zh-CN':2,vi:3,tl:4,th:5,fr:6};
 const SKIP=/^(SCRIPT|STYLE|NOSCRIPT|TEXTAREA|INPUT)$/;
 const ATTRS=['placeholder','title','alt','aria-label'];
 const H=/[가-힣]/;

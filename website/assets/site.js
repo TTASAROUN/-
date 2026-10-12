@@ -6,11 +6,12 @@ const FLAGS={
  cn:'<rect width="30" height="20" fill="#de2910"/><g fill="#ffde00"><polygon points="5.00,2.00 5.67,4.07 7.85,4.07 6.09,5.35 6.76,7.43 5.00,6.15 3.24,7.43 3.91,5.35 2.15,4.07 4.33,4.07"/><polygon points="9.14,2.51 9.62,1.97 9.25,1.34 9.91,1.63 10.39,1.08 10.33,1.80 11.00,2.09 10.29,2.25 10.22,2.97 9.85,2.35"/><polygon points="11.01,4.14 11.66,3.82 11.56,3.10 12.07,3.62 12.72,3.30 12.38,3.95 12.88,4.47 12.17,4.34 11.83,4.99 11.73,4.27"/><polygon points="11.04,6.73 11.76,6.70 11.96,6.00 12.21,6.68 12.94,6.66 12.37,7.10 12.62,7.79 12.01,7.38 11.44,7.83 11.64,7.13"/><polygon points="9.22,8.38 9.90,8.63 10.35,8.06 10.32,8.79 11.00,9.05 10.30,9.24 10.26,9.96 9.87,9.36 9.16,9.55 9.62,8.98"/></g>',
  vn:'<rect width="30" height="20" fill="#da251d"/><polygon points="15.00,4.50 16.35,8.65 20.71,8.65 17.18,11.21 18.53,15.35 15.00,12.79 11.47,15.35 12.82,11.21 9.29,8.65 13.65,8.65" fill="#ff0"/>',
  ph:'<rect width="30" height="10" fill="#0038a8"/><rect y="10" width="30" height="10" fill="#ce1126"/><path d="M0 0L17.32 10L0 20z" fill="#fff"/><g fill="#fcd116"><circle cx="5.77" cy="10" r="1.5"/><polygon points="7.44,9.66 8.87,10.00 7.44,10.34"/><polygon points="7.19,10.94 7.96,12.19 6.71,11.42"/><polygon points="6.11,11.67 5.77,13.10 5.43,11.67"/><polygon points="4.83,11.42 3.58,12.19 4.35,10.94"/><polygon points="4.10,10.34 2.67,10.00 4.10,9.66"/><polygon points="4.35,9.06 3.58,7.81 4.83,8.58"/><polygon points="5.43,8.33 5.77,6.90 6.11,8.33"/><polygon points="6.71,8.58 7.96,7.81 7.19,9.06"/><polygon points="2.96,3.59 3.49,4.19 4.22,3.87 3.82,4.56 4.35,5.16 3.57,4.98 3.17,5.67 3.09,4.88 2.31,4.71 3.04,4.39"/><polygon points="2.96,16.41 3.04,15.61 2.31,15.29 3.09,15.12 3.17,14.33 3.57,15.02 4.35,14.84 3.82,15.44 4.22,16.13 3.49,15.81"/><polygon points="14.30,10.00 13.54,10.25 13.54,11.05 13.07,10.40 12.31,10.65 12.78,10.00 12.31,9.35 13.07,9.60 13.54,8.95 13.54,9.75"/></g>',
+ fr:'<rect width="10" height="20" fill="#0055a4"/><rect x="10" width="10" height="20" fill="#fff"/><rect x="20" width="10" height="20" fill="#ef4135"/>',
  th:'<rect width="30" height="20" fill="#a51931"/><rect y="3.33" width="30" height="13.34" fill="#f4f5f8"/><rect y="6.67" width="30" height="6.66" fill="#2d2a4a"/>'
 };
 // [구글언어코드, 표시이름, 국기코드]
-const LANGS=[['ko','한국어','kr'],['en','English','us'],['zh-CN','中文','cn'],['vi','Tiếng Việt','vn'],['tl','Filipino','ph'],['th','ไทย','th']];
-const FLAGX={kr:5,us:0,cn:0,vn:5,ph:0,th:5}; // 동그랗게 보일 때 보여 줄 영역(왼쪽 기준 위치)
+const LANGS=[['ko','한국어','kr'],['en','English','us'],['zh-CN','中文','cn'],['vi','Tiếng Việt','vn'],['tl','Filipino','ph'],['th','ไทย','th'],['fr','Français','fr']];
+const FLAGX={kr:5,us:0,cn:0,vn:5,ph:0,th:5,fr:5}; // 동그랗게 보일 때 보여 줄 영역(왼쪽 기준 위치)
 const flagSrc=c=>'data:image/svg+xml,'+encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="${FLAGX[c]||0} 0 20 20">${FLAGS[c]}</svg>`);
 const flag=c=>`<img class="flag" src="${flagSrc(c)}" alt="" width="26" height="26">`;
 const I={
@@ -125,10 +126,10 @@ if(document.querySelector('[data-form],[data-feed],[data-match],[data-share],[da
  const st=document.createElement('style');
  st.textContent=`html.cur,html.cur *{cursor:none!important}html.cur input:not([type=checkbox]):not([type=radio]),html.cur textarea{cursor:text!important}
 .cur-dot,.cur-ring{position:fixed;left:0;top:0;z-index:99999;pointer-events:none;border-radius:50%;opacity:0;transition:opacity .2s}
-.cur-dot{width:6px;height:6px;margin:-3px 0 0 -3px;background:var(--green,#2f7d6b)}
-.cur-ring{width:32px;height:32px;margin:-16px 0 0 -16px;border:1.5px solid var(--green,#2f7d6b);transition:opacity .2s,width .2s,height .2s,margin .2s,background .2s}
-.cur-ring.on{width:48px;height:48px;margin:-24px 0 0 -24px;background:rgba(47,125,107,.12)}
-.cur-ring.dn{width:24px;height:24px;margin:-12px 0 0 -12px}
+.cur-dot{width:5px;height:5px;margin:-2.5px 0 0 -2.5px;background:var(--green,#e25f14)}
+.cur-ring{width:20px;height:20px;margin:-10px 0 0 -10px;border:1.2px solid var(--green,#e25f14);transition:opacity .2s,width .2s,height .2s,margin .2s,background .2s}
+.cur-ring.on{width:32px;height:32px;margin:-16px 0 0 -16px;background:rgba(226,95,20,.12)}
+.cur-ring.dn{width:15px;height:15px;margin:-7.5px 0 0 -7.5px}
 html.cur-in .cur-dot,html.cur-in .cur-ring{opacity:1}`;
  document.head.appendChild(st);
  const dot=document.createElement('div'),ring=document.createElement('div');dot.className='cur-dot';ring.className='cur-ring';
