@@ -262,3 +262,20 @@ section.blk .lt-hero h2{color:#fff;margin:0 0 10px}
 .hero h1,.hero p{text-shadow:0 1px 14px rgba(0,40,30,.4)}
 @media(max-width:760px){.hero{min-height:480px}.hero-ov{background:linear-gradient(180deg,rgba(24,82,68,.92) 0%,rgba(31,91,77,.78) 52%,rgba(47,125,107,.3) 100%)}}
 .hero-video{transition:opacity .9s ease}
+
+/* 언어 선택: 맨 오른쪽 끝, 동그란 국기 */
+header.site .wrap{max-width:none;padding-left:28px;padding-right:28px}
+.langbox{margin-left:10px}
+#lang-btn{width:44px;height:44px;padding:0;justify-content:center;border-radius:50%;background:#fff;border:1px solid var(--sand)}
+#lang-btn:hover{background:var(--cream)}
+.flag{width:26px;height:26px;border-radius:50%;object-fit:cover;box-shadow:0 0 0 1px rgba(0,0,0,.14)}
+#lang-btn .flag{width:30px;height:30px}
+#lang-menu{border-radius:16px;min-width:160px}
+#lang-menu button{border-radius:999px}
+@media(max-width:900px){header.site .wrap{padding-left:16px;padding-right:16px}}
+@media(max-width:900px){.langbox{margin-left:auto}}
+@media(max-width:900px){
+ header.site .wrap{flex-wrap:wrap}
+ .logo{order:1}.langbox{order:2;margin-left:auto}
+ nav.main{order:3;flex:none;width:100%;justify-content:flex-start;overflow-x:auto}
+}

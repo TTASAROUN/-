@@ -10,8 +10,9 @@ const FLAGS={
 };
 // [구글언어코드, 표시이름, 국기코드]
 const LANGS=[['ko','한국어','kr'],['en','English','us'],['zh-CN','中文','cn'],['vi','Tiếng Việt','vn'],['tl','Filipino','ph'],['th','ไทย','th']];
-const flagSrc=c=>'data:image/svg+xml,'+encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 20">${FLAGS[c]}</svg>`);
-const flag=c=>`<img class="flag" src="${flagSrc(c)}" alt="" width="22" height="15">`;
+const FLAGX={kr:5,us:0,cn:0,vn:5,ph:0,th:5}; // 동그랗게 보일 때 보여 줄 영역(왼쪽 기준 위치)
+const flagSrc=c=>'data:image/svg+xml,'+encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="${FLAGX[c]||0} 0 20 20">${FLAGS[c]}</svg>`);
+const flag=c=>`<img class="flag" src="${flagSrc(c)}" alt="" width="26" height="26">`;
 const I={
  about:'<path d="M5 21V4h9v17M14 9h5v12M3 21h18M8 8h2M8 12h2M8 16h2"/>',
  mom:'<path d="M12 21s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 11c0 5.6-7 10-7 10z"/>',
@@ -64,7 +65,7 @@ const ddGroup=(label,list)=>`<div class="dd"><a href="#" class="${list.includes(
 const one=n=>link(byName(n));
 const topNav=one('about.html')+ddGroup('돌봄 서비스',CARE)+ddGroup('응애맘빠',['class.html','letter.html'])+['growth-note.html','match.html','branch.html','community.html','shop.html','academy.html'].map(one).join('');
 document.body.insertAdjacentHTML('afterbegin',`<header class="site"><div class="wrap">
- <a class="logo notranslate" href="index.html">따사로운</a><nav class="main">${topNav}</nav><div class="langbox notranslate"><button id="lang-btn" type="button" aria-label="Language">${flag("kr")}<small>▾</small></button><div id="lang-menu">${LANGS.map(l=>`<button type="button" data-l="${l[0]}">${flag(l[2])}${l[1]}</button>`).join('')}</div></div></div></header><div id="gt"></div>`);
+ <a class="logo notranslate" href="index.html">따사로운</a><nav class="main">${topNav}</nav><div class="langbox notranslate"><button id="lang-btn" type="button" aria-label="Language">${flag("kr")}</button><div id="lang-menu">${LANGS.map(l=>`<button type="button" data-l="${l[0]}">${flag(l[2])}${l[1]}</button>`).join('')}</div></div></div></header><div id="gt"></div>`);
 document.body.insertAdjacentHTML('beforeend',`<footer class="site"><div class="wrap"><b>따사로운 통합서비스</b> 사업자등록번호: (입력) · 대표: (입력)<br><b>따사로운 평생교육원</b> 사업자등록번호: (입력) · 대표: (입력)<br>주소: (입력) · 전화: (입력) · 이메일: (입력)<br>www.ttassaroun.co.kr<br>© 2026 All rights reserved.</div></footer>`);
 const card=p=>`<a class="card" href="${p[0]}"><i>${svg(p[2])}</i><h3>${p[1]}</h3><p>${p[3]}</p></a>`;
 const g1=document.getElementById('care-cards');if(g1)g1.innerHTML=care.map(card).join('');
