@@ -261,3 +261,4 @@ section.blk .lt-hero h2{color:#fff;margin:0 0 10px}
 .hero-ov{position:absolute;inset:0;z-index:1;background:linear-gradient(90deg,rgba(24,82,68,.93) 0%,rgba(31,91,77,.8) 36%,rgba(47,125,107,.28) 66%,rgba(47,125,107,.04) 100%)}
 .hero h1,.hero p{text-shadow:0 1px 14px rgba(0,40,30,.4)}
 @media(max-width:760px){.hero{min-height:480px}.hero-ov{background:linear-gradient(180deg,rgba(24,82,68,.92) 0%,rgba(31,91,77,.78) 52%,rgba(47,125,107,.3) 100%)}}
+.hero-video{transition:opacity .9s ease}
