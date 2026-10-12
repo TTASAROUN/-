@@ -305,3 +305,23 @@ header.site .wrap{max-width:none;padding-left:28px;padding-right:28px}
  nav.main{order:2;flex:none;width:100%;justify-content:center;overflow:visible}
  .langbox{position:absolute;right:28px;top:6px;margin:0}
 }
+
+/* 모바일: 햄버거 메뉴 */
+#nav-burger{display:none}
+@media(max-width:900px){
+ header.site .wrap{flex-wrap:wrap;align-items:center;min-height:56px;padding-top:4px;padding-bottom:4px}
+ .logo{order:1;margin-right:auto}.langbox{order:2;margin-left:0}
+ #nav-burger{display:flex;order:3;flex-direction:column;justify-content:center;gap:5px;width:44px;height:44px;margin-left:6px;border:0;border-radius:50%;background:var(--sand);cursor:pointer;padding:0 12px}
+ #nav-burger i{display:block;height:2px;border-radius:2px;background:var(--green-d);transition:transform .2s,opacity .2s}
+ header.site.nav-open #nav-burger i:nth-child(1){transform:translateY(7px) rotate(45deg)}
+ header.site.nav-open #nav-burger i:nth-child(2){opacity:0}
+ header.site.nav-open #nav-burger i:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+ nav.main{order:4;display:none!important;flex-direction:column;width:100%;overflow:visible;padding:6px 0 10px;border-top:1px solid var(--sand);max-height:calc(100svh - 70px);overflow-y:auto}
+ header.site.nav-open nav.main{display:flex!important}
+ nav.main a{width:100%;padding:13px 12px;font-size:1rem;justify-content:space-between}
+ nav.main .dd{display:block;width:100%}
+ nav.main .dd .ddm{position:static!important;display:none;box-shadow:none;border:0;padding:0 0 6px 14px;max-height:none;overflow:visible;min-width:0;border-radius:0}
+ nav.main .dd.open .ddm{display:block}
+ nav.main .dd .ddm a{padding:11px 12px;font-size:.95rem;color:var(--mute)}
+ .hero{height:clamp(300px,62vh,calc(100svh - 64px))}
+}
