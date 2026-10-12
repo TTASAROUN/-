@@ -44,59 +44,52 @@ function cap(x1,y1,x2,y2,w,col){c.strokeStyle=col;c.lineWidth=w;c.lineCap='round
 function el(x,y,rx,ry,col,rot){c.fillStyle=col;c.beginPath();c.ellipse(x,y,rx,ry,rot||0,0,TAU);c.fill()}
 const shadow=(x,y,rx,ry,a)=>el(x,y,rx,ry,`rgba(20,60,25,${a||.16})`);
 
-// ── 아기: 몸은 기어가는 방향을 따라 돌고, 얼굴은 항상 위를 보게 그려요 ──
-// 머리카락 스타일: blond(금발 곱슬), bowl(검은 단발), afro(곱슬 뭉게머리), curly(갈색 곱슬), buns(양갈래 똥머리), red(붉은 머리)
-function drawHead(e,x,y,tilt,t){
- const r=13*e.sc;
- c.save();c.translate(x,y);c.rotate(tilt);
- if(e.hs==='afro'){el(0,-r*.12,r*1.3,r*1.24,e.hc);}
- if(e.hs==='buns'){el(-r*.95,-r*.62,r*.46,r*.46,e.hc);el(r*.95,-r*.62,r*.46,r*.46,e.hc)}
- el(-r*.98,r*.06,r*.2,r*.24,e.skin);el(r*.98,r*.06,r*.2,r*.24,e.skin);
- el(0,0,r,r*1.02,e.skin);
- c.save();c.beginPath();c.ellipse(0,0,r,r*1.02,0,0,TAU);c.clip();
- c.fillStyle=e.hc;
- if(e.hs==='blond'){c.beginPath();c.ellipse(0,-r*.7,r*.98,r*.55,0,0,TAU);c.fill()}
- else if(e.hs==='bowl'||e.hs==='buns'){c.beginPath();c.ellipse(0,-r*.62,r*1.04,r*.62,0,0,TAU);c.fill();c.fillRect(-r,-r*.62,r*.3,r*.9);c.fillRect(r*.7,-r*.62,r*.3,r*.9)}
- else if(e.hs==='curly'){c.beginPath();c.ellipse(0,-r*.72,r*.96,r*.5,0,0,TAU);c.fill()}
- else if(e.hs==='red'){c.beginPath();c.ellipse(0,-r*.74,r*.95,r*.48,0,0,TAU);c.fill()}
- else if(e.hs==='afro'){c.beginPath();c.ellipse(0,-r*.66,r*1.0,r*.5,0,0,TAU);c.fill()}
- c.restore();
- c.fillStyle=e.hc;
- if(e.hs==='blond'||e.hs==='curly'){for(let i=-2;i<=2;i++){c.beginPath();c.arc(i*r*.36,-r*(.98-Math.abs(i)*.06),r*.27,0,TAU);c.fill()}}
- if(e.hs==='red'){c.beginPath();c.arc(0,-r*1.05,r*.2,0,TAU);c.arc(r*.28,-r*1.0,r*.14,0,TAU);c.fill()}
- const blink=((t+e.bo)%4.2)<.13;
- c.fillStyle='#2b1d17';c.strokeStyle='#2b1d17';c.lineWidth=r*.08;c.lineCap='round';
- for(const sx of [-1,1]){
-  if(blink){c.beginPath();c.arc(sx*r*.36,r*.1,r*.1,.15*Math.PI,.85*Math.PI);c.stroke()}
-  else{c.beginPath();c.arc(sx*r*.36,r*.08,r*.105,0,TAU);c.fill();c.fillStyle='#fff';c.beginPath();c.arc(sx*r*.36+r*.03,r*.04,r*.035,0,TAU);c.fill();c.fillStyle='#2b1d17'}
- }
- el(-r*.6,r*.4,r*.2,r*.13,'rgba(255,120,120,.38)');el(r*.6,r*.4,r*.2,r*.13,'rgba(255,120,120,.38)');
- el(0,r*.24,r*.07,r*.05,e.skinD);
- const open=Math.sin(t*1.7+e.bo)>.6;
- c.strokeStyle='#8a3a2e';c.lineWidth=r*.075;c.beginPath();
- if(open){c.fillStyle='#b5453a';c.beginPath();c.ellipse(0,r*.5,r*.2,r*.14,0,0,Math.PI);c.fill()}
- else{c.arc(0,r*.38,r*.2,.2*Math.PI,.8*Math.PI);c.stroke()}
- if(e.hs==='red'){c.fillStyle='rgba(170,90,50,.55)';for(const [fx,fy] of [[-.5,.28],[-.38,.38],[-.62,.38],[.5,.28],[.38,.38],[.62,.38]]){c.beginPath();c.arc(fx*r,fy*r,r*.04,0,TAU);c.fill()}}
- c.restore();
-}
+// ── 아기: 하늘에서 수직으로 내려다본 모습 (정수리·등·기저귀, 얼굴은 보이지 않아요) ──
+// 머리카락 스타일: blond(금발 곱슬), bowl(검은 직모), afro(곱슬 뭉게머리), curly(갈색 곱슬), buns(양갈래 똥머리), red(붉은 머리)
+function bumps(cx,cy,r,n,br,col,off){c.fillStyle=col;for(let i=0;i<n;i++){const a=i/n*TAU+off;c.beginPath();c.arc(cx+Math.cos(a)*r,cy+Math.sin(a)*r,br,0,TAU);c.fill()}}
 function drawBaby(e,t){
- const sc=e.sc;
- c.save();c.translate(e.x,e.y);c.rotate(e.a);c.scale(sc,sc);
- shadow(0,6,34,18,.2);
- const s1=Math.sin(e.ph),s2=Math.sin(e.ph+Math.PI);
- const leg=(side,sw)=>{const hy=side*9;cap(-12,hy,-22+sw*4,hy+side*5,8.5,e.skin);cap(-22+sw*4,hy+side*5,-31+sw*5,hy+side*3,7,e.skin);el(-33+sw*5,hy+side*3,4.4,3.6,e.skinL)};
- leg(-1,s1);leg(1,s2);
- const arm=(side,sw)=>{cap(8,side*10,19+sw*4,side*12.5,7,e.skin);el(21.5+sw*4,side*12.8,4.4,4.4,e.skin)};
- arm(-1,s2);arm(1,s1);
- el(2,0,16,12.5,e.skin);el(5,0,8,7,e.skinL);
- el(-11,0,14,12.8,'#ffffff');el(-11,0,9,8,'#f4f7fb');
- c.strokeStyle='rgba(110,125,150,.5)';c.lineWidth=1.3;c.beginPath();c.ellipse(-11,0,14,12.8,0,0,TAU);c.stroke();
- c.beginPath();c.arc(-1,-11,7,.5,Math.PI-.5);c.stroke();c.beginPath();c.arc(-1,11,7,Math.PI+.5,TAU-.5);c.stroke();   // 다리 둘레 주름
- c.fillStyle=e.tab;c.fillRect(-1,-14.5,6.5,4.5);c.fillRect(-1,10,6.5,4.5);                                              // 양쪽 테이프
- c.strokeStyle=e.tab;c.lineWidth=2.2;c.beginPath();c.moveTo(1.5,-9);c.lineTo(1.5,9);c.stroke();                        // 허리 밴드
+ const sc=e.sc,sw=Math.sin(e.ph),sw2=Math.sin(e.ph+Math.PI);
+ c.save();c.translate(e.x,e.y);c.rotate(e.a);
+ // 그림자 (해가 왼쪽 위에 있어 오른쪽 아래로 드리워요)
+ c.save();c.rotate(-e.a);c.translate(7*sc,10*sc);c.rotate(e.a);c.scale(sc,sc);el(-2,0,38,17,'rgba(20,60,25,.22)');c.restore();
+ c.scale(sc,sc);c.translate(0,Math.sin(e.ph*2)*.9);
+ // 다리 (엉덩이 옆에서 뒤로 접혀 번갈아 움직임)
+ for(const [side,w] of [[-1,sw],[1,sw2]]){
+  const hy=side*8.5,kx=-22+w*5,ky=side*13.5,fx=-34+w*6,fy=side*8;
+  cap(-12,hy,kx,ky,9.5,e.skin);cap(kx,ky,fx,fy,7.6,e.skin);
+  el(fx-1.5,fy,5,3.6,e.skinL,side*.4);
+ }
+ // 팔 (어깨에서 앞으로 번갈아 뻗음)
+ for(const [side,w] of [[-1,sw2],[1,sw]]){
+  const ex=14+w*3,ey=side*16,hx=25+w*5,hy2=side*11.5;
+  cap(8,side*12,ex,ey,7,e.skin);cap(ex,ey,hx,hy2,6.2,e.skin);el(hx+1.5,hy2,4.3,4,e.skinL);
+ }
+ // 등과 어깨
+ el(2,0,15,12.8,e.skin);el(4,0,10,8,e.skinL);
+ c.strokeStyle=e.skinD;c.globalAlpha=.4;c.lineWidth=1.4;c.beginPath();c.moveTo(-3,0);c.lineTo(13,0);c.stroke();c.globalAlpha=1;
+ el(7,-5,5,4,e.skinD,.3);c.globalAlpha=1;
+ // 기저귀
+ el(-12,0,13.5,14,'#ffffff');el(-13,0,10,10,'#eef2f8');
+ c.strokeStyle='rgba(110,125,150,.55)';c.lineWidth=1.2;c.beginPath();c.ellipse(-12,0,13.5,14,0,0,TAU);c.stroke();
+ c.beginPath();c.moveTo(-24,0);c.lineTo(-5,0);c.stroke();                                         // 뒤 솔기
+ c.beginPath();c.arc(-9,-12,6,.5,Math.PI-.5);c.stroke();c.beginPath();c.arc(-9,12,6,Math.PI+.5,TAU-.5);c.stroke(); // 다리 둘레
+ c.fillStyle=e.tab;c.fillRect(-4.5,-15,6.5,4.6);c.fillRect(-4.5,10.4,6.5,4.6);                      // 양쪽 테이프
+ c.strokeStyle=e.tab;c.lineWidth=2;c.beginPath();c.moveTo(-2,-10);c.lineTo(-2,10);c.stroke();       // 허리 밴드
+ // 목과 머리 (정수리가 보여요)
+ const hx=22;
+ el(14,0,5,6.5,e.skin);
+ if(e.hs==='afro'){bumps(hx,0,10,12,4.4,e.hc,0);el(hx,0,11,11,e.hc);bumps(hx,0,6,6,3.8,e.hc2,.3)}
+ else{
+  el(hx,0,10.2,10.6,e.skin);                                                                       // 머리 바탕
+  el(hx,-10.6,2.4,3.3,e.skin);el(hx,10.6,2.4,3.3,e.skin);                                           // 귀
+  if(e.hs==='buns'){el(hx-3,-11.5,4.6,4.6,e.hc);el(hx-3,11.5,4.6,4.6,e.hc)}
+  if(e.hs==='blond'||e.hs==='curly')bumps(hx,0,8.2,11,3.1,e.hc,0);
+  el(hx-.5,0,9.4,9.8,e.hc);                                                                        // 머리카락
+  c.fillStyle=e.hc2;c.beginPath();c.ellipse(hx-2.5,-2.8,5.2,3.2,-.5,0,TAU);c.fill();               // 윤기
+  c.strokeStyle=e.hc3;c.lineWidth=1.1;c.beginPath();c.arc(hx-2,1.2,2.8,.2,Math.PI*1.5);c.stroke();   // 가마
+  if(e.hs==='red'){c.strokeStyle=e.hc2;c.lineWidth=1.6;c.beginPath();c.moveTo(hx+6,-3);c.quadraticCurveTo(hx+11,-1,hx+9.5,4);c.stroke()}
+ }
  c.restore();
- const hx=e.x+Math.cos(e.a)*26*sc,hy=e.y+Math.sin(e.a)*26*sc-3*sc;
- drawHead(e,hx,hy,clamp(Math.sin(e.a)*.12+Math.sin(t*.9+e.bo)*.05,-.25,.25),t);
 }
 // ── 앉은 어른 ──
 function drawSitter(e,t){
@@ -161,33 +154,37 @@ function build(){
  U=clamp(H/520,.72,1.5);
  const bx=W*.70,by=H*.56,bw=470*U,bh=300*U,ba=-.06;
  const toW=(lx,ly)=>({x:bx+Math.cos(ba)*lx-Math.sin(ba)*ly,y:by+Math.sin(ba)*lx+Math.cos(ba)*ly});
- // 다양한 아기들: [머리 스타일, 머리색, 피부색, 밝은 피부색(발바닥·배), 피부 그늘색, 기저귀 끈 색]
+ // 다양한 아기들: [머리 스타일, 머리색, 윤기색, 가마색, 피부색, 밝은 피부, 그늘 피부, 기저귀 테이프색]
  const KIDS=[
-  ['blond','#f1cf74','#fbd9c4','#fde8da','#e9b79b','#7ec8e3'],
-  ['afro','#241813','#7a4a33','#94604a','#5e3623','#ffb3c7'],
-  ['bowl','#241b17','#f3cfa5','#f8e0c4','#d9a979','#a8d98a'],
-  ['curly','#6b4a34','#d39e6f','#e2b588','#b57d52','#ffd45c'],
-  ['buns','#1d1613','#ae7a52','#c4906a','#8a5a38','#c8a4ff'],
-  ['red','#c8622e','#fde1d0','#feeee4','#eab99f','#7ec8e3']];
- const mkBaby=(x,y,i,bounds,sp)=>{const k=KIDS[i];return{k:'baby',x,y,a:rr(0,TAU),sc:1.32*U,ph:rr(0,TAU),sp:sp*U,bounds,tgt:null,pause:rr(0,2),hs:k[0],hc:k[1],skin:k[2],skinL:k[3],skinD:k[4],tab:k[5],bo:rr(0,4)}};
- const blanketB={x0:W*.54,x1:W*.93,y0:H*.18,y1:H*.86};
+  ['blond','#e9c564','#f7e09a','#c9a43f','#fbd5bd','#fde6d6','#e4a98c','#7ec8e3'],
+  ['afro','#21160f','#3b2a20','#21160f','#74452e','#8d5a40','#58311f','#ffb3c7'],
+  ['bowl','#1d1613','#4a3a33','#0d0908','#f1cba0','#f8e0c4','#d6a574','#a8d98a'],
+  ['curly','#6b4a34','#8e6a4c','#4c3322','#d39e6f','#e2b588','#b57d52','#ffd45c'],
+  ['buns','#1a1311','#463631','#0d0908','#a9744c','#c08c66','#85563a','#c8a4ff'],
+  ['red','#c1592a','#e08a52','#9a4220','#fde0cf','#feeee4','#e8b79c','#7ec8e3'],
+  ['afro','#2b1d14','#4a3426','#2b1d14','#8d5b3d','#a8745a','#6a3f29','#ffd45c'],
+  ['bowl','#2a201b','#5a4a40','#14100d','#c68e5f','#d9a67c','#a06e46','#ffb3c7'],
+  ['blond','#d9b45a','#f0d488','#b9923a','#f6cdb0','#fbe0cc','#dba283','#a8d98a']];
+ const mkBaby=(x,y,i,bounds,sp)=>{const k=KIDS[i];return{k:'baby',x,y,a:rr(0,TAU),sc:.92*U,ph:rr(0,TAU),sp:sp*U,bounds,tgt:null,pause:rr(0,2),hs:k[0],hc:k[1],hc2:k[2],hc3:k[3],skin:k[4],skinL:k[5],skinD:k[6],tab:k[7]}};
+ const blanketB={x0:W*.5,x1:W*.96,y0:H*.1,y1:H*.9};
  const grassB={x0:W*.5,x1:W*.96,y0:H*.14,y1:H*.9};
  const S={bx,by,bw,bh,ba,babies:[],butter:[],ball:null};
- S.babies=[mkBaby(bx-bw*.12,by+bh*.02,0,blanketB,20),mkBaby(bx+bw*.14,by-bh*.1,1,blanketB,18),mkBaby(bx+bw*.04,by+bh*.18,2,blanketB,17),
-  mkBaby(W*.58,H*.72,3,grassB,24),mkBaby(W*.8,H*.3,4,grassB,22),mkBaby(W*.9,H*.78,5,grassB,21)];
- const care=toW(-bw*.46,bh*.16),mom=toW(bw*.4,-bh*.18);
- S.care={k:'sitter',x:care.x,y:care.y,a:ba,sc:3.0*U,sw:0,skin:'#e6b78d',hair:'#241b17',top:'#ffffff',pants:'#7a8fb5',apron:'#4aa58e',bun:true};
- S.mom={k:'sitter',x:mom.x,y:mom.y,a:ba+Math.PI-.1,sc:3.0*U,sw:2,skin:'#8a5638',hair:'#241813',afro:true,top:'#ffb3a7',pants:'#556',hold:true,babySkin:'#9a6446',babyHair:'#241813'};
- S.dad={k:'sitter',x:W*.58,y:H*.3,a:.5,sc:3.0*U,sw:4,skin:'#fbd9c4',hair:'#c28b4a',top:'#5b87c6',pants:'#3b4a63'};
- S.pup={k:'puppy',x:W*.86,y:H*.62,a:3,sc:1.7*U,ph:0,sp:80*U,bounds:grassB,moving:0,pause:0};
- S.bun={k:'bunny',x:W*.52,y:H*.8,a:0,sc:1.6*U,hop:0,wait:1,from:null,to:null,bounds:grassB};
- const kp=toW(bw*.4,bh*.32);S.kit={k:'kitten',x:kp.x,y:kp.y,a:ba+2.6,sc:1.7*U};
+ S.babies=[mkBaby(W*.58,H*.68,0,blanketB,17),mkBaby(W*.74,H*.62,1,blanketB,15),mkBaby(W*.66,H*.84,2,blanketB,16),
+  mkBaby(W*.82,H*.78,3,blanketB,18),mkBaby(W*.9,H*.55,4,blanketB,17),mkBaby(W*.56,H*.28,5,blanketB,16),
+  mkBaby(W*.72,H*.2,6,blanketB,15),mkBaby(W*.86,H*.3,7,blanketB,17),mkBaby(W*.62,H*.5,8,blanketB,16)];
+ const care={x:W*.6,y:H*.76},mom={x:W*.92,y:H*.42};
+ S.care={k:'sitter',x:care.x,y:care.y,a:ba,sc:1.5*U,sw:0,skin:'#e6b78d',hair:'#241b17',top:'#ffffff',pants:'#7a8fb5',apron:'#4aa58e',bun:true};
+ S.mom={k:'sitter',x:mom.x,y:mom.y,a:ba+Math.PI-.1,sc:1.5*U,sw:2,skin:'#8a5638',hair:'#241813',afro:true,top:'#ffb3a7',pants:'#556',hold:true,babySkin:'#9a6446',babyHair:'#241813'};
+ S.dad={k:'sitter',x:W*.66,y:H*.36,a:.5,sc:1.5*U,sw:4,skin:'#fbd9c4',hair:'#c28b4a',top:'#5b87c6',pants:'#3b4a63'};
+ S.pup={k:'puppy',x:W*.86,y:H*.62,a:3,sc:1.25*U,ph:0,sp:70*U,bounds:grassB,moving:0,pause:0};
+ S.bun={k:'bunny',x:W*.52,y:H*.8,a:0,sc:1.15*U,hop:0,wait:1,from:null,to:null,bounds:grassB};
+ S.kit={k:'kitten',x:W*.78,y:H*.9,a:ba+2.6,sc:1.25*U};
  S.ball={x:W*.8,y:H*.5,vx:0,vy:0,bounds:grassB};
  const cols=[['#ffd45c','#ff9a3c'],['#ff9ec7','#ff6fa5'],['#9fd0ff','#5aa6ff'],['#fff','#ffd9a8'],['#ffb36b','#ff7a3a'],['#d9b8ff','#a97bff']];
  for(let i=0;i<7;i++){const k=cols[i%cols.length];S.butter.push({cx:W*rr(.45,.95),cy:H*rr(.12,.88),rx:rr(60,150)*U,ry:rr(30,80)*U,sx:rr(.25,.55),sy:rr(.3,.6),ph:rr(0,TAU),fp:rr(0,TAU),fs:rr(9,14),c1:k[0],c2:k[1],sc:rr(.8,1.15),x:0,y:0,a:0,vx:rr(-12,12),dx:0})}
  S.toys=[];const tc=['#ff8f7a','#ffd45c','#7ec8e3','#a8d98a'];
- for(let i=0;i<4;i++){const p=toW(-bw*.12+i*52*U,-bh*.36+(i%2)*28*U);S.toys.push({x:p.x,y:p.y,a:rr(0,TAU),c:tc[i]})}
- S.ted=toW(bw*.2,bh*.34);
+ for(let i=0;i<5;i++){S.toys.push({x:W*rr(.55,.94),y:H*rr(.15,.88),a:rr(0,TAU),c:tc[i%4]})}
+ S.ted={x:W*.7,y:H*.46};
  scene=S;
 }
 function pick(e){const b=e.bounds;e.tgt={x:rr(b.x0,b.x1),y:rr(b.y0,b.y1)}}
@@ -204,14 +201,14 @@ function update(dt,t){
  const S=scene;
  S.babies.forEach(b=>step(b,dt));
  for(let i=0;i<S.babies.length;i++)for(let j=i+1;j<S.babies.length;j++){
-  const a=S.babies[i],b=S.babies[j],dx=b.x-a.x,dy=b.y-a.y,d=Math.hypot(dx,dy)||1,m=96*U;
+  const a=S.babies[i],b=S.babies[j],dx=b.x-a.x,dy=b.y-a.y,d=Math.hypot(dx,dy)||1,m=72*U;
   if(d<m){const k=(m-d)/d*.5*Math.min(1,dt*4);a.x-=dx*k;a.y-=dy*k;b.x+=dx*k;b.y+=dy*k}
  }
  const p=S.pup,b=S.ball;p.tgt={x:b.x,y:b.y};
  b.x+=b.vx*dt;b.y+=b.vy*dt;b.vx*=Math.pow(.5,dt);b.vy*=Math.pow(.5,dt);
  if(b.x<b.bounds.x0||b.x>b.bounds.x1)b.vx*=-1;if(b.y<b.bounds.y0||b.y>b.bounds.y1)b.vy*=-1;
  b.x=clamp(b.x,b.bounds.x0,b.bounds.x1);b.y=clamp(b.y,b.bounds.y0,b.bounds.y1);
- if(Math.hypot(p.x-b.x,p.y-b.y)<26*U&&p.pause<=0){const a=R()*TAU;b.vx=Math.cos(a)*150*U;b.vy=Math.sin(a)*150*U;p.pause=.5}
+ if(Math.hypot(p.x-b.x,p.y-b.y)<22*U&&p.pause<=0){const a=R()*TAU;b.vx=Math.cos(a)*150*U;b.vy=Math.sin(a)*150*U;p.pause=.5}
  if(p.pause>0){p.pause-=dt;p.moving=0}else{const dx=b.x-p.x,dy=b.y-p.y;p.a+=angDiff(p.a,Math.atan2(dy,dx))*clamp(dt*7,0,1);const sp=p.sp*clamp(Math.hypot(dx,dy)/60,.2,1);p.x+=Math.cos(p.a)*sp*dt;p.y+=Math.sin(p.a)*sp*dt;p.ph+=sp*dt*.35;p.moving=sp>10}
  const u=S.bun;
  if(u.from){u.hop+=dt/.55;const k=Math.min(1,u.hop);u.x=lerp(u.from.x,u.to.x,k);u.y=lerp(u.from.y,u.to.y,k);if(u.hop>=1){u.from=null;u.hop=0;u.wait=rr(.5,2.2)}}
@@ -234,8 +231,8 @@ function frame(){
  const z=1.03+Math.sin(t*.05)*.012,cx=Math.sin(t*.07)*14*U,cy=Math.cos(t*.06)*9*U;
  c.save();c.translate(W/2+cx,H/2+cy);c.scale(z,z);c.translate(-W/2,-H/2);
  c.drawImage(bg,-60*U,-60*U,W+120*U,H+120*U);
- S.toys.forEach(o=>{c.save();c.translate(o.x,o.y);c.rotate(o.a);shadow(2,3,12*U,11*U,.16);c.fillStyle=o.c;rrect(-11*U,-11*U,22*U,22*U,5*U);c.fill();c.restore()});
- c.save();c.translate(S.ted.x,S.ted.y);c.scale(1.4*U,1.4*U);shadow(3,5,13,12,.18);el(0,0,10,10,'#b97f4e');el(-8,-8,4,4,'#b97f4e');el(8,-8,4,4,'#b97f4e');el(0,-1,6,6,'#d4a273');c.restore();
+ S.toys.forEach(o=>{c.save();c.translate(o.x,o.y);c.rotate(o.a);shadow(2,3,9*U,8*U,.16);c.fillStyle=o.c;rrect(-8*U,-8*U,16*U,16*U,4*U);c.fill();c.restore()});
+ c.save();c.translate(S.ted.x,S.ted.y);c.scale(.9*U,.9*U);shadow(3,5,13,12,.18);el(0,0,10,10,'#b97f4e');el(-8,-8,4,4,'#b97f4e');el(8,-8,4,4,'#b97f4e');el(0,-1,6,6,'#d4a273');c.restore();
  drawBall(S.ball);
  const L=S.babies.concat([S.pup,S.bun,S.kit,S.care,S.mom,S.dad]).sort((a,b)=>a.y-b.y);
  L.forEach(e=>{
