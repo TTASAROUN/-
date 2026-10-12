@@ -27,8 +27,16 @@ const OBJ=[
 ];
 const img=new Image();img.decoding='async';img.src='assets/hero.jpg';
 let W=0,H=0,dpr=1,sc=1,ox=0,oy=0,ready=false,raf=0,running=false,t0=0;
-// 나비: 사진 위를 천천히 날아다녀요
-const BF=[[.15,.2,'#fff'],[.45,.6,'#ffe27a'],[.7,.3,'#fff'],[.3,.8,'#fff'],[.85,.7,'#ffd24d'],[.6,.12,'#fff'],[.08,.55,'#ffe27a']].map((b,i)=>({u:b[0],v:b[1],col:b[2],ph:i*1.7,sp:.12+.03*(i%3),ax:.07+.02*(i%4),ay:.05+.02*(i%3)}));
+// 나비: 종류마다 색이 다르고, 날개를 퍼덕이다 날개를 펴고 미끄러지듯 날기를 반복해요
+const FW=new Path2D('M.8,-2C3,-9 10,-13 14.500,-11.500C16.500,-10.500 15.500,-4 11.500,-.5C8.500,2 4,2 .8,.6Z');
+const HW=new Path2D('M.8,.6C4.500,1.500 9.500,2 11.500,5.500C12.500,9.500 8,12.500 4.500,10.500C2,9 1,5.500 .8,3Z');
+const SPECIES={
+ monarch:{a:'#f6a21e',b:'#e0661a',edge:'#2b1d12',dots:'#fff',vein:'rgba(40,20,5,.55)'},
+ swallow:{a:'#ffe86a',b:'#f2c230',edge:'#2b2415',dots:'#f2c230',vein:'rgba(40,30,5,.5)'},
+ white:{a:'#ffffff',b:'#e9eef2',edge:'#8a949c',dots:'',vein:'rgba(110,120,130,.5)'},
+ blue:{a:'#8fc8ff',b:'#4f8fe0',edge:'#1d2f55',dots:'#fff',vein:'rgba(20,40,90,.5)'}
+};
+const BF=[['white',.15,.22],['monarch',.5,.62],['swallow',.72,.3],['white',.3,.82],['blue',.86,.7],['white',.62,.14],['monarch',.08,.58]].map((b,i)=>({sp:SPECIES[b[0]],u:b[1],v:b[2],ph:i*1.9,spd:.11+.025*(i%3),ax:.09+.02*(i%4),ay:.06+.02*(i%3),phase:i,hd:0,lt:0,sz:1.6+.25*(i%3)}));
 function feather(o){ // 가장자리가 부드러운 조각을 사진에서 잘라 둡니다
  const w=Math.ceil(o.rx*2+8),h=Math.ceil(o.ry*2+8),p=document.createElement('canvas');p.width=w;p.height=h;const g=p.getContext('2d');
  g.drawImage(img,o.x-w/2,o.y-h/2,w,h,0,0,w,h);
@@ -40,14 +48,25 @@ function size(){
  const r=hero.getBoundingClientRect();dpr=Math.min(window.devicePixelRatio||1,2);W=Math.max(1,Math.round(r.width*dpr));H=Math.max(1,Math.round(r.height*dpr));
  cv.width=W;cv.height=H;sc=Math.max(W/IW,H/IH);const mobile=r.width<760;ox=(W-IW*sc)*(mobile?.68:.6);oy=(H-IH*sc)*.1;draw(t0)
 }
-function butterfly(x,y,a,s,col,flap){
- c.save();c.translate(x,y);c.rotate(a);c.scale(s,s);
- c.fillStyle=col;c.strokeStyle='rgba(70,55,30,.45)';c.lineWidth=.7;
- const f=.2+.8*Math.abs(Math.sin(flap));
- for(const sd of[-1,1]){c.save();c.scale(sd*f,1);
-  c.beginPath();c.ellipse(5,-3.5,5,6.5,.5,0,TAU);c.fill();c.stroke();
-  c.beginPath();c.ellipse(3.8,4,3.2,4.4,-.4,0,TAU);c.fill();c.stroke();c.restore()}
- c.fillStyle='#4a3d2a';c.beginPath();c.ellipse(0,0,.9,5.5,0,0,TAU);c.fill();c.restore();
+function wing(sp,f){
+ c.save();c.scale(f,1);
+ for(const P of[FW,HW]){
+  const g=c.createRadialGradient(0,0,1,8,-3,15);g.addColorStop(0,sp.b);g.addColorStop(1,sp.a);
+  c.fillStyle=g;c.fill(P);c.lineWidth=.85;c.strokeStyle=sp.edge;c.lineJoin='round';c.stroke(P);
+ }
+ c.strokeStyle=sp.vein;c.lineWidth=.45;c.beginPath();
+ for(const[x,y]of[[13,-9],[12,-5],[9,-2],[10,6],[7,9]]){c.moveTo(1,0);c.quadraticCurveTo(x*.55,y*.35,x,y)}c.stroke();
+ if(sp.dots){c.fillStyle=sp.dots;for(const[x,y]of[[13,-9.800],[14.300,-6.500],[12.800,-2.800],[10.800,8.500],[7.500,10.800]]){c.beginPath();c.arc(x-.4,y,.55,0,TAU);c.fill()}}
+ c.restore();
+}
+function butterfly(b,x,y,ang,s,flap,glide){
+ c.save();c.translate(x+4*s,y+9*s);c.rotate(ang);c.scale(s*.9,s*.9);c.globalAlpha=.13;c.fillStyle='#10260c';
+ c.beginPath();c.ellipse(0,0,10*Math.max(.3,flap),8,0,0,TAU);c.fill();c.restore(); // 풀밭에 비친 그림자
+ c.save();c.translate(x,y);c.rotate(ang);c.scale(s,s);
+ wing(b.sp,flap);c.scale(-1,1);wing(b.sp,flap);c.scale(-1,1);
+ c.fillStyle='#2e2418';c.beginPath();c.ellipse(0,1,.95,5.600,0,0,TAU);c.fill();c.beginPath();c.arc(0,-5.200,1.100,0,TAU);c.fill();
+ c.strokeStyle='#2e2418';c.lineWidth=.5;c.beginPath();c.moveTo(-.4,-6);c.quadraticCurveTo(-2.500,-9.500,-3.800,-9);c.moveTo(.4,-6);c.quadraticCurveTo(2.500,-9.500,3.800,-9);c.stroke();
+ c.restore();
 }
 function draw(t){
  if(!ready)return;
@@ -68,10 +87,16 @@ function draw(t){
  }
  c.setTransform(1,0,0,1,0,0);
  for(const b of BF){
-  const u=b.u+Math.sin(t*b.sp+b.ph)*b.ax+Math.sin(t*b.sp*2.3+b.ph)*.02,v=b.v+Math.cos(t*b.sp*1.3+b.ph)*b.ay;
-  const u2=b.u+Math.sin((t+.05)*b.sp+b.ph)*b.ax+Math.sin((t+.05)*b.sp*2.3+b.ph)*.02,v2=b.v+Math.cos((t+.05)*b.sp*1.3+b.ph)*b.ay;
-  const x=u*W,y=v*H,ang=Math.atan2((v2-v)*H,(u2-u)*W)+Math.PI/2;
-  butterfly(x,y,ang,sc*1.9,b.col,t*14+b.ph);
+  const dt=b.lt?Math.min(.05,Math.max(0,t-b.lt)):0;b.lt=t;
+  const w=t*b.spd+b.ph;
+  const U=b.u+Math.sin(w)*b.ax+Math.sin(w*2.31+1.3)*.03,V=b.v+Math.cos(w*1.27)*b.ay+Math.sin(w*3.1)*.015;
+  const e=.02,w2=w+e*b.spd,U2=b.u+Math.sin(w2)*b.ax+Math.sin(w2*2.31+1.3)*.03,V2=b.v+Math.cos(w2*1.27)*b.ay+Math.sin(w2*3.1)*.015;
+  const tgt=Math.atan2((V2-V)*H,(U2-U)*W)+Math.PI/2;let d=tgt-b.hd;d=Math.atan2(Math.sin(d),Math.cos(d));b.hd+=d*Math.min(1,dt*4);
+  const burst=Math.sin(t*.8+b.ph*2.1);const glide=burst>.55;           // 가끔 날개를 펴고 미끄러져요
+  b.phase+=dt*(glide?1.2:(11+5*Math.sin(t*1.7+b.ph)));
+  const flap=glide?.9+.08*Math.sin(b.phase*3):.12+.88*Math.abs(Math.cos(b.phase));
+  const bob=Math.sin(b.phase*2)*(glide?.4:2.2);
+  butterfly(b,U*W+Math.cos(b.hd)*bob,V*H+Math.sin(b.hd)*bob,b.hd,sc*b.sz,flap,glide);
  }
 }
 function loop(ts){if(!running)return;if(!t0)t0=ts/1000;draw(ts/1000);raf=requestAnimationFrame(loop)}
