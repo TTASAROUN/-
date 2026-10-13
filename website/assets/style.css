@@ -325,3 +325,15 @@ header.site .wrap{max-width:none;padding-left:28px;padding-right:28px}
  nav.main .dd .ddm a{padding:11px 12px;font-size:.95rem;color:var(--mute)}
  .hero{height:clamp(300px,62vh,calc(100svh - 64px))}
 }
+
+/* 응애맘빠 행사 달력 */
+.cal-d.evd{position:relative;font-weight:700;color:#fff;background:var(--green);border-radius:50%;width:38px;margin:0 auto}
+.cal-d.evd:not(:disabled):hover{background:var(--green-d)}.cal-d.evd.sel{outline:3px solid rgba(226,95,20,.35);outline-offset:1px}
+.cal-d.evd.past{background:#d9d2c3;color:#fff}.cal-d.evd i{position:absolute;left:50%;bottom:3px;width:4px;height:4px;margin-left:-2px;border-radius:50%;background:#fff;opacity:.9}
+.evdot{display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--green);vertical-align:-1px}
+.ev-list{display:grid;gap:12px;margin-top:16px}
+.evc{display:grid;grid-template-columns:84px 1fr auto;gap:16px;align-items:center;background:#fff;border:1px solid var(--sand);border-radius:16px;padding:16px 18px}
+.evc.on{border-color:var(--green);box-shadow:0 4px 16px rgba(226,95,20,.12)}
+.evd2{text-align:center;background:var(--sand);border-radius:12px;padding:8px 4px}.evd2 b{display:block;font-size:1.7rem;line-height:1.1;color:var(--green-d)}.evd2 span{font-size:.78rem;color:var(--mute)}
+.evb h3{margin:0 0 4px;font-size:1.05rem}.evb p{margin:0;color:var(--mute);font-size:.92rem}.evb .evm{margin-top:6px;font-size:.86rem}
+@media(max-width:640px){.evc{grid-template-columns:64px 1fr}.eva{grid-column:1 / -1}.eva .btn{width:100%;text-align:center}}
