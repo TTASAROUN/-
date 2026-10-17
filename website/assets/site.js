@@ -65,7 +65,7 @@ const care=PAGES.filter(p=>CARE.includes(p[0])),rest=PAGES.filter(p=>!CARE.inclu
 const byName=n=>PAGES.find(p=>p[0]===n);
 const ddGroup=(label,list)=>`<div class="dd"><a href="#" class="${list.includes(cur)?'on':''}">${label}</a><div class="ddm">${list.map(byName).map(link).join('')}</div></div>`;
 const one=n=>link(byName(n));
-const topNav=one('about.html')+ddGroup('돌봄 서비스',CARE)+ddGroup('응애맘빠',['class.html','letter.html'])+['match.html','growth-note.html','branch.html','community.html','mam.html','shop.html','academy.html'].map(one).join('');
+const topNav=one('about.html')+ddGroup('돌봄 서비스',CARE)+ddGroup('응애맘빠',['class.html','letter.html'])+['match.html','growth-note.html','branch.html'].map(one).join('')+ddGroup('따사로운 이야기',['community.html','mam.html','shop.html'])+one('academy.html');
 document.body.insertAdjacentHTML('afterbegin',`<header class="site"><div class="wrap">
  <a class="logo notranslate" href="index.html">따사로운</a><nav class="main">${topNav}</nav><div class="langbox notranslate"><button id="lang-btn" type="button" aria-label="Language">${flag("kr")}</button><div id="lang-menu">${LANGS.map(l=>`<button type="button" data-l="${l[0]}">${flag(l[2])}${l[1]}</button>`).join('')}</div></div><button id="nav-burger" type="button" aria-label="메뉴" aria-expanded="false"><i></i><i></i><i></i></button></div></header><div id="gt"></div>`);
 (function(){const h=document.querySelector('header.site'),b=document.getElementById('nav-burger');if(!b)return;b.addEventListener('click',()=>{const o=h.classList.toggle('nav-open');b.setAttribute('aria-expanded',o)});h.querySelectorAll('nav.main a[href]').forEach(a=>{if(!a.parentElement.classList.contains('dd')||a.closest('.ddm'))a.addEventListener('click',()=>h.classList.remove('nav-open'))})})();
