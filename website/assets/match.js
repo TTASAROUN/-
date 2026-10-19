@@ -5,7 +5,9 @@ const CFG=window.SITE_CONFIG||{};
 const cookieLang=window.cookieLang||(()=>'ko');
 const SERVICES=['산후관리사','영유아 관리사','가사관리사','정리수납전문가','이유식전문가'];
 const TRAITS=['차분','조용','쾌활·유쾌','사교','전문'];
-const ENV=[['다태아','다태아(쌍둥이 이상)'],['먼거리','먼 거리 가능'],['입주','야간·입주'],['자차','자차 보유']];
+// 고객이 고르는 '해당 사항'만 둡니다. 먼 거리·입주·자차 같은 항목은 관리사님 인사기록(시트)의 항목이라 고객 화면에서는 뺐습니다.
+const ENV=[['다태아','다태아(쌍둥이 이상)']];
+const ENV_SERVICES=['산후관리사','영유아 관리사'];
 const PETS=[['반려견','댁에 반려견이 있어요'],['반려묘','댁에 반려묘가 있어요']];
 const AGES=['30대','40대','50대','60대','70대'];
 const RELIGIONS=['무교','기독교','천주교','불교','기타'];
@@ -99,7 +101,7 @@ function step1(msg){
  <div class="fld"><label for="m-apt">아파트·건물명 <em>(선택)</em></label><input id="m-apt" placeholder="예: 래미안 역삼" autocomplete="off"></div>
  <p class="hint full" style="margin:-6px 0 12px">가까이 사는 관리사님을 먼저 보여드리기 위해 사용해요. 정확한 주소는 마지막 단계에서 입력합니다.</p>
  ${dd('when','매칭 일정',`<div class="exrow top"><b>제외할 날 선택 <small>체크한 날은 서비스 일수에서 빠져요</small></b><div class="chips">${chips('excl',[['토','토요일 제외'],['일','일요일 제외'],['공휴일','공휴일 제외']],'checkbox')}<button type="button" class="chip-all" id="ex-all">토·일·공휴일 모두 제외</button></div></div><div class="exrow top"><b>특정 요일만 필요하다면 <small>예: 매주 수요일만 · 선택한 요일 외에는 선택할 수 없어요</small></b><div class="chips">${chips('only',[...WD].map(w=>[w,w+'요일']),'checkbox')}</div></div><div id="m-cal"></div>`,{full:1,wide:1})}
- ${dd('env','필요한 조건',`<div class="chips">${anyChips('extras',ENV)}</div>`,{hint:'해당하는 것 모두'})}
+ ${dd('env','해당 사항',`<div class="chips">${anyChips('extras',ENV)}</div>`,{hint:'해당하는 경우만'})}
  ${dd('pet','반려동물',`<div class="chips">${chips('pets',[[ANY,'없음·무관']].concat(PETS),'checkbox')}</div>`,{right:1,hint:'있다면 선택'})}
  ${dd('traits','성향',`<div class="chips">${anyChips('traits',TRAITS)}</div>`,{hint:'여러 개 선택'})}
  ${dd('mbti','MBTI',`<div class="mbr">${MBR.map((r,i)=>`<div class="mbrow"><span>${r[0]}</span><div class="chips">${chips('mb'+i,[[r[1],`${r[2]} ${r[1]}`],[r[3],`${r[4]} ${r[3]}`],['-','무관']],'radio')}</div></div>`).join('')}</div>`,{right:1,hint:'축별로 선택'})}
@@ -131,6 +133,7 @@ function step1(msg){
  const label=(arr,more=2)=>arr.length>more?`${arr.slice(0,more).join(', ')} 외 ${arr.length-more}`:arr.join(', ');
  let cal;
  const refresh=()=>{read();
+  {const ok=q.service.some(x=>ENV_SERVICES.includes(x)),fl=root.querySelector('[data-dd="env"]').closest('.fld');fl.style.display=ok?'':'none';if(!ok&&q.extras.includes('다태아')){q.extras=q.extras.filter(x=>x!=='다태아');f('extras').forEach(i=>i.checked=false);const a=f('extras').find(i=>i.value===ANY);if(a)a.checked=true}}
   sum('service',label(q.service),'선택하세요');
   const n=svcDays().length,tot=q.start?days(q.start,q.end||q.start):0;
   sum('when',q.start?`${fmt(q.start)}${q.end&&q.end!==q.start?' ~ '+fmt(q.end):''}${n!==tot?` · 서비스 ${n}일`:''}`:'','날짜를 선택하세요');
