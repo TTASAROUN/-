@@ -36,6 +36,7 @@ function doGet(e){
   if (p.list === 'share') return shareList_();
   if (p.list === 'community') return communityList_();
   if (p.list === 'letters') return lettersList_();
+  if (p.list === 'support') return supportList_();
   if (p.list !== 'growth') return out({ ok: true });
   const sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('growth');
   if (!sh || sh.getLastRow() < 2) return out({ ok: true, items: [] });
@@ -143,4 +144,20 @@ function lettersList_(){
     msg: r['한마디'], link: r['영상 링크'], vid: r['영상ID'], date: day(r['접수일시']) }));
   const comments = rowsOf('comment').slice(0, 300).map(r => ({ pid: r['글번호'], nick: r['닉네임'], body: r['내용'], date: day(r['접수일시']) }));
   return out({ ok: true, letters: letters, comments: comments });
+}
+
+
+// 출산지원 지도: 시트 '출산지원' 탭에서 '공개(Y)'인 줄만 내려보냄
+// 열: 지역코드 | 시도 | 시군구 | 제도명 | 지원내용 | 대상 | 신청방법 | 공식링크 | 문의 | 최종확인일 | 공개(Y)
+// 지역코드는 앱 안내(README)의 코드표를 쓰세요. (시·도 2자리 또는 시·군·구 5자리)
+function supportList_(){
+  const sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('출산지원');
+  if (!sh || sh.getLastRow() < 2) return out({ ok: true, items: [] });
+  const v = sh.getDataRange().getValues(), h = v[0].map(String), col = n => h.indexOf(n);
+  const day = d => d instanceof Date ? Utilities.formatDate(d, 'Asia/Seoul', 'yyyy-MM-dd') : String(d || '');
+  const items = v.slice(1).filter(r => r[col('공개(Y)')] === 'Y' && r[col('지역코드')]).map(r => ({
+    code: String(r[col('지역코드')]), name: r[col('제도명')], amount: r[col('지원내용')], target: r[col('대상')],
+    how: r[col('신청방법')], url: r[col('공식링크')], phone: r[col('문의')], checked: day(r[col('최종확인일')]), link: ''
+  }));
+  return out({ ok: true, items: items });
 }

@@ -35,6 +35,7 @@ const I={
  give:'<rect x="3" y="9" width="18" height="4" rx="1"/><path d="M5 13v7h14v-7M12 9v11M12 9c-3 0-4-4-1.5-4S12 9 12 9zm0 0c3 0 4-4 1.5-4S12 9 12 9z"/>',
  get:'<path d="M4 14l3-8h10l3 8v5H4z"/><path d="M4 14h5l1 2h4l1-2h5"/>',
  talk:'<path d="M4 5h16v11H11l-4 4v-4H4z"/><path d="M8 9h8M8 12h5"/>',
+ map:'<path d="M9 4l-5 2v14l5-2 6 2 5-2V4l-5 2-6-2z"/><path d="M9 4v14M15 6v14"/>',
  heartic:'<path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/><path d="M9 11l2 2 4-4" opacity=".0"/>',
  ask:'<circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.7.4-1 .9-1 1.7M12 17h.01"/>',
  tip:'<rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8l1.5 1.5L13 7M9 13l1.5 1.5L13 12M9 18h6"/>',
@@ -51,6 +52,7 @@ const PAGES=[
  ['growth-note.html','열린 의견함','note','불편과 의견을 해결하고, 개선으로 키워가는 공간'],
  ['match.html','번개매칭','bolt','급할 때 가장 빠르게 연결해 드립니다'],
  ['branch.html','지사모집','branch','함께 따사로운을 키워갈 지사장님을 모십니다'],
+ ['support.html','출산지원 지도','map','지도에서 우리 동네 출산지원 제도를 찾고 신청 방법을 확인해요','출산지원'],
  ['community.html','따사마을','chat','산모와 엄마들이 함께 나누는 이야기'],
  ['mam.html','따사맘','heartic','관리사님들이 들려주는 제안 · 우리 아기 이야기 · 서비스 소감'],
  ['shop.html','따사마켓','shop','친환경 육아용품 · 세제용품'],
@@ -65,7 +67,7 @@ const care=PAGES.filter(p=>CARE.includes(p[0])),rest=PAGES.filter(p=>!CARE.inclu
 const byName=n=>PAGES.find(p=>p[0]===n);
 const ddGroup=(label,list)=>`<div class="dd"><a href="#" class="${list.includes(cur)?'on':''}">${label}</a><div class="ddm">${list.map(byName).map(link).join('')}</div></div>`;
 const one=n=>link(byName(n));
-const topNav=one('about.html')+ddGroup('돌봄 서비스',CARE)+ddGroup('응애맘빠',['class.html','letter.html'])+['match.html','growth-note.html','branch.html'].map(one).join('')+ddGroup('따사로운 이야기',['community.html','mam.html','shop.html'])+one('academy.html');
+const topNav=one('about.html')+ddGroup('돌봄 서비스',CARE)+one('support.html')+ddGroup('응애맘빠',['class.html','letter.html'])+['match.html','growth-note.html','branch.html'].map(one).join('')+ddGroup('따사로운 이야기',['community.html','mam.html','shop.html'])+one('academy.html');
 document.body.insertAdjacentHTML('afterbegin',`<header class="site"><div class="wrap">
  <a class="logo notranslate" href="index.html">따사로운</a><nav class="main">${topNav}</nav><div class="langbox notranslate"><button id="lang-btn" type="button" aria-label="Language">${flag("kr")}</button><div id="lang-menu">${LANGS.map(l=>`<button type="button" data-l="${l[0]}">${flag(l[2])}${l[1]}</button>`).join('')}</div></div><button id="nav-burger" type="button" aria-label="메뉴" aria-expanded="false"><i></i><i></i><i></i></button></div></header><div id="gt"></div>`);
 (function(){const h=document.querySelector('header.site'),b=document.getElementById('nav-burger');if(!b)return;b.addEventListener('click',()=>{const o=h.classList.toggle('nav-open');b.setAttribute('aria-expanded',o)});h.querySelectorAll('nav.main a[href]').forEach(a=>{if(!a.parentElement.classList.contains('dd')||a.closest('.ddm'))a.addEventListener('click',()=>h.classList.remove('nav-open'))})})();
@@ -105,11 +107,12 @@ function googleLang(code,n){
 })();
 
 // 폼/피드가 있는 페이지에서만 설정과 폼 스크립트를 불러옵니다
-if(document.querySelector('[data-form],[data-feed],[data-match],[data-share],[data-community],[data-letter]')){
+if(document.querySelector('[data-form],[data-feed],[data-match],[data-share],[data-community],[data-letter],[data-support]')){
  const ld=src=>new Promise(r=>{const e=document.createElement('script');e.src=src;e.onload=r;document.head.appendChild(e)});
  ld('assets/config.js').then(()=>ld('assets/forms.js')).then(()=>{
   if(document.querySelector('[data-share],[data-community]'))ld('assets/share.js').then(()=>{if(document.querySelector('[data-community]'))ld('assets/community.js')});
   if(document.querySelector('[data-letter]'))ld('assets/letter.js');
+  if(document.querySelector('[data-support]'))ld('assets/korea-map.js').then(()=>ld('assets/support-data.js')).then(()=>ld('assets/support.js'));
   if(document.querySelector('[data-match]'))ld('assets/holidays.js').then(()=>ld('assets/match-core.js')).then(()=>ld('assets/sample-caregivers.js')).then(()=>ld('assets/match.js'));
  });
 }

@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>출산지원 지도 | 따사로운</title><link rel="stylesheet" href="assets/style.css"></head><body>
+<div class="pagehead" id="pagehead"></div>
+<section class="blk" data-support><div class="wrap">
+ <div class="note"><b>우리 동네 출산지원, 지도에서 찾아보세요.</b> 지도에서 지역을 누르면 그 지자체의 출산지원 제도와 신청 방법을 볼 수 있어요. 금액과 조건은 해마다 바뀌므로 신청 전에는 공식 안내로 꼭 확인해 주세요.</div>
+ <div class="sp-grid">
+  <div class="sp-mapcard">
+   <div class="sp-bar"><button type="button" class="link" id="sp-back" hidden>‹ 전국 보기</button><b id="sp-crumb">전국</b></div>
+   <div class="sp-sel"><select id="sp-sel-p" aria-label="시·도"></select><select id="sp-sel-m" aria-label="시·군·구" disabled></select></div>
+   <svg id="sp-map" role="group" aria-label="대한민국 지도" preserveAspectRatio="xMidYMid meet"></svg>
+   <p class="sp-hint" id="sp-hint">시·도를 눌러 보세요. 누르면 시·군·구까지 볼 수 있어요.</p>
+  </div>
+  <div class="sp-detail" id="sp-detail"></div>
+ </div>
+ <h2 id="sp-form-h" style="margin-top:40px">출산지원 신청·상담</h2>
+ <p class="mute">정부·지자체 지원은 해당 기관에서 신청해요. 어떤 제도를 받을 수 있는지, 어떻게 신청하는지 막막하시면 알려 주세요. 따사로운이 안내해 드립니다.</p>
+ <div data-form="support" id="sp-form"></div>
+</div></section>
+<script src="assets/site.js"></script></body></html>

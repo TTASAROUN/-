@@ -3,7 +3,7 @@
 const mem={};
 const LS={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return mem[k]!==undefined?mem[k]:d}},set(k,v){mem[k]=v;try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const NAME={consult:'상담 신청',match:'번개매칭',growth:'열린 의견함',class:'응애맘빠',branch:'지사 문의',academy:'수강 문의',quote:'정리수납 견적',share:'무료나눔 등록',shareReq:'나눔 신청',post:'따사마을 글',comment:'따사마을 댓글',report:'신고',letter:'영상편지'};
+const NAME={consult:'상담 신청',match:'번개매칭',growth:'열린 의견함',class:'응애맘빠',branch:'지사 문의',academy:'수강 문의',quote:'정리수납 견적',share:'무료나눔 등록',shareReq:'나눔 신청',post:'따사마을 글',comment:'따사마을 댓글',report:'신고',letter:'영상편지',support:'출산지원 상담'};
 const STATUS=['접수','연락중','확정','완료','보류'];
 const CG=window.SAMPLE_CAREGIVERS||[];
 let tab='inbox',filter='all',open=null;

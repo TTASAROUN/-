@@ -29,6 +29,11 @@ const FORMS={
  class:{title:'응애맘빠 참가 신청',btn:'참가 신청하기',f:[
   {k:'신청자 이름'},{k:'배우자 이름'},{k:'연락처',t:'tel'},{k:'출산 예정월',ph:'예: 2027년 3월'},{k:'참가 희망 행사',t:'select',o:()=>window.TtasaEventOptions?window.TtasaEventOptions():['아직 정하지 못했어요 (다음 일정 안내 요청)']},{k:'문의 내용',t:'textarea',opt:1}],
   note:'예비부부만 신청할 수 있습니다. 자격 확인 방법은 접수 후 개별 안내드립니다.'},
+ support:{title:'출산지원 신청·상담',btn:'상담 신청하기',f:[
+  {k:'이름'},{k:'연락처',t:'tel'},{k:'거주 지역',ph:'지도에서 지역을 누르면 자동으로 채워져요'},{k:'출산(예정)일',ph:'예: 2027년 3월'},{k:'출산 순서',t:'select',o:['첫째','둘째','셋째 이상','다태아(쌍둥이 이상)']},
+  {k:'궁금한 지원',t:'checks',o:()=>((window.SUPPORT&&window.SUPPORT.national)||[]).map(x=>x.name),opt:1},{k:'문의 내용',t:'textarea',opt:1}],
+  note:'정부·지자체 지원의 실제 신청은 해당 기관에서 합니다. 따사로운은 대상 확인과 신청 방법을 안내해 드려요.',
+  agree:'수집 항목: 이름·연락처·거주 지역·출산(예정)일·문의 내용 · 목적: 출산지원 제도 안내 및 산후도우미 이용 상담 · 보유: 상담 종료 후 지체 없이 파기'},
  branch:{title:'지사 문의',btn:'문의하기',f:[
   {k:'이름'},{k:'연락처',t:'tel'},{k:'희망 지역'},{k:'관련 경력/현재 사업',opt:1,t:'textarea'},{k:'문의 내용',t:'textarea',opt:1}]},
  academy:{title:'수강 문의',btn:'수강 문의하기',f:[
@@ -91,7 +96,7 @@ function field(x,i){
  const id='f'+Math.random().toString(36).slice(2,7),req=x.opt?'':' required';
  const lab=`<label for="${id}">${x.k.replace('(선택)','')}${x.opt?' <em>(선택)</em>':''}</label>`;
  let inp;
- if(x.t==='checks')inp=`<div class="chips">${x.o.map(o=>`<label class="chip"><input type="checkbox" name="${esc(x.k)}" value="${esc(o)}"><span>${esc(o)}</span></label>`).join('')}</div>`;
+ if(x.t==='checks')inp=`<div class="chips">${(typeof x.o==='function'?x.o():x.o).map(o=>`<label class="chip"><input type="checkbox" name="${esc(x.k)}" value="${esc(o)}"><span>${esc(o)}</span></label>`).join('')}</div>`;
  else if(x.t==='file')inp=`<div class="upl" data-upl><input id="${id}" name="${esc(x.k)}" type="file" accept="image/*" multiple hidden><label for="${id}" class="btn ghost2 upbtn">사진 선택</label> <span class="hint">최대 ${x.max||MAXF}장 · ${x.photoHint||'얼굴, 주소, 전화번호 등 개인정보가 보이지 않게 가려 주세요.'}${x.max>3?' 공간 전체와 수납장 안쪽이 보이게 찍어 주시면 견적이 정확해요.':''}</span><div class="thumbs"></div></div>`;
  else if(x.t==='select')inp=`<select id="${id}" name="${esc(x.k)}"${req}>${(typeof x.o==='function'?x.o():x.o).map(o=>`<option>${esc(o)}</option>`).join('')}</select>`;
  else if(x.t==='textarea')inp=`<textarea id="${id}" name="${esc(x.k)}" rows="4" placeholder="${esc(x.ph||'')}"${req}></textarea>`;
